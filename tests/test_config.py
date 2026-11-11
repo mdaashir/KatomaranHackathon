@@ -159,6 +159,15 @@ def test_rejects_non_object_top_level(tmp_path: Path):
         load_config(path)
 
 
+def test_accepts_utf8_bom_config(tmp_path, config_dict):
+    path = tmp_path / "config.json"
+    path.write_text(json.dumps(config_dict), encoding="utf-8-sig")
+
+    config = load_config(path)
+
+    assert config.frame_skip == 3
+
+
 def test_does_not_mutate_input_dict(write_config, config_dict):
     original = copy.deepcopy(config_dict)
     load_config(write_config(config_dict))
