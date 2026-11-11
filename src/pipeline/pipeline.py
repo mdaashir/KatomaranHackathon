@@ -231,6 +231,11 @@ class Pipeline:
                     )
                     continue
 
+                self._crops.update(
+                    box.track_id,
+                    quality.crop,
+                    quality_score=quality.score,
+                )
                 result = self._embedder.embed(
                     frame.image,
                     detection,
