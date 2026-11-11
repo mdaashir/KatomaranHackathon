@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Runtime outputs
+data/
+logs/
+
+# Provided input datasets (kept locally, not in git)
+src/video/*.mp4
+
+# Environment
+.env
+.env.*
+
+# Local session memory
+memory.md
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
