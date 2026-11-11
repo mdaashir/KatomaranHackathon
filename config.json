@@ -18,6 +18,8 @@
   },
   "recognition": {
     "model_name": "buffalo_l",
+    "model_dir": "models/insightface/models/buffalo_l",
+    "device": "auto",
     "similarity_threshold": 0.45,
     "min_face_size": 60,
     "min_confidence": 0.6,

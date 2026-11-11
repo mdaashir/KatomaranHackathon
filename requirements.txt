@@ -9,6 +9,10 @@ av>=12.0
 ultralytics>=8.4
 omegaconf>=2.3
 
-# Phase 4+ (uncomment as each phase is implemented)
-# insightface>=0.7.3
-# onnxruntime>=1.17
+# Phase 4
+insightface>=2.1
+onnxruntime-gpu==1.22.0
+
+# insightface may pull the CPU onnxruntime package. On a GPU install, run
+# `uv pip uninstall onnxruntime` so onnxruntime-gpu provides the module;
+# scripts/setup_gpu.ps1 does this automatically.

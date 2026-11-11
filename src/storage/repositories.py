@@ -243,6 +243,15 @@ class FaceRepository:
             for row in rows
         ]
 
+    def count_embeddings(self, face_id: int) -> int:
+        """Return the number of stored embeddings for a face."""
+
+        row = self._db.connect().execute(
+            "SELECT COUNT(*) FROM embeddings WHERE face_id = ?",
+            (face_id,),
+        ).fetchone()
+        return int(row[0])
+
     def add_embedding(
         self,
         face_id: int,
