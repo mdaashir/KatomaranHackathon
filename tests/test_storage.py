@@ -160,6 +160,21 @@ def test_add_embedding_updates_best_quality(faces):
     assert len(faces.list_embeddings()) == 2
 
 
+def test_count_embeddings(faces):
+    face_id = _create_face(faces)
+
+    assert faces.count_embeddings(face_id) == 1
+    faces.add_embedding(
+        face_id,
+        vector=_vector(),
+        dim=4,
+        quality=0.9,
+        now=NOW,
+    )
+    assert faces.count_embeddings(face_id) == 2
+    assert faces.count_embeddings(999) == 0
+
+
 def test_add_embedding_unknown_face(faces):
     with pytest.raises(StorageError, match="does not exist"):
         faces.add_embedding(
