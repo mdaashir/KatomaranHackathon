@@ -206,7 +206,10 @@ head, so Phase 4 derives alignment points with InsightFace landmarks.
 - 5-point similarity-transform alignment to the ArcFace 112×112 template,
   using YOLO keypoints when present and InsightFace landmarks otherwise.
 - InsightFace `buffalo_l` recognition model loaded directly
-  (`app.models['recognition']`), so detection is **not** run twice.
+  (`model_zoo.ArcFaceONNX`), so detection is **not** run twice. The 106-point
+  landmark model supplies the five points when YOLO has no keypoint head.
+- CUDA first: `recognition.device="auto"` selects `CUDAExecutionProvider` when
+  available and falls back to CPU.
 - L2-normalised 512-d embeddings; cosine match against an in-memory matrix
   loaded from SQLite.
 - Registration with quality gate; up to `max_embeddings_per_face` embeddings
@@ -216,6 +219,12 @@ head, so Phase 4 derives alignment points with InsightFace landmarks.
 
 Acceptance: same face across different frames matches; a different person does
 not; registry reload from DB reproduces matches.
+
+Measured (Phase 4, RTX 3050 6 GB, CUDA 12.8): 106 landmarks **4.1 ms** and
+ArcFace **12.7 ms** per face on GPU; CPU fallback is **10.1 ms** and
+**96.6 ms**. Same-person cosine is **0.733 / 0.701** at 0.4 s / 0.8 s; a
+different person scores **0.118**. The 106→5 mapping uses eye centroids
+33:43 and 87:97, nose 86, and mouth corners 52 and 61.
 
 ### Phase 5 — Tracking and visit lifecycle (`feature/tracking-lifecycle`)
 

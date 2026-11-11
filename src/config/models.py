@@ -38,6 +38,8 @@ class RecognitionConfig:
     """Embedding, quality and re-identification settings."""
 
     model_name: str = "buffalo_l"
+    model_dir: str = "models/insightface/models/buffalo_l"
+    device: str = "auto"
     similarity_threshold: float = 0.45
     min_face_size: int = 60
     min_confidence: float = 0.6

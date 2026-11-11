@@ -49,6 +49,8 @@ _SOURCE_KEYS = {
 _DETECTOR_KEYS = {"model_path", "conf_threshold", "imgsz", "min_face_size", "device"}
 _RECOGNITION_KEYS = {
     "model_name",
+    "model_dir",
+    "device",
     "similarity_threshold",
     "min_face_size",
     "min_confidence",
@@ -148,6 +150,13 @@ def _parse_recognition(data: Mapping[str, Any]) -> RecognitionConfig:
         model_name=_get_str(
             section, "model_name", "recognition", default="buffalo_l"
         ),
+        model_dir=_get_str(
+            section,
+            "model_dir",
+            "recognition",
+            default="models/insightface/models/buffalo_l",
+        ),
+        device=_get_str(section, "device", "recognition", default="auto"),
         similarity_threshold=_get_float(
             section,
             "similarity_threshold",
@@ -388,17 +397,26 @@ def _validate_detector(detector: DetectorConfig) -> None:
         raise ConfigError("detector.conf_threshold: must be between 0 and 1")
     if detector.min_face_size < 1:
         raise ConfigError("detector.min_face_size: must be at least 1")
-    if detector.device not in {"auto", "cpu"} and not re.fullmatch(
-        r"cuda(:\d+)?", detector.device
+    _validate_device(detector.device, "detector.device")
+
+
+def _validate_device(device: str, path: str) -> None:
+    if device not in {"auto", "cpu"} and not re.fullmatch(
+        r"cuda(:\d+)?", device
     ):
         raise ConfigError(
-            "detector.device: expected 'auto', 'cpu', 'cuda' or 'cuda:<index>'"
+            f"{path}: expected 'auto', 'cpu', 'cuda' or 'cuda:<index>'"
         )
 
 
 def _validate_recognition(
     recognition: RecognitionConfig, detector: DetectorConfig
 ) -> None:
+    if not recognition.model_name:
+        raise ConfigError("recognition.model_name: must not be empty")
+    if not recognition.model_dir:
+        raise ConfigError("recognition.model_dir: must not be empty")
+    _validate_device(recognition.device, "recognition.device")
     if not 0.0 <= recognition.similarity_threshold <= 1.0:
         raise ConfigError(
             "recognition.similarity_threshold: must be between 0 and 1"

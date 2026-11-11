@@ -197,6 +197,67 @@ native-coordinate filtering, and measured latency.
 
 ---
 
+## 2026-11-11 — Phase 4: InsightFace embeddings and registry
+
+### Prompt
+
+> successfully merged the pr, deleted the branch in remote, commit memory.md
+> too, use gpu. start proceeding next make sure you always following the
+> agents.md
+
+**Purpose:** implement Phase 4 with CUDA execution: quality gate, InsightFace
+alignment, ArcFace embeddings, and the cosine registry.
+
+**What the model did:**
+
+1. Synced `main`, deleted the merged local branch, and created
+   `feature/insightface-embedder-registry`.
+2. Confirmed an RTX 3050 6 GB and installed `torch 2.11.0+cu128`,
+   `insightface 2.1`, and `onnxruntime-gpu==1.22.0`.
+3. Downloaded the official `buffalo_l` pack and loaded only
+   `w600k_r50.onnx` (ArcFace) and `2d106det.onnx` (landmarks) through
+   `ArcFaceONNX` / `Landmark`; InsightFace's detector is never run.
+4. Added `src/recognition/`: quality gate + crop, 106→5 alignment, CUDA/CPU
+   provider selection, lazy runtime, embedder, and SQLite-backed cosine
+   registry. Added `recognition.model_dir` / `recognition.device` to config
+   and `count_embeddings()` to storage.
+5. Added 36 tests (127 total), including a real GPU validation on the provided
+   clips.
+6. Added `scripts/download_models.py`, `scripts/setup_gpu.ps1`,
+   `models/insightface/README.md`, and GPU setup instructions in the README.
+
+**Problems solved:**
+
+- ORT GPU 1.31 requires CUDA 13 DLLs (`cublasLt64_13.dll`), but Torch's cu128
+  wheel ships CUDA 12.8. Pinned `onnxruntime-gpu==1.22.0`, which uses CUDA 12.
+- `insightface` pulls the CPU `onnxruntime`; the setup script removes it so the
+  GPU module wins. PyTorch's CUDA/cuDNN DLL directory is added before ONNX
+  Runtime import.
+- `FaceAnalysis` requires a detection module even when only recognition and
+  landmarks are wanted. Loading `ArcFaceONNX` and `Landmark` directly avoids
+  that and skips the unused 17 MB detector.
+- The initial 106→5 index guess landed on eyebrow points. Labeled the 106-point
+  crop and confirmed: eye clusters `33:43` / `87:97`, nose `86`, mouth corners
+  `52` / `61`.
+- The 174 MB recognizer exceeds GitHub's per-file limit, so both models are
+  fetched by a verified download script instead of committed.
+- Most 4K crowd faces fail `blur_threshold=60` due to motion blur; the real
+  test selects a quality-passing face. Phase 8 can tune the threshold.
+
+**Measured:** GPU providers `['CUDAExecutionProvider', 'CPUExecutionProvider']`;
+landmarks **4.1 ms**, ArcFace **12.7 ms**; CPU 10.1 ms / 96.6 ms; same-person
+cosine **0.733 / 0.701**, different person **0.118**.
+
+**Tests:** `127 passed`.
+
+**Outputs:** `src/recognition/`, config/storage updates, 36 tests, GPU setup +
+model download scripts, model documentation, updated plan/architecture/compute.
+
+**Remaining:** tracking and visit lifecycle (Phase 5); tune blur/registration
+thresholds in Phase 8; real RTSP kill/restore remains a manual check.
+
+---
+
 ## Template for future phases
 
 ```markdown

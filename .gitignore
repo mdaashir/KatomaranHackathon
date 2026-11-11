@@ -17,12 +17,14 @@ logs/
 # Provided input datasets (kept locally, not in git)
 src/video/*.mp4
 
+# InsightFace model pack (fetched by scripts/download_models.py)
+models/insightface/*.zip
+models/insightface/models/
+models/insightface/pack/
+
 # Environment
 .env
 .env.*
-
-# Local session memory
-memory.md
 
 # OS / editors
 .DS_Store

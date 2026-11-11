@@ -3,9 +3,10 @@
 Real-time face detection, recognition, tracking, auto-registration and unique
 visitor counting from a video file or RTSP stream.
 
-> Status: **Phase 1 — foundations (configuration, storage, logging).** The
-> detection/recognition pipeline is not wired yet. See the build phases in
-> [`docs/PLAN.md`](docs/PLAN.md).
+> Status: **Phase 4 — recognition foundations.** Configuration, storage,
+> logging, video inputs, YOLO face detection, and InsightFace/ArcFace
+> embedding are implemented. Tracking, event logging, and the pipeline are
+> next. See the build phases in [`docs/PLAN.md`](docs/PLAN.md).
 
 ## Documentation
 
@@ -15,21 +16,47 @@ visitor counting from a video file or RTSP stream.
 - [Architecture and diagrams](docs/ARCHITECTURE.md)
 - [Prompts used](docs/PROMPTS.md)
 
-## Setup
+## GPU setup (Windows, recommended)
 
-Python 3.10+ is required; 3.11 is recommended.
+Requires an NVIDIA GPU with a recent driver. This installs the CUDA 12.8
+PyTorch build, ONNX Runtime GPU 1.22, and the InsightFace models:
+
+```powershell
+uv python install 3.11
+uv venv --python 3.11
+.\scripts\setup_gpu.ps1
+```
+
+Verify:
+
+```powershell
+.venv\Scripts\python.exe -c "import torch, onnxruntime as ort; print(torch.cuda.is_available(), ort.get_available_providers())"
+```
+
+## CPU setup
 
 ```powershell
 uv python install 3.11
 uv venv --python 3.11
 uv pip install -r requirements.txt
+.venv\Scripts\python.exe scripts\download_models.py
 ```
+
+Set `detector.device` and `recognition.device` to `cpu` in `config.json` to
+force CPU execution; `auto` prefers CUDA when it is available.
 
 ## Tests
 
 ```powershell
 .venv\Scripts\python.exe -m pytest
 ```
+
+## Models
+
+- `models/yolov8n-face.pt` is committed (6.2 MB) for offline YOLO detection.
+- The 174 MB InsightFace recognizer and 5 MB landmark model are fetched by
+  `scripts/download_models.py` and verified against pinned SHA256 values.
+  See [`models/insightface/README.md`](models/insightface/README.md).
 
 ## Configuration
 

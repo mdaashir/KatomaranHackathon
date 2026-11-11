@@ -30,6 +30,8 @@ def config_dict(tmp_path: Path) -> dict[str, Any]:
         },
         "recognition": {
             "model_name": "buffalo_l",
+            "model_dir": str(tmp_path / "insightface"),
+            "device": "auto",
             "similarity_threshold": 0.45,
             "min_face_size": 60,
             "min_confidence": 0.6,
