@@ -286,6 +286,15 @@ Acceptance: `python main.py --config config.json` runs a clip end-to-end with
 no unhandled exception; Ctrl+C produces exit events for active tracks and a
 summary.
 
+Implemented: `main.py` is the composition root; the pipeline creates ByteTrack
+lazily from `frame.fps`, recognizes before confirmation, caches the best crop
+per track for exits, and flushes/resets on `is_window_end` or a window change.
+SIGINT/SIGTERM set the stop event and close the source so an RTSP stall cannot
+block shutdown. `--start-time` overrides a single-file start, and the config
+loader accepts UTF-8 with or without BOM. Measured: the 30-frame smoke run
+processed **30 frames / 10 detection cycles**, produced **1 unique, 1 entry,
+1 exit, 0 open**, and wrote 9.3 KB / 8.8 KB crops. **208 tests pass.**
+
 ### Phase 8 — End-to-end validation and tuning (`test/e2e-and-calibration`)
 
 - Run all 22 record clips in sequence; run `video_sample1.mp4`.

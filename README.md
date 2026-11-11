@@ -3,11 +3,10 @@
 Real-time face detection, recognition, tracking, auto-registration and unique
 visitor counting from a video file or RTSP stream.
 
-> Status: **Phase 6 — event logging and counting.** Configuration, storage,
-> logging, video inputs, YOLO detection, InsightFace/ArcFace recognition,
-> ByteTrack visit lifecycle, atomic image logging, and DB-derived unique
-> counting are implemented. The full pipeline and CLI are next. See the build
-> phases in [`docs/PLAN.md`](docs/PLAN.md).
+> Status: **Phase 7 — pipeline and CLI.** The complete pipeline now runs from
+> a file, a folder of clips, or an RTSP stream, logs entries/exits, and exposes
+> the DB-derived unique count. Validation, tuning, and sample outputs are next.
+> See the build phases in [`docs/PLAN.md`](docs/PLAN.md).
 
 ## Documentation
 
@@ -45,6 +44,28 @@ uv pip install -r requirements.txt
 
 Set `detector.device` and `recognition.device` to `cpu` in `config.json` to
 force CPU execution; `auto` prefers CUDA when it is available.
+
+## Run
+
+```powershell
+# One clip (explicit start time avoids the file mtime)
+.venv\Scripts\python.exe main.py --source file `
+  --path src/video/record_20250620_183903.mp4 `
+  --start-time 2025-06-20T18:39:03Z --max-frames 30
+
+# All front-entry clips (filename timestamps + per-clip flush)
+.venv\Scripts\python.exe main.py --source folder --path src/video
+
+# Interview RTSP stream
+.venv\Scripts\python.exe main.py --source rtsp --rtsp-url rtsp://camera/stream
+
+# Read the DB summary without processing
+.venv\Scripts\python.exe main.py --report
+```
+
+Ctrl+C (or SIGTERM) stops the stream, flushes every open track as an exit, and
+writes a `SUMMARY` line. Use `--verify-db` to log `PRAGMA integrity_check` at
+startup.
 
 ## Tests
 

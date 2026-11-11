@@ -405,6 +405,23 @@ One entry or exit = atomic 256×256 JPEG write + one SQLite transaction:
 Events occur a few times per minute, so this is negligible against the frame
 budget. Images are fsynced and renamed before the DB commit.
 
+### Measured — Phase 7 (end-to-end smoke)
+
+One 30-frame run from `record_20250620_183903.mp4` on the RTX 3050:
+
+| Metric | Measured |
+|---|---:|
+| Frames / detection cycles | 30 / 10 |
+| Unique faces | 1 |
+| Visits / entries / exits / open | 1 / 1 / 1 / 0 |
+| Entry crop | 9.3 KB |
+| Exit crop | 8.8 KB |
+| First event | `2025-06-20T18:39:03.000Z` |
+
+Model load dominates this short run (~10 s); steady-state per-stage costs are
+the Phase 3–6 measurements. Phase 8 runs the full 22-clip sequence and replaces
+the projected runtimes with wall-clock results.
+
 No estimate in this document should survive into the final submission
 unverified; replace §4 and §5 with measured rows.
 

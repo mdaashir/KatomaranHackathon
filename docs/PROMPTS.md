@@ -362,6 +362,62 @@ cross-table methods, 29 tests, updated plan/architecture/compute/README/memory.
 
 ---
 
+## 2026-11-11 — Phase 7: pipeline and CLI
+
+### Prompt
+
+> successfully merged the pr, deleted the branch in remote. start proceeding
+> next make sure you always following the agents.md
+
+**Purpose:** wire every module into a runnable pipeline and CLI, with graceful
+shutdown and an end-to-end smoke run.
+
+**What the model did:**
+
+1. Synced `main`, deleted the merged branch, and created
+   `feature/pipeline-cli`.
+2. Added `src/pipeline/`:
+   - `Pipeline` frame loop with `frame_skip`, recognition-before-confirmation,
+     per-window flush/reset, best-crop cache, and per-track recognition retry.
+   - `CropCache` for exit images when the face is no longer in frame.
+   - `PipelineResult` summary type.
+3. Added `Frame.fps` to all sources so ByteTrack can be created with the real
+   detection cadence.
+4. Added `main.py`:
+   - Composition root, dependency wiring, `--config`, `--source`, `--path`,
+     `--rtsp-url`, `--start-time`, `--max-frames`, `--log-level`, `--report`,
+     `--verify-db`.
+   - SIGINT/SIGTERM set a stop event and close the source so an RTSP stall
+     cannot block shutdown.
+   - `--report` prints the DB summary as JSON.
+5. Added 21 tests (208 total) for the pipeline, crop cache, CLI overrides,
+   report, and error paths.
+
+**Problems solved:**
+
+- Ctrl+C could not wake a blocked RTSP queue. `main` now owns the source and
+  closes it from the signal handler; `run_pipeline` also closes it if pipeline
+  construction fails.
+- A Windows-authored config with a UTF-8 BOM failed JSON parsing. The loader now
+  reads `utf-8-sig`.
+- A failed embedding-cache write discarded a valid recognition; it is now
+  non-fatal and logged.
+- Added `--start-time` so a single file does not inherit its mtime.
+
+**Measured:** 30 frames / 10 detection cycles, 1 unique, 1 entry, 1 exit,
+0 open; 9.3 KB entry crop and 8.8 KB exit crop; first event
+`2025-06-20T18:39:03.000Z`.
+
+**Tests:** `208 passed`.
+
+**Outputs:** `src/pipeline/`, `main.py`, `Frame.fps`, BOM-safe config loading,
+21 tests, updated plan/architecture/compute/README/memory.
+
+**Remaining:** run all 22 clips, calibrate thresholds, produce `samples/`
+(Phase 8), then final README/demo (Phase 9).
+
+---
+
 ## Template for future phases
 
 ```markdown

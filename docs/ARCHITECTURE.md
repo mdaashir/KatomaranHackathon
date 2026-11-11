@@ -267,6 +267,23 @@ Key properties:
 - Entry is emitted after confirmation, but timestamped at **first sight**.
 - Exit is emitted at timeout, timestamped at **last sight**.
 
+### Runtime composition and shutdown
+
+- `main.py` loads config, applies CLI overrides, builds the source, and injects
+  every dependency into `Pipeline`.
+- `Pipeline` creates ByteTrack lazily from `frame.fps` and detects when
+  `frame.global_index % frame_skip == 0`.
+- Recognition runs **before** `lifecycle.observe`, so a track can enter with its
+  Face ID. A face recognized after confirmation uses `assign_face()` and
+  `EventLogger.link_face()` to update the open visit and its entry row.
+- The pipeline caches the largest crop per track; exit events fire after the
+  face is gone, so they use the cached crop.
+- `is_window_end` or a `window_id` change flushes and persists exits, then
+  resets the tracker, lifecycle tracks, crop cache, and retry timers.
+- SIGINT/SIGTERM set a stop event and close the source, waking a blocked RTSP
+  queue; the `finally` path flushes open visits and logs `SUMMARY`.
+- Config loading accepts UTF-8 with or without a BOM.
+
 ---
 
 ## 4. Identity decision flow
