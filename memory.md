@@ -484,7 +484,8 @@ Last updated: 2026-11-11
   back-of-head views; the README explains the DB is authoritative.
 - `pytest`: 210 passed.
 - Updated PLAN, COMPUTE, PROMPTS, README, memory.
-- PR pending creation in this phase; stop and wait for review/merge.
+- PR #8: https://github.com/mdaashir/KatomaranHackathon/pull/8
+- State: open, waiting for review/merge. Do not start Phase 9 until merged.
 
 ## Next session starts with
 
