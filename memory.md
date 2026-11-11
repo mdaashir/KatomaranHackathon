@@ -303,3 +303,8 @@ Last updated: 2026-11-11
 5. Frontend deferred until Phases 0–9.
 6. Whether Phase 8 needs 2×2 tiling to improve far-face recall.
 7. Whether `blur_threshold=60` is too strict for the 4K crowd clip.
+
+## Phase 5 PR
+
+- PR #5: https://github.com/mdaashir/KatomaranHackathon/pull/5
+- State: open, waiting for review/merge. Do not start Phase 6 until merged.
