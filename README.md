@@ -3,11 +3,11 @@
 Real-time face detection, recognition, tracking, auto-registration and unique
 visitor counting from a video file or RTSP stream.
 
-> Status: **Phase 5 — tracking and visit lifecycle.** Configuration, storage,
-> logging, video inputs, YOLO detection, InsightFace/ArcFace recognition, and
-> ByteTrack visit lifecycle are implemented. Event persistence, counting, and
-> the pipeline are next. See the build phases in
-> [`docs/PLAN.md`](docs/PLAN.md).
+> Status: **Phase 6 — event logging and counting.** Configuration, storage,
+> logging, video inputs, YOLO detection, InsightFace/ArcFace recognition,
+> ByteTrack visit lifecycle, atomic image logging, and DB-derived unique
+> counting are implemented. The full pipeline and CLI are next. See the build
+> phases in [`docs/PLAN.md`](docs/PLAN.md).
 
 ## Documentation
 

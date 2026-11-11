@@ -79,8 +79,8 @@ flowchart LR
 | `src/video` | Decode files/folders/RTSP into `Frame` objects; reconnect | config, logging |
 | `src/detection` | YOLO face inference; native-coordinate boxes; detect-only checkpoint | config, types |
 | `src/recognition` | Quality gate, 106→5 alignment, ArcFace embeddings, cosine registry, CUDA/CPU providers | config, storage |
-| `src/tracking` | ByteTrack association, track lifecycle, visits | config, recognition, events |
-| `src/events` | Atomic image writes, event + visit persistence, audit log | config, storage |
+| `src/tracking` | ByteTrack association, track lifecycle, visits | config, detection |
+| `src/events` | Atomic image writes, event + visit persistence, audit log | config, storage, tracking |
 | `src/storage` | SQLite connection, schema, repositories | config |
 | `src/counting` | DB-derived unique count and summary | storage |
 | `src/pipeline` | Frame loop, cadence, orchestration, shutdown | all of the above |
@@ -596,6 +596,20 @@ Rules:
 - Rotating handler: 10 MB × 5 backups by default.
 
 ---
+
+### Event persistence contract
+
+- `EventLogger` maps lifecycle visit IDs to database visit IDs in memory.
+- The image filename uses the lifecycle visit ID; the audit line carries both
+  `visit` (DB) and `lifecycle_visit`.
+- Order per event: atomic image write, one visit+event DB transaction, then the
+  `events.log` line. A DB failure removes the just-written image.
+- A missing crop writes a black placeholder and a warning; the event is never
+  dropped.
+- `link_face()` updates the visit and its entry event when recognition happens
+  after entry. The exit path refuses a conflicting Face ID.
+- The Phase 6 logger is synchronous. Phase 7 can move it to a bounded writer
+  thread without changing the repository contract.
 
 ## 9. Storage layout
 

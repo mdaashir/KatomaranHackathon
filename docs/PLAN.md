@@ -265,6 +265,15 @@ Acceptance: DB `UNIQUE(visit_id, event_type)` rejects duplicates; images are
 never truncated; counter returns DB-derived values after restart; re-ID does not
 increment.
 
+Implemented with a synchronous `EventLogger`: lifecycle visit IDs map to DB
+visit IDs in memory. The entry image filename uses the lifecycle visit ID; the
+audit line carries both `visit` and `lifecycle_visit` for traceability. Images
+are written atomically first, then the visit+event transaction; a DB failure
+removes the image. A missing crop produces a black placeholder so an event is
+never lost. `link_face()` updates both the visit and its entry event when
+recognition happens after entry. Measured: **4.8 ms median per entry/exit**
+(256 px JPEG + SQLite transaction); **185 tests pass**.
+
 ### Phase 7 — Pipeline and CLI (`feature/pipeline-cli`)
 
 - `main.py` composition root: load config, wire dependencies, install signal

@@ -393,6 +393,18 @@ The lifecycle is pure Python over a handful of tracks and visits; its cost is
 well below the tracker and does not appear in the frame budget. The budget line
 in §4 remains a safe 1–3 ms per cycle.
 
+### Measured — Phase 6 (local disk)
+
+One entry or exit = atomic 256×256 JPEG write + one SQLite transaction:
+
+| Operation | Median | p95 |
+|---|---:|---:|
+| Entry persistence | **4.78 ms** | 6.36 ms |
+| Exit persistence | **4.76 ms** | 5.54 ms |
+
+Events occur a few times per minute, so this is negligible against the frame
+budget. Images are fsynced and renamed before the DB commit.
+
 No estimate in this document should survive into the final submission
 unverified; replace §4 and §5 with measured rows.
 
