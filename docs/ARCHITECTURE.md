@@ -77,7 +77,7 @@ flowchart LR
 |---|---|---|
 | `src/config` | Load and validate JSON into frozen typed config | — |
 | `src/video` | Decode files/folders/RTSP into `Frame` objects; reconnect | config, logging |
-| `src/detection` | YOLO face inference; native-coordinate boxes | config, types |
+| `src/detection` | YOLO face inference; native-coordinate boxes; detect-only checkpoint | config, types |
 | `src/recognition` | Quality gate, alignment, ArcFace embedding, cosine registry | config, storage |
 | `src/tracking` | ByteTrack association, track lifecycle, visits | config, recognition, events |
 | `src/events` | Atomic image writes, event + visit persistence, audit log | config, storage |
@@ -113,7 +113,7 @@ class Frame:
 class FaceDetection:
     bbox: tuple[float, float, float, float]  # x1, y1, x2, y2 in native pixels
     confidence: float
-    keypoints: np.ndarray | None             # 5x2, native pixels
+    keypoints: np.ndarray | None             # None with the detect-only checkpoint
 
 
 @dataclass(frozen=True)
@@ -183,6 +183,9 @@ Contracts:
 
 - The detector always returns **native-pixel** boxes; resizing is its internal
   concern.
+- The bundled `yolov8n-face` checkpoint is detect-only, so `keypoints` is
+  normally `None`. The aligner must derive 5 points with InsightFace landmarks
+  when the detector cannot supply them.
 - The embedder receives a 112×112 aligned BGR crop and returns a float32 vector
   with unit L2 norm.
 - The registry is confined to the pipeline thread; it is not thread-safe.
@@ -519,7 +522,7 @@ opens the file directly.
 | `source.type` | `file`, `folder`, or `rtsp`. `folder` reads `glob` in filename order. |
 | `source.realtime` | `false` for files (process as fast as possible), `true` for RTSP (pace to stream, drop stale frames). |
 | `frame_skip` | Decode every frame; run detection when `frame_index % frame_skip == 0`. Must be ≥ 1. |
-| `detector.imgsz` | Inference size. 1600 CPU, 1920 GPU for ≥2K sources; 1280 for CPU real-time. |
+| `detector.imgsz` | Inference size. 1600 default; 1280 for CPU real-time; 1920 on GPU. Measured CPU: 196/297/417 ms at 1280/1600/1920 on a 2K frame. |
 | `detector.min_face_size` | Native-pixel minimum to create a track. |
 | `detector.device` | `auto`, `cpu`, `cuda:0`. |
 | `recognition.min_face_size` | Native-pixel minimum to embed or register. Must be ≥ detector gate. |

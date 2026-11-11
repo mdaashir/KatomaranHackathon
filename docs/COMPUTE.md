@@ -126,13 +126,19 @@ per-track, not per-frame. Add `new_faces_per_second × 10 ms` (CPU) or
 
 | Profile | Effective FPS | 33 044 frames | Notes |
 |---|---:|---:|---|
-| CPU, `imgsz=1280`, skip 3 | 18–20 | **28–31 min** | One-off sample run; acceptable |
-| CPU, `imgsz=1280`, skip 4 | 22–24 | **23–25 min** | Real-time-ish |
-| CPU, `imgsz=1600`, skip 4 | 18–20 | **28–31 min** | Better far-face recall |
-| GPU, `imgsz=1920`, skip 3 | 40–50 | **11–14 min** | Decode-bound |
-| GPU, `imgsz=1280`, skip 3 | 50–60 | **9–12 min** | Fastest |
+| CPU, `imgsz=1280`, skip 3 | 11–12 | **47–49 min** | Measured CPU correction |
+| CPU, `imgsz=1280`, skip 4 | 14–15 | **39–41 min** | Best CPU fallback |
+| CPU, `imgsz=1600`, skip 4 | 10–11 | **52–55 min** | Better far-face recall |
+| GPU, `imgsz=1920`, skip 3 | 40–50 | **11–14 min** | Estimated; no GPU host measured |
+| GPU, `imgsz=1280`, skip 3 | 50–60 | **9–12 min** | Estimated; fastest |
 
-`video_sample1.mp4` (240 frames): **15–25 s CPU**, **6–12 s GPU**.
+`video_sample1.mp4` (240 frames): **23–31 s CPU** (measured detector cost),
+**6–12 s GPU** (estimated).
+
+The CPU rows are extrapolated from the measured Phase 3 detector latency
+(196 ms @1280, 297 ms @1600) plus 20 ms/frame decode and 2 ms overhead. The
+original 90 ms estimate was optimistic by roughly 2–3× on this host. GPU rows
+remain estimates because no CUDA device was available.
 
 These assume sequential file processing with no dropped frames. The pipeline
 does not sleep in file mode; it processes as fast as the hardware allows.
@@ -141,26 +147,27 @@ does not sleep in file mode; it processes as fast as the hardware allows.
 
 ## 6. Real-time RTSP budget (single 25 fps stream)
 
-### CPU profile (`imgsz=1280`, `frame_skip=4`)
+### CPU profile (`imgsz=1280`, `frame_skip=4`, measured latency)
 
 | Consumer | ms per second | Share of one core |
 |---|---:|---:|
 | Decode 25 × 17 ms | 425 | 42.5 % |
-| Detect 6.25 × 90 ms | 563 | 56.3 % |
+| Detect 6.25 × 196 ms | 1 225 | 122.5 % |
 | Track 6.25 × 2 ms | 13 | 1.3 % |
 | Embedding (~2 new faces/s × 10 ms) | 20 | 2.0 % |
 | Event I/O (~0.2 events/s × 15 ms) | 3 | 0.3 % |
-| **Total** | **1 024 ms/s** | **≈1.0 core** |
+| **Total** | **1 686 ms/s** | **≈1.7 cores** |
 
-With `imgsz=1600` the detection share rises to ~0.85 core, total ~1.3 cores.
-On an 8-core machine that is **15–25 % total CPU**; the constraining factor is
-that decode is single-threaded and the pipeline loop is mostly serial.
+With `imgsz=1600`, detection rises to **2.47 cores** at skip 3 or
+**1.86 cores** at skip 4. On an 8-core machine that is 21–31 % total CPU; on a
+4-core machine it is 42–62 %, so use `imgsz=1280` with skip 4–6 there.
 
 **Verdict:** 25 fps RTSP is achievable on 8 cores at `imgsz=1280`, skip 4,
 provided decode runs on a separate thread and stale frames are dropped. On a
-4-core machine, drop to `imgsz=960` or `frame_skip=6`, or run file mode.
+4-core machine, use `imgsz=1280` with `frame_skip=6` (or `imgsz=960`), or run
+file mode. The earlier 90 ms estimate was optimistic by ~2× on this host.
 
-### GPU profile (`imgsz=1920`, skip 3)
+### GPU profile (`imgsz=1920`, skip 3) — estimated, not measured
 
 | Consumer | ms per second | Share |
 |---|---:|---:|
@@ -316,6 +323,31 @@ Decode is therefore **not** the bottleneck on this machine; YOLO remains the
 dominant cost. These numbers replace the decode ranges in §4 for this host and
 will be re-measured with detection enabled in Phase 3.
 
+### Measured — Phase 3 (local CPU)
+
+Environment: `torch 2.15.0+cpu`, `ultralytics 8.4.210`, CPU-only. The first
+inference after model load includes ~9 s of warmup and is excluded from the
+steady-state numbers.
+
+| `imgsz` | front 0 s | front 20 s | front 40 s | 4K crowd | Median ms (2K frame) | Median ms (4K frame) |
+|---:|---:|---:|---:|---:|---:|---:|
+| 1280 | 3 | 4 | 1 | 11 | 163–196 | 160 |
+| 1600 | 3 | 4 | 2 | 13 | 247–311 | 301 |
+| 1920 | 3 | 4 | 2 | 13 | 376–417 | 409 |
+
+Observations:
+
+- The checkpoint is **detect-only** (`task=detect`, one class `face`); it emits
+  no ArcFace keypoints, so `FaceDetection.keypoints` is `None`.
+- Far-corridor faces are still partially missed: 1 face at 40 s with `imgsz`
+  1280, 2 at 1600/1920. Optional 2×2 tiling remains the mitigation if Phase 8
+  finds recall too low.
+- The 4K crowd frame yields 11–13 boxes versus 25–40 visible faces because the
+  image is downscaled to the inference size. This is expected; the primary
+  dataset is the 2K front-entry camera.
+- At `imgsz=1600`, detection alone costs ~2.5 cores at 8.33 cycles/s. The
+  original 90 ms estimate in §4 was optimistic by ~2–3× on this host.
+
 No estimate in this document should survive into the final submission
 unverified; replace §4 and §5 with measured rows.
 
@@ -323,7 +355,7 @@ unverified; replace §4 and §5 with measured rows.
 
 ## 12. Energy and thermal notes
 
-- CPU profile: ~1 core sustained, package power ~12–25 W on a laptop.
+- CPU profile: ~1.7–2.5 cores sustained, package power ~25–45 W on a laptop.
 - GPU profile: 8–15 % of a T4 (~10–20 W) plus CPU decode (~8–15 W).
 - Thermal throttling on thin laptops can reduce YOLO throughput by 20–30 %
   over a 20-minute run. If the demo stutters, use file mode or GPU.

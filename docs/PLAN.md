@@ -185,19 +185,26 @@ killed/restored local RTSP loop; never blocks the pipeline indefinitely.
 
 - `ultralytics` wrapper, model path from config, `imgsz` and confidence from
   config.
-- Returns `FaceDetection(bbox_native, confidence, keypoints[5])`, boxes mapped
-  back to native coordinates.
+- Returns `FaceDetection(bbox_native, confidence, keypoints)`, boxes mapped
+  back to native coordinates. `keypoints` is optional: the bundled
+  `yolov8n-face` checkpoint is detect-only and returns `None`.
 - Size filtering and NMS already handled by Ultralytics; our gate uses native
   pixels.
-- `tests/test_detector.py` with a stubbed model + one real-image smoke test
+- `tests/test_detector.py` with a stubbed model + real-image smoke tests
   (skipped if weights are absent).
 
-Acceptance: detects faces at both near and far range on a record frame;
-per-frame latency measured and recorded in `COMPUTE.md`.
+Acceptance: detects near and mid-range faces on record frames and at least 5
+faces on the 4K crowd frame; far-face recall is measured and reported;
+per-frame latency recorded in `COMPUTE.md`.
+
+Measured (Phase 3, CPU): 3 faces at front-entry 0 s, 4 at 20 s, 1–2 at 40 s
+depending on `imgsz`, and 11–13 on the 4K crowd. The checkpoint has no keypoint
+head, so Phase 4 derives alignment points with InsightFace landmarks.
 
 ### Phase 4 — Embeddings and registry (`feature/insightface-embedder-registry`)
 
-- 5-point similarity-transform alignment to the ArcFace 112×112 template.
+- 5-point similarity-transform alignment to the ArcFace 112×112 template,
+  using YOLO keypoints when present and InsightFace landmarks otherwise.
 - InsightFace `buffalo_l` recognition model loaded directly
   (`app.models['recognition']`), so detection is **not** run twice.
 - L2-normalised 512-d embeddings; cosine match against an in-memory matrix
