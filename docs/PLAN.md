@@ -242,6 +242,16 @@ entry and one exit; a 2 s detector gap does not create a new visit; a 4 s gap
 creates one exit and a later reappearance creates a new visit with the same
 Face ID.
 
+Implemented with `supervision==0.25.1` ByteTrack (0.31 removed the tracker
+module). `TrackLifecycle` is storage-agnostic: it returns `VisitEvent` objects
+and supports an optional sink, so Phase 6 can map events to SQLite/images/logs.
+Identity anchoring works at confirmation: if a new track already has the same
+Face ID as an open visit, it attaches to that visit instead of emitting a
+second entry. Recognition must run before confirmation to get the right ID;
+`assign_face()` can later fill an anonymous open visit, and Phase 6 updates the
+stored entry row. Measured: **1.8 ms median** for a 10-box ByteTrack update;
+**154 tests pass**.
+
 ### Phase 6 — Event logging and counting (`feature/event-logging-and-counter`)
 
 - `ImageStore` atomic writes to `logs/entries|exits/YYYY-MM-DD/`.
@@ -309,7 +319,7 @@ entries/exits, and thumbnails. Must not touch the core pipeline.
 | R5 | Detector drops frames → false exits. | 3 s exit timeout; `LOST → ACTIVE` reacquisition; a reappearance after exit reuses the Face ID, so the unique count stays correct even if an extra visit is logged. |
 | R6 | Clip gaps confuse tracking. | One source window per file; flush at file end; global clock from filename + frame index. |
 | R7 | CPU-only interview machine cannot keep up. | ONNX Runtime CPU, `yolov8n-face`, `imgsz`/`frame_skip` configurable, per-track embedding cache, producer/consumer decode thread. |
-| R8 | Model weights unavailable offline at interview. | Vendor `models/yolov8n-face.pt` in the repo (or LFS) and document the InsightFace cache path; include an offline setup check in `main.py`. |
+| R8 | Model weights unavailable offline at interview. | Fetch both checkpoints with `scripts/download_models.py`; no model weights are committed. Run it before the interview and verify the pinned SHA256 values. |
 | R9 | Log explosion on long streams. | Rotating handlers; INFO audit events only; DEBUG per-frame log disabled by default. |
 | R10 | Windows path/encoding issues. | `pathlib` everywhere, UTF-8, ISO timestamps with `-` instead of `:` in filenames. |
 | R11 | HEVC decode differences. | PyAV primary, OpenCV fallback; decode test in Phase 2 on all 22 clips. |

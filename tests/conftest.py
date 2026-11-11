@@ -42,6 +42,8 @@ def config_dict(tmp_path: Path) -> dict[str, Any]:
         },
         "tracking": {
             "tracker": "bytetrack",
+            "track_activation_threshold": 0.25,
+            "minimum_matching_threshold": 0.8,
             "confirm_hits": 3,
             "exit_timeout_frames": 75,
             "lost_track_buffer": 30,

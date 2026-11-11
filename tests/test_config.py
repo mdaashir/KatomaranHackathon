@@ -89,6 +89,12 @@ def test_recognition_gate_must_not_be_smaller(write_config, config_dict):
         load_config(write_config(config_dict))
 
 
+def test_tracking_activation_threshold_range(write_config, config_dict):
+    config_dict["tracking"]["track_activation_threshold"] = 1.5
+    with pytest.raises(ConfigError, match="track_activation_threshold"):
+        load_config(write_config(config_dict))
+
+
 def test_imgsz_must_be_multiple_of_32(write_config, config_dict):
     config_dict["detector"]["imgsz"] = 1000
     with pytest.raises(ConfigError, match="multiple of 32"):

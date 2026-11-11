@@ -506,6 +506,8 @@ opens the file directly.
   },
   "tracking": {
     "tracker": "bytetrack",
+    "track_activation_threshold": 0.25,
+    "minimum_matching_threshold": 0.8,
     "confirm_hits": 3,
     "exit_timeout_frames": 75,
     "lost_track_buffer": 30
@@ -540,6 +542,8 @@ opens the file directly.
 | `recognition.similarity_threshold` | Cosine threshold for re-identification. |
 | `recognition.register_quality_threshold` | Higher bar for creating a new identity; prevents garbage registrations. |
 | `recognition.max_embeddings_per_face` | Pose variants stored per identity. |
+| `tracking.track_activation_threshold` | ByteTrack activation threshold. |
+| `tracking.minimum_matching_threshold` | ByteTrack association threshold. |
 | `tracking.confirm_hits` | Detection cycles before `NEW → ACTIVE`. |
 | `tracking.exit_timeout_frames` | **Source frames** missing before exit. 75 ≈ 3 s at 25 fps. Not detection cycles. |
 | `tracking.lost_track_buffer` | ByteTrack buffer, in detection cycles (`frame_rate = fps / frame_skip`). |

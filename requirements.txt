@@ -16,3 +16,7 @@ onnxruntime-gpu==1.22.0
 # insightface may pull the CPU onnxruntime package. On a GPU install, run
 # `uv pip uninstall onnxruntime` so onnxruntime-gpu provides the module;
 # scripts/setup_gpu.ps1 does this automatically.
+
+# Phase 5
+# 0.31 removed the tracker module; pin a version that still ships ByteTrack.
+supervision==0.25.1

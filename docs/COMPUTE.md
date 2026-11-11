@@ -380,6 +380,19 @@ Observations:
   primary 2K front-entry camera is sharper. Phase 8 can tune this threshold if
   registration recall is too low.
 
+### Measured — Phase 5 (local CPU)
+
+ByteTrack (`supervision==0.25.1`) with 10 boxes per detection cycle:
+
+| Metric | Measured |
+|---|---:|
+| Update median | **1.77 ms** |
+| Update p95 | 4.22 ms |
+
+The lifecycle is pure Python over a handful of tracks and visits; its cost is
+well below the tracker and does not appear in the frame budget. The budget line
+in §4 remains a safe 1–3 ms per cycle.
+
 No estimate in this document should survive into the final submission
 unverified; replace §4 and §5 with measured rows.
 

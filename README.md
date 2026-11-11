@@ -3,10 +3,11 @@
 Real-time face detection, recognition, tracking, auto-registration and unique
 visitor counting from a video file or RTSP stream.
 
-> Status: **Phase 4 — recognition foundations.** Configuration, storage,
-> logging, video inputs, YOLO face detection, and InsightFace/ArcFace
-> embedding are implemented. Tracking, event logging, and the pipeline are
-> next. See the build phases in [`docs/PLAN.md`](docs/PLAN.md).
+> Status: **Phase 5 — tracking and visit lifecycle.** Configuration, storage,
+> logging, video inputs, YOLO detection, InsightFace/ArcFace recognition, and
+> ByteTrack visit lifecycle are implemented. Event persistence, counting, and
+> the pipeline are next. See the build phases in
+> [`docs/PLAN.md`](docs/PLAN.md).
 
 ## Documentation
 
@@ -53,10 +54,12 @@ force CPU execution; `auto` prefers CUDA when it is available.
 
 ## Models
 
-- `models/yolov8n-face.pt` is committed (6.2 MB) for offline YOLO detection.
-- The 174 MB InsightFace recognizer and 5 MB landmark model are fetched by
-  `scripts/download_models.py` and verified against pinned SHA256 values.
-  See [`models/insightface/README.md`](models/insightface/README.md).
+- **No model weights are committed.** All `*.pt`, `*.onnx` and `*.zip` files
+  under `models/` are ignored by git.
+- `scripts/download_models.py` fetches and SHA256-verifies the 6.2 MB YOLO
+  checkpoint plus the 174 MB InsightFace recognizer and 5 MB landmark model.
+- See [`models/README.md`](models/README.md) and
+  [`models/insightface/README.md`](models/insightface/README.md).
 
 ## Configuration
 

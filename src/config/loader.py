@@ -61,6 +61,8 @@ _RECOGNITION_KEYS = {
 }
 _TRACKING_KEYS = {
     "tracker",
+    "track_activation_threshold",
+    "minimum_matching_threshold",
     "confirm_hits",
     "exit_timeout_frames",
     "lost_track_buffer",
@@ -196,6 +198,18 @@ def _parse_tracking(data: Mapping[str, Any]) -> TrackingConfig:
         tracker=_get_str(
             section, "tracker", "tracking", default="bytetrack"
         ).lower(),
+        track_activation_threshold=_get_float(
+            section,
+            "track_activation_threshold",
+            "tracking",
+            default=0.25,
+        ),
+        minimum_matching_threshold=_get_float(
+            section,
+            "minimum_matching_threshold",
+            "tracking",
+            default=0.8,
+        ),
         confirm_hits=_get_int(section, "confirm_hits", "tracking", default=3),
         exit_timeout_frames=_get_int(
             section, "exit_timeout_frames", "tracking", default=75
@@ -449,6 +463,14 @@ def _validate_tracking(tracking: TrackingConfig) -> None:
         raise ConfigError(
             f"tracking.tracker: expected one of {sorted(_TRACKERS)}, "
             f"got '{tracking.tracker}'"
+        )
+    if not 0.0 <= tracking.track_activation_threshold <= 1.0:
+        raise ConfigError(
+            "tracking.track_activation_threshold: must be between 0 and 1"
+        )
+    if not 0.0 <= tracking.minimum_matching_threshold <= 1.0:
+        raise ConfigError(
+            "tracking.minimum_matching_threshold: must be between 0 and 1"
         )
     if tracking.confirm_hits < 1:
         raise ConfigError("tracking.confirm_hits: must be at least 1")
