@@ -201,6 +201,18 @@ excerpt and `summary.json`.
 .venv\Scripts\python.exe scripts\export_samples.py --config config.json
 ```
 
+## Dashboard (optional)
+
+A read-only HTML snapshot of the current database and recent event crops. It
+does not import the pipeline and adds no dependency:
+
+```powershell
+.venv\Scripts\python.exe scripts\dashboard.py --config config.json --open
+```
+
+Open [`samples/dashboard/index.html`](samples/dashboard/index.html) for the
+snapshot generated from the 22-clip run.
+
 ## Tests and verification
 
 ```powershell
@@ -210,9 +222,9 @@ excerpt and `summary.json`.
 
 `pytest` covers the registry/re-ID matching, the entry/exit state machine, the
 unique counter, all video sources, detection, recognition, tracking, events,
-storage and the CLI. `verify_outputs.py` checks SQLite integrity, foreign keys,
-exactly one entry and one exit per visit, no open visits, and that every
-referenced image exists.
+storage, the CLI and the read-only dashboard. `verify_outputs.py` checks SQLite
+integrity, foreign keys, exactly one entry and one exit per visit, no open
+visits, and that every referenced image exists.
 
 ## Business rules implemented
 

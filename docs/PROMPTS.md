@@ -515,6 +515,45 @@ final submission until that is done.
 
 ---
 
+## 2026-11-11 — Phase 10: optional read-only dashboard
+
+### Prompt
+
+> successfully merged the pr, deleted the branch in remote. start proceeding next make sure you always following the agents.md
+
+**Purpose:** add the optional read-only dashboard without touching the core
+pipeline, and ship a committed snapshot generated from the real 22-clip run.
+
+**What the model did:**
+
+1. Synced `main`, removed `docs/readme-and-demo`, and created
+   `feature/dashboard`.
+2. Added `src/dashboard/`: `DashboardBuilder` reads SQLite, copies recent event
+   thumbnails, and writes a standalone `index.html`; `render_dashboard` is a
+   pure HTML renderer with escaped DB text.
+3. Added `scripts/dashboard.py` with `--config`, `--db`, `--output`,
+   `--max-events`, `--max-visits` and `--open`.
+4. Added six tests: summary/rows, image copying, missing-image placeholder,
+   truncation/validation, empty states and safe image cleanup.
+5. Generated `samples/dashboard/index.html` from `data/e2e.db`: 26 unique,
+   59 visits, 24 recent events and 24 thumbnails.
+6. Updated README, PLAN, FEATURES, ARCHITECTURE, sample README and `.gitignore`
+   (`/dashboard/`).
+
+**Design:** static generation rather than a server. It adds no dependency,
+cannot block the pipeline, and can be refreshed on demand. Live serving can be
+added later without changing the renderer.
+
+**Tests:** `216 passed`.
+
+**Outputs:** `src/dashboard/`, `scripts/dashboard.py`,
+`tests/test_dashboard.py`, `samples/dashboard/`, updated docs.
+
+**Remaining:** the public demo video is still the only blocker before the
+submission form; the dashboard is an optional extra.
+
+---
+
 ## Template for future phases
 
 ```markdown

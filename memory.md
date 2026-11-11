@@ -519,3 +519,27 @@ Last updated: 2026-11-11
 - After merge: sync `main`, delete `docs/readme-and-demo`, and either record the
   demo or start the optional Phase 10 dashboard only after the submission is
   complete. Do not add a dashboard before the core submission is final.
+
+---
+
+## Phase 10 — optional read-only dashboard (2026-11-11)
+
+- Branch: `feature/dashboard`.
+- Added `src/dashboard/` (`DashboardBuilder`, pure `render_dashboard`) and
+  `scripts/dashboard.py` (`--config`, `--db`, `--output`, `--max-events`,
+  `--max-visits`, `--open`). It only reads SQLite, copies event thumbnails and
+  writes a standalone HTML snapshot; it never imports the pipeline.
+- Added six tests (`tests/test_dashboard.py`); total `216 passed`.
+- Generated `samples/dashboard/index.html` from `data/e2e.db`: 26 unique,
+  59 visits, 24 recent events, 24 thumbnails. `samples/README.md` links it.
+- Updated README, PLAN, FEATURES, ARCHITECTURE, PROMPTS and `.gitignore`
+  (`/dashboard/`).
+- PR pending creation in this phase; stop and wait for review/merge.
+- The public demo video link remains the only blocker before the actual
+  submission.
+
+## Next session starts with
+
+- After merge: sync `main`, delete `feature/dashboard`, record the public demo
+  (still required), replace `VIDEO_URL`, and submit. Do not start another
+  feature before the submission video is live.

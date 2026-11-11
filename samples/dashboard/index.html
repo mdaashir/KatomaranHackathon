@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Intelligent Face Tracker — Dashboard</title>
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f4f5f7;
+  --panel: #ffffff;
+  --fg: #172033;
+  --muted: #667085;
+  --line: #e4e7ec;
+  --header: #111827;
+  --accent: #2563eb;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+header {
+  background: var(--header);
+  color: #ffffff;
+  padding: 26px 24px;
+}
+header .inner { max-width: 1240px; margin: 0 auto; }
+header h1 { margin: 0 0 6px; font-size: 26px; letter-spacing: -0.02em; }
+header p { margin: 0; color: #cbd5e1; font-size: 14px; }
+main { max-width: 1240px; margin: 0 auto; padding: 22px 24px 48px; }
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+.card .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; }
+.card .number { font-size: 30px; font-weight: 700; margin-top: 4px; }
+.grid {
+  display: grid;
+  grid-template-columns: 1.45fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+@media (max-width: 980px) { .grid { grid-template-columns: 1fr; } }
+section {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+section h2 { margin: 0; padding: 14px 16px; font-size: 15px; border-bottom: 1px solid var(--line); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { padding: 9px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; }
+th { color: var(--muted); font-weight: 600; background: #fafbfc; white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+.thumb {
+  width: 54px; height: 54px; object-fit: cover; border-radius: 8px;
+  display: block; background: #eef2f6;
+}
+.thumb.missing {
+  display: flex; align-items: center; justify-content: center;
+  color: var(--muted); font-size: 10px; text-align: center;
+}
+.badge {
+  display: inline-block; padding: 2px 8px; border-radius: 999px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.02em;
+}
+.badge.entry { background: #dcfce7; color: #166534; }
+.badge.exit { background: #ffedd5; color: #9a3412; }
+.badge.open { background: #fef9c3; color: #854d0e; }
+.badge.closed { background: #e0e7ff; color: #3730a3; }
+.source { max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); }
+.empty { color: var(--muted); text-align: center; padding: 24px; }
+.meta { color: var(--muted); font-size: 12px; margin: 0 0 18px; }
+footer { max-width: 1240px; margin: 0 auto; padding: 0 24px 36px; color: var(--muted); font-size: 12px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="inner">
+    <h1>Intelligent Face Tracker</h1>
+    <p>Read-only snapshot from SQLite · generated 2026-11-11T23:31:54Z</p>
+  </div>
+</header>
+<main>
+  <div class="cards">
+    <div class="card"><div class="label">Unique faces</div><div class="number">26</div></div>
+<div class="card"><div class="label">Visits</div><div class="number">59</div></div>
+<div class="card"><div class="label">Open visits</div><div class="number">0</div></div>
+<div class="card"><div class="label">Anonymous</div><div class="number">33</div></div>
+<div class="card"><div class="label">Entries</div><div class="number">59</div></div>
+<div class="card"><div class="label">Exits</div><div class="number">59</div></div>
+  </div>
+  <p class="meta">First event: 2025-06-20T18:39:03.000Z · Last event: 2025-06-20T19:13:28.962Z</p>
+  <div class="grid">
+    <section>
+      <h2>Recent events</h2>
+      <table>
+        <thead><tr><th>Crop</th><th>Type</th><th>Time</th><th>Identity</th><th>Visit</th><th>Track</th><th>Conf.</th><th>Source</th></tr></thead>
+        <tbody>
+        <tr><td><a href="images/event_118_2025-06-20T19-13-28.962Z_faceanon_visit2_track52.jpg" target="_blank" rel="noreferrer"><img class="thumb" src="images/event_118_2025-06-20T19-13-28.962Z_faceanon_visit2_track52.jpg" alt="Event 118 crop" loading="lazy"></a></td><td><span class="badge exit">exit</span></td><td>2025-06-20T19:13:28.962Z</td><td>Anonymous</td><td>#59</td><td>52</td><td>0.73</td><td class="source" title="record_20250620_191230.mp4">record_20250620_191230.mp4</td></tr>
+<tr><td><a href="images/event_117_2025-06-20T19-13-26.805Z_faceanon_visit2_track52.jpg" target="_blank" rel="noreferrer"><img class="thumb" src="images/event_117_2025-06-20T19-13-26.805Z_faceanon_visit2_track52.jpg" alt="Event 117 crop" loading="lazy"></a></td><td><span class="badge entry">entry</span></td><td>2025-06-20T19:13:26.805Z</td><td>Anonymous</td><td>#59</td><td>52</td><td>0.68</td><td class="source" title="record_20250620_191230.mp4">record_20250620_191230.mp4</td></tr>
+<tr><td><a href="images/event_116_2025-06-20T19-13-14.102Z_face25_visit1_track7.jpg" target="_blank" rel="noreferrer"><img class="thumb" src="images/event_116_2025-06-20T19-13-14.102Z_face25_visit1_track7.jpg" alt="Event 116 crop" loading="lazy"></a></td><td><span class="badge exit">exit</span></td><td>2025-06-20T19:13:14.102Z</td><td>Face 25</td><td>#58</td><td>7</td><td>0.75</td><td class="source" title="record_20250620_191230.mp4">record_20250620_191230.mp4</td></tr>
+<tr><td><a href="images/event_115_2025-06-20T19-13-08.349Z_faceanon_visit1_track7.jpg" target="_blank" rel="noreferrer"><img class="thumb" src="images/event_115_2025-06-20T19-13-08.349Z_faceanon_visit1_track7.jpg" alt="Event 115 crop" loading="lazy"></a></td><td><span class="badge entry">entry</span></td><td>2025-06-20T19:13:08.349Z</td><td>Face 25</td><td>#58</td><td>7</td><td>0.76</td><td class="source" title="record_20250620_191230.mp4">record_20250620_191230.mp4</td></tr>
+<tr><td><a href="images/event_114_2025-06-20T19-11-35.112Z_faceanon_visit2_track2.jpg" target="_blank" rel="noreferrer"><img class="thumb" src="images/event_114_2025-06-20T19-11-35.112Z_faceanon_visit2_track2.jpg" alt="Event 114 crop" loading="lazy"></a></td><td><span class="badge exit">exit</span></td><td>2025-06-20T19:11:35.112Z</td><td>Anonymous</td><td>#56</td><td>2</td><td>0.66</td><td class="source" title="record_20250620_191129.mp4">record_20250620_191129.mp4</td></tr>
+<tr><td><a href="images/event_113_2025-06-20T19-11-33.434Z_faceanon_visit3_track4.jpg" target="_blank" rel="noreferrer"><img class="thumb" src="images/event_113_2025-06-20T19-11-33.434Z_faceanon_visit3_track4.jpg" alt="Event 113 crop" loading="lazy"></a></td><td><span class="badge exit">exit</span></td><td>2025-06-20T19:11:33.434Z</td><td>Anonymous</td><td>#57</td><td>4</td><td>0.77</td><td class="source" title="record_20250620_191129.mp4">record_20250620_191129.mp4</td></tr>
+<tr><td><a href="images/event_112_2025-06-20T19-11-29.959Z_faceanon_visit1_track1.jpg" target="_blank" rel="noreferrer"><img class="thumb" src="images/event_112_2025-06-20T19-11-29.959Z_faceanon_visit1_track1.jpg" alt="Event 112 crop" loading="lazy"></a></td><td><span class="badge exit">exit</span></td><td>2025-06-20T19:11:29.959Z</td><td>Anonymous</td><td>#55</td><td>1</td><td>0.76</td><td class="source" title="record_20250620_191129.mp4">record_20250620_191129.mp4</td></tr>
+<tr><td><a href="images/event_111_2025-06-20T19-11-30.319Z_faceanon_visit3_track4.jpg" target="_blank" rel="noreferrer"><img class="thumb" src="images/event_111_2025-06-20T19-11-30.319Z_faceanon_visit3_track4.jpg" alt="Event 111 crop" loading="lazy"></a></td><td><span class="badge entry">entry</span></td><td>2025-06-20T19:11:30.319Z</td><td>Anonymous</td><td>#57</td><td>4</td><td>0.69</td><td class="source" title="record_20250620_191129.mp4">record_20250620_191129.mp4</td></tr>
+<tr><td><a href="images/event_110_2025-06-20T19-11-29.719Z_faceanon_visit2_track2.jpg" target="_blank" rel="noreferrer"><img class="thumb" src="images/event_110_2025-06-20T19-11-29.719Z_faceanon_visit2_track2.jpg" alt="Event 110 crop" loading="lazy"></a></td><td><span class="badge entry">entry</span></td><td>2025-06-20T19:11:29.719Z</td><td>Anonymous</td><td>#56</td><td>2</td><td>0.74</td><td class="source" title="record_20250620_191129.mp4">record_20250620_191129.mp4</td></tr>
+<tr><td><a href="images/event_109_2025-06-20T19-11-29.000Z_faceanon_visit1_track1.jpg" target="_blank" rel="noreferrer"><img class="thumb" src="images/event_109_2025-06-20T19-11-29.000Z_faceanon_visit1_track1.jpg" alt="Event 109 crop" loading="lazy"></a></td><td><span class="badge entry">entry</span></td><td>2025-06-20T19:11:29.000Z</td><td>Anonymous</td><td>#55</td><td>1</td><td>0.66</td><td class="source" title="record_20250620_191129.mp4">record_20250620_191129.mp4</td></tr>
+<tr><td><a href="images/event_108_2025-06-20T19-11-01.157Z_faceanon_visit54_track1.jpg" target="_blank" rel="noreferrer"><img class="thumb" src="images/event_108_2025-06-20T19-11-01.157Z_faceanon_visit54_track1.jpg" alt="Event 108 crop" loading="lazy"></a></td><td><span class="badge exit">exit</span></td><td>2025-06-20T19:11:01.157Z</td><td>Anonymous</td><td>#54</td><td>1</td><td>0.56</td><td class="source" title="record_20250620_191029.mp4">record_20250620_191029.mp4</td></tr>
+<tr><td><a href="images/event_107_2025-06-20T19-11-00.199Z_faceanon_visit54_track1.jpg" target="_blank" rel="noreferrer"><img class="thumb" src="images/event_107_2025-06-20T19-11-00.199Z_faceanon_visit54_track1.jpg" alt="Event 107 crop" loading="lazy"></a></td><td><span class="badge entry">entry</span></td><td>2025-06-20T19:11:00.199Z</td><td>Anonymous</td><td>#54</td><td>1</td><td>0.63</td><td class="source" title="record_20250620_191029.mp4">record_20250620_191029.mp4</td></tr>
+<tr><td><a href="images/event_106_2025-06-20T19-09-56.282Z_faceanon_visit53_track1.jpg" target="_blank" rel="noreferrer"><img class="thumb" src="images/event_106_2025-06-20T19-09-56.282Z_faceanon_visit53_track1.jpg" alt="Event 106 crop" loading="lazy"></a></td><td><span class="badge exit">exit</span></td><td>2025-06-20T19:09:56.282Z</td><td>Anonymous</td><td>#53</td><td>1</td><td>0.52</td><td class="source" title="record_20250620_190928.mp4">record_20250620_190928.mp4</td></tr>
+<tr><td><a href="images/event_105_2025-06-20T19-09-51.249Z_faceanon_visit53_track1.jpg" target="_blank" rel="noreferrer"><img class="thumb" src="images/event_105_2025-06-20T19-09-51.249Z_faceanon_visit53_track1.jpg" alt="Event 105 crop" loading="lazy"></a></td><td><span class="badge entry">entry</span></td><td>2025-06-20T19:09:51.249Z</td><td>Anonymous</td><td>#53</td><td>1</td><td>0.73</td><td class="source" title="record_20250620_190928.mp4">record_20250620_190928.mp4</td></tr>
+<tr><td><a href="images/event_104_2025-06-20T19-09-19.851Z_face24_visit52_track1.jpg" target="_blank" rel="noreferrer"><img class="thumb" src="images/event_104_2025-06-20T19-09-19.851Z_face24_visit52_track1.jpg" alt="Event 104 crop" loading="lazy"></a></td><td><span class="badge exit">exit</span></td><td>2025-06-20T19:09:19.851Z</td><td>Face 24</td><td>#52</td><td>1</td><td>0.70</td><td class="source" title="record_20250620_190828.mp4">record_20250620_190828.mp4</td></tr>
+<tr><td><a href="images/event_103_2025-06-20T19-09-13.140Z_faceanon_visit52_track1.jpg" target="_blank" rel="noreferrer"><img class="thumb" src="images/event_103_2025-06-20T19-09-13.140Z_faceanon_visit52_track1.jpg" alt="Event 103 crop" loading="lazy"></a></td><td><span class="badge entry">entry</span></td><td>2025-06-20T19:09:13.140Z</td><td>Face 24</td><td>#52</td><td>1</td><td>0.67</td><td class="source" title="record_20250620_190828.mp4">record_20250620_190828.mp4</td></tr>
+<tr><td><a href="images/event_102_2025-06-20T19-08-10.062Z_face13_visit51_track12.jpg" target="_blank" rel="noreferrer"><img class="thumb" src="images/event_102_2025-06-20T19-08-10.062Z_face13_visit51_track12.jpg" alt="Event 102 crop" loading="lazy"></a></td><td><span class="badge exit">exit</span></td><td>2025-06-20T19:08:10.062Z</td><td>Face 13</td><td>#51</td><td>12</td><td>0.61</td><td class="source" title="record_20250620_190727.mp4">record_20250620_190727.mp4</td></tr>
+<tr><td><a href="images/event_101_2025-06-20T19-08-05.149Z_faceanon_visit50_track7.jpg" target="_blank" rel="noreferrer"><img class="thumb" src="images/event_101_2025-06-20T19-08-05.149Z_faceanon_visit50_track7.jpg" alt="Event 101 crop" loading="lazy"></a></td><td><span class="badge exit">exit</span></td><td>2025-06-20T19:08:05.149Z</td><td>Anonymous</td><td>#50</td><td>7</td><td>0.51</td><td class="source" title="record_20250620_190727.mp4">record_20250620_190727.mp4</td></tr>
+<tr><td><a href="images/event_100_2025-06-20T19-08-06.587Z_face13_visit51_track12.jpg" target="_blank" rel="noreferrer"><img class="thumb" src="images/event_100_2025-06-20T19-08-06.587Z_face13_visit51_track12.jpg" alt="Event 100 crop" loading="lazy"></a></td><td><span class="badge entry">entry</span></td><td>2025-06-20T19:08:06.587Z</td><td>Face 13</td><td>#51</td><td>12</td><td>0.60</td><td class="source" title="record_20250620_190727.mp4">record_20250620_190727.mp4</td></tr>
+<tr><td><a href="images/event_99_2025-06-20T19-08-04.310Z_faceanon_visit50_track7.jpg" target="_blank" rel="noreferrer"><img class="thumb" src="images/event_99_2025-06-20T19-08-04.310Z_faceanon_visit50_track7.jpg" alt="Event 99 crop" loading="lazy"></a></td><td><span class="badge entry">entry</span></td><td>2025-06-20T19:08:04.310Z</td><td>Anonymous</td><td>#50</td><td>7</td><td>0.76</td><td class="source" title="record_20250620_190727.mp4">record_20250620_190727.mp4</td></tr>
+<tr><td><a href="images/event_98_2025-06-20T19-07-56.281Z_faceanon_visit49_track2.jpg" target="_blank" rel="noreferrer"><img class="thumb" src="images/event_98_2025-06-20T19-07-56.281Z_faceanon_visit49_track2.jpg" alt="Event 98 crop" loading="lazy"></a></td><td><span class="badge exit">exit</span></td><td>2025-06-20T19:07:56.281Z</td><td>Anonymous</td><td>#49</td><td>2</td><td>0.72</td><td class="source" title="record_20250620_190727.mp4">record_20250620_190727.mp4</td></tr>
+<tr><td><a href="images/event_97_2025-06-20T19-07-55.442Z_faceanon_visit49_track2.jpg" target="_blank" rel="noreferrer"><img class="thumb" src="images/event_97_2025-06-20T19-07-55.442Z_faceanon_visit49_track2.jpg" alt="Event 97 crop" loading="lazy"></a></td><td><span class="badge entry">entry</span></td><td>2025-06-20T19:07:55.442Z</td><td>Anonymous</td><td>#49</td><td>2</td><td>0.70</td><td class="source" title="record_20250620_190727.mp4">record_20250620_190727.mp4</td></tr>
+<tr><td><a href="images/event_96_2025-06-20T19-07-01.712Z_faceanon_visit48_track1.jpg" target="_blank" rel="noreferrer"><img class="thumb" src="images/event_96_2025-06-20T19-07-01.712Z_faceanon_visit48_track1.jpg" alt="Event 96 crop" loading="lazy"></a></td><td><span class="badge exit">exit</span></td><td>2025-06-20T19:07:01.712Z</td><td>Anonymous</td><td>#48</td><td>1</td><td>0.79</td><td class="source" title="record_20250620_190626.mp4">record_20250620_190626.mp4</td></tr>
+<tr><td><a href="images/event_95_2025-06-20T19-06-57.877Z_faceanon_visit48_track1.jpg" target="_blank" rel="noreferrer"><img class="thumb" src="images/event_95_2025-06-20T19-06-57.877Z_faceanon_visit48_track1.jpg" alt="Event 95 crop" loading="lazy"></a></td><td><span class="badge entry">entry</span></td><td>2025-06-20T19:06:57.877Z</td><td>Anonymous</td><td>#48</td><td>1</td><td>0.74</td><td class="source" title="record_20250620_190626.mp4">record_20250620_190626.mp4</td></tr>
+        </tbody>
+      </table>
+    </section>
+    <section>
+      <h2>Recent visits</h2>
+      <table>
+        <thead><tr><th>Visit</th><th>Identity</th><th>Status</th><th>Entry</th><th>Exit</th><th>Track</th><th>Source</th></tr></thead>
+        <tbody>
+        <tr><td>#59</td><td>Anonymous</td><td><span class="badge closed">closed</span></td><td>2025-06-20T19:13:26.805Z</td><td>2025-06-20T19:13:28.962Z</td><td>52</td><td class="source" title="record_20250620_191230.mp4">record_20250620_191230.mp4</td></tr>
+<tr><td>#58</td><td>Face 25</td><td><span class="badge closed">closed</span></td><td>2025-06-20T19:13:08.349Z</td><td>2025-06-20T19:13:14.102Z</td><td>7</td><td class="source" title="record_20250620_191230.mp4">record_20250620_191230.mp4</td></tr>
+<tr><td>#57</td><td>Anonymous</td><td><span class="badge closed">closed</span></td><td>2025-06-20T19:11:30.319Z</td><td>2025-06-20T19:11:33.434Z</td><td>4</td><td class="source" title="record_20250620_191129.mp4">record_20250620_191129.mp4</td></tr>
+<tr><td>#56</td><td>Anonymous</td><td><span class="badge closed">closed</span></td><td>2025-06-20T19:11:29.719Z</td><td>2025-06-20T19:11:35.112Z</td><td>2</td><td class="source" title="record_20250620_191129.mp4">record_20250620_191129.mp4</td></tr>
+<tr><td>#55</td><td>Anonymous</td><td><span class="badge closed">closed</span></td><td>2025-06-20T19:11:29.000Z</td><td>2025-06-20T19:11:29.959Z</td><td>1</td><td class="source" title="record_20250620_191129.mp4">record_20250620_191129.mp4</td></tr>
+<tr><td>#54</td><td>Anonymous</td><td><span class="badge closed">closed</span></td><td>2025-06-20T19:11:00.199Z</td><td>2025-06-20T19:11:01.157Z</td><td>1</td><td class="source" title="record_20250620_191029.mp4">record_20250620_191029.mp4</td></tr>
+<tr><td>#53</td><td>Anonymous</td><td><span class="badge closed">closed</span></td><td>2025-06-20T19:09:51.249Z</td><td>2025-06-20T19:09:56.282Z</td><td>1</td><td class="source" title="record_20250620_190928.mp4">record_20250620_190928.mp4</td></tr>
+<tr><td>#52</td><td>Face 24</td><td><span class="badge closed">closed</span></td><td>2025-06-20T19:09:13.140Z</td><td>2025-06-20T19:09:19.851Z</td><td>1</td><td class="source" title="record_20250620_190828.mp4">record_20250620_190828.mp4</td></tr>
+<tr><td>#51</td><td>Face 13</td><td><span class="badge closed">closed</span></td><td>2025-06-20T19:08:06.587Z</td><td>2025-06-20T19:08:10.062Z</td><td>12</td><td class="source" title="record_20250620_190727.mp4">record_20250620_190727.mp4</td></tr>
+<tr><td>#50</td><td>Anonymous</td><td><span class="badge closed">closed</span></td><td>2025-06-20T19:08:04.310Z</td><td>2025-06-20T19:08:05.149Z</td><td>7</td><td class="source" title="record_20250620_190727.mp4">record_20250620_190727.mp4</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+</main>
+<footer>
+  Unique visitors are derived from registered faces in SQLite. Anonymous visits
+  are logged but excluded from the unique count.
+</footer>
+</body>
+</html>

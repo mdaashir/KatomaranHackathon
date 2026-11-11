@@ -344,6 +344,11 @@ remaining author action before submission.
 Small read-only page or CLI report showing current unique count, recent
 entries/exits, and thumbnails. Must not touch the core pipeline.
 
+**Status (2026-11-11):** implemented as `src/dashboard` plus
+`scripts/dashboard.py`; it reads SQLite, copies event thumbnails and writes a
+standalone HTML snapshot. `samples/dashboard/index.html` is generated from the
+22-clip run; 216 tests pass. The core pipeline is untouched.
+
 ---
 
 ## 8. Risks and mitigations

@@ -83,6 +83,7 @@ flowchart LR
 | `src/events` | Atomic image writes, event + visit persistence, audit log | config, storage, tracking |
 | `src/storage` | SQLite connection, schema, repositories | config |
 | `src/counting` | DB-derived unique count and summary | storage |
+| `src/dashboard` | Read-only HTML snapshot; copies event thumbnails | storage, counting |
 | `src/pipeline` | Frame loop, cadence, orchestration, shutdown | all of the above |
 | `src/logging_setup` | Console/file handlers, formatters | config |
 | `main.py` | Composition root and CLI. Wires concrete classes. | all |

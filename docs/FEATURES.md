@@ -453,6 +453,9 @@ process; reads SQLite/logs; never blocks the pipeline.
 - Pipeline runs normally with the dashboard stopped.
 - No new dependency in the core path.
 
+**Status (2026-11-11):** implemented in `src/dashboard` + `scripts/dashboard.py`;
+sample at `samples/dashboard/index.html`; 216 tests pass.
+
 ---
 
 ## 9. Explicit non-features
