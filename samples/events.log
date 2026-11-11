@@ -1,0 +1,81 @@
+2026-11-11T21:42:27.915Z | PIPELINE_STARTED | source=video frame_skip=3
+2026-11-11T21:42:37.625Z | EMBEDDING_GENERATED | track=1 face=- dim=512 quality=0.731
+2026-11-11T21:42:37.626Z | FACE_REGISTERED | track=1 face=1 similarity=-1.0 quality=0.731
+2026-11-11T21:42:37.627Z | FACE_DETECTED | track=1 frame=0 bbox=2261.5,410.8,2332.3,493.2 conf=0.65
+2026-11-11T21:42:37.628Z | TRACK_STARTED | track=1 frame=0
+2026-11-11T21:42:37.857Z | ENTRY | visit=1 lifecycle_visit=1 face=1 track=1 anon=false frame=0 video_t=0.0 conf=0.748 img=logs/e2e/entries/2025-06-20/2025-06-20T18-39-03.000Z_face1_visit1_track1.jpg
+2026-11-11T21:42:39.343Z | TRACK_LOST | track=1 missed=3
+2026-11-11T21:42:42.111Z | TRACK_LOST | track=1 missed=75
+2026-11-11T21:42:42.118Z | EXIT | visit=1 lifecycle_visit=1 face=1 track=1 anon=false frame=42 video_t=1.678 conf=0.571 img=logs/e2e/exits/2025-06-20/2025-06-20T18-39-04.678Z_face1_visit1_track1.jpg
+2026-11-11T21:42:52.454Z | FACE_DETECTED | track=4 frame=360 bbox=2069.9,60.6,2110.1,108.3 conf=0.688
+2026-11-11T21:42:52.455Z | TRACK_STARTED | track=4 frame=360
+2026-11-11T21:42:52.802Z | ENTRY | visit=2 lifecycle_visit=2 face=- track=4 anon=true frame=360 video_t=14.381 conf=0.719 img=logs/e2e/entries/2025-06-20/2025-06-20T18-39-17.381Z_faceanon_visit2_track4.jpg
+2026-11-11T21:42:56.453Z | FACE_DETECTED | track=5 frame=462 bbox=990.4,50.2,1033.5,105.4 conf=0.771
+2026-11-11T21:42:56.454Z | TRACK_STARTED | track=5 frame=462
+2026-11-11T21:42:56.684Z | ENTRY | visit=3 lifecycle_visit=3 face=- track=5 anon=true frame=462 video_t=18.456 conf=0.804 img=logs/e2e/entries/2025-06-20/2025-06-20T18-39-21.456Z_faceanon_visit3_track5.jpg
+2026-11-11T21:42:57.046Z | TRACK_LOST | track=4 missed=3
+2026-11-11T21:42:57.760Z | FACE_DETECTED | track=10 frame=495 bbox=1175.2,3.3,1223.0,59.1 conf=0.659
+2026-11-11T21:42:57.761Z | TRACK_STARTED | track=10 frame=495
+2026-11-11T21:42:58.004Z | ENTRY | visit=4 lifecycle_visit=4 face=- track=10 anon=true frame=495 video_t=19.774 conf=0.704 img=logs/e2e/entries/2025-06-20/2025-06-20T18-39-22.774Z_faceanon_visit4_track10.jpg
+2026-11-11T21:42:58.786Z | EMBEDDING_GENERATED | track=10 face=- dim=512 quality=0.731
+2026-11-11T21:42:58.788Z | FACE_REGISTERED | track=10 face=2 similarity=0.173 quality=0.731
+2026-11-11T21:42:58.789Z | VISIT_LINKED | visit=4 lifecycle_visit=4 face=2
+2026-11-11T21:42:59.879Z | TRACK_LOST | track=4 missed=75
+2026-11-11T21:42:59.880Z | TRACK_LOST | track=5 missed=3
+2026-11-11T21:42:59.885Z | EXIT | visit=2 lifecycle_visit=2 face=- track=4 anon=true frame=474 video_t=18.935 conf=0.661 img=logs/e2e/exits/2025-06-20/2025-06-20T18-39-21.935Z_faceanon_visit2_track4.jpg
+2026-11-11T21:43:00.004Z | FACE_DETECTED | track=11 frame=552 bbox=953.1,249.1,1004.3,331.0 conf=0.789
+2026-11-11T21:43:00.006Z | TRACK_STARTED | track=11 frame=552
+2026-11-11T21:43:00.290Z | ENTRY | visit=5 lifecycle_visit=5 face=- track=11 anon=true frame=552 video_t=22.051 conf=0.787 img=logs/e2e/entries/2025-06-20/2025-06-20T18-39-25.051Z_faceanon_visit5_track11.jpg
+2026-11-11T21:43:02.962Z | TRACK_LOST | track=5 missed=75
+2026-11-11T21:43:02.969Z | EXIT | visit=3 lifecycle_visit=3 face=- track=5 anon=true frame=546 video_t=21.811 conf=0.763 img=logs/e2e/exits/2025-06-20/2025-06-20T18-39-24.811Z_faceanon_visit3_track5.jpg
+2026-11-11T21:43:04.974Z | TRACK_LOST | track=10 missed=3
+2026-11-11T21:43:05.099Z | TRACK_LOST | track=11 missed=3
+2026-11-11T21:43:06.069Z | FACE_DETECTED | track=16 frame=696 bbox=883.9,9.4,925.3,62.4 conf=0.775
+2026-11-11T21:43:06.071Z | TRACK_STARTED | track=16 frame=696
+2026-11-11T21:43:06.242Z | FACE_DETECTED | track=18 frame=699 bbox=1566.2,464.2,1608.1,512.6 conf=0.698
+2026-11-11T21:43:06.243Z | TRACK_STARTED | track=18 frame=699
+2026-11-11T21:43:06.497Z | ENTRY | visit=6 lifecycle_visit=6 face=- track=18 anon=true frame=699 video_t=27.923 conf=0.728 img=logs/e2e/entries/2025-06-20/2025-06-20T18-39-30.923Z_faceanon_visit6_track18.jpg
+2026-11-11T21:43:06.627Z | ENTRY | visit=7 lifecycle_visit=7 face=- track=16 anon=true frame=696 video_t=27.803 conf=0.777 img=logs/e2e/entries/2025-06-20/2025-06-20T18-39-30.803Z_faceanon_visit7_track16.jpg
+2026-11-11T21:43:08.026Z | TRACK_LOST | track=10 missed=75
+2026-11-11T21:43:08.034Z | EXIT | visit=4 lifecycle_visit=4 face=2 track=10 anon=false frame=666 video_t=26.605 conf=0.714 img=logs/e2e/exits/2025-06-20/2025-06-20T18-39-29.605Z_face2_visit4_track10.jpg
+... (excerpt; see logs for the full file) ...
+2026-11-11T22:22:08.968Z | ENTRY | visit=57 lifecycle_visit=3 face=- track=4 anon=true frame=33 video_t=1.319 conf=0.693 img=logs/e2e/entries/2025-06-20/2025-06-20T19-11-30.319Z_faceanon_visit3_track4.jpg
+2026-11-11T22:22:11.704Z | TRACK_LOST | track=4 missed=3
+2026-11-11T22:22:11.967Z | TRACK_REACQUIRED | track=4
+2026-11-11T22:22:13.031Z | TRACK_LOST | track=1 missed=75
+2026-11-11T22:22:13.056Z | EXIT | visit=55 lifecycle_visit=1 face=- track=1 anon=true frame=24 video_t=0.959 conf=0.761 img=logs/e2e/exits/2025-06-20/2025-06-20T19-11-29.959Z_faceanon_visit1_track1.jpg
+2026-11-11T22:22:15.772Z | TRACK_LOST | track=4 missed=3
+2026-11-11T22:22:22.690Z | TRACK_LOST | track=2 missed=3
+2026-11-11T22:22:24.202Z | TRACK_LOST | track=4 missed=75
+2026-11-11T22:22:25.240Z | EXIT | visit=57 lifecycle_visit=3 face=- track=4 anon=true frame=111 video_t=4.434 conf=0.766 img=logs/e2e/exits/2025-06-20/2025-06-20T19-11-33.434Z_faceanon_visit3_track4.jpg
+2026-11-11T22:22:27.461Z | TRACK_LOST | track=2 missed=75
+2026-11-11T22:22:27.471Z | EXIT | visit=56 lifecycle_visit=2 face=- track=2 anon=true frame=153 video_t=6.112 conf=0.66 img=logs/e2e/exits/2025-06-20/2025-06-20T19-11-35.112Z_faceanon_visit2_track2.jpg
+2026-11-11T22:23:36.239Z | SUMMARY | unique=24 visits=57 entries=57 exits=57 anonymous=32 open=0
+2026-11-11T22:24:06.198Z | PIPELINE_STARTED | source=record_20250620_191230.mp4 frame_skip=3
+2026-11-11T22:26:12.876Z | FACE_DETECTED | track=7 frame=960 bbox=1240.7,47.2,1283.1,103.0 conf=0.745
+2026-11-11T22:26:12.878Z | TRACK_STARTED | track=7 frame=960
+2026-11-11T22:26:13.255Z | ENTRY | visit=58 lifecycle_visit=1 face=- track=7 anon=true frame=960 video_t=38.349 conf=0.756 img=logs/e2e/entries/2025-06-20/2025-06-20T19-13-08.349Z_faceanon_visit1_track7.jpg
+2026-11-11T22:26:21.291Z | EMBEDDING_GENERATED | track=7 face=- dim=512 quality=0.757
+2026-11-11T22:26:21.297Z | FACE_REGISTERED | track=7 face=25 similarity=0.257 quality=0.757
+2026-11-11T22:26:21.300Z | VISIT_LINKED | visit=58 lifecycle_visit=1 face=25
+2026-11-11T22:26:24.552Z | FACE_DETECTED | track=14 frame=1089 bbox=445.2,568.9,491.9,625.0 conf=0.672
+2026-11-11T22:26:24.555Z | TRACK_STARTED | track=14 frame=1089
+2026-11-11T22:26:25.863Z | TRACK_LOST | track=7 missed=3
+2026-11-11T22:26:27.730Z | EMBEDDING_GENERATED | track=33 face=- dim=512 quality=0.726
+2026-11-11T22:26:27.733Z | FACE_REGISTERED | track=33 face=26 similarity=0.197 quality=0.726
+2026-11-11T22:26:27.735Z | FACE_DETECTED | track=33 frame=1134 bbox=288.6,907.5,350.3,980.0 conf=0.736
+2026-11-11T22:26:27.737Z | TRACK_STARTED | track=33 frame=1134
+2026-11-11T22:26:28.953Z | EMBEDDING_GENERATED | track=38 face=- dim=512 quality=0.721
+2026-11-11T22:26:28.956Z | FACE_RECOGNIZED | track=38 face=26 similarity=0.484
+2026-11-11T22:26:28.959Z | FACE_DETECTED | track=38 frame=1152 bbox=245.0,1104.7,312.0,1183.4 conf=0.659
+2026-11-11T22:26:28.960Z | TRACK_STARTED | track=38 frame=1152
+2026-11-11T22:26:31.168Z | TRACK_LOST | track=7 missed=75
+2026-11-11T22:26:31.187Z | EXIT | visit=58 lifecycle_visit=1 face=25 track=7 anon=false frame=1104 video_t=44.102 conf=0.751 img=logs/e2e/exits/2025-06-20/2025-06-20T19-13-14.102Z_face25_visit1_track7.jpg
+2026-11-11T22:26:55.912Z | FACE_DETECTED | track=52 frame=1422 bbox=1014.5,4.5,1054.8,50.0 conf=0.714
+2026-11-11T22:26:55.920Z | TRACK_STARTED | track=52 frame=1422
+2026-11-11T22:26:57.290Z | ENTRY | visit=59 lifecycle_visit=2 face=- track=52 anon=true frame=1422 video_t=56.805 conf=0.682 img=logs/e2e/entries/2025-06-20/2025-06-20T19-13-26.805Z_faceanon_visit2_track52.jpg
+2026-11-11T22:26:58.635Z | TRACK_LOST | track=52 missed=3
+2026-11-11T22:26:59.228Z | TRACK_REACQUIRED | track=52
+2026-11-11T22:27:08.359Z | TRACK_LOST | track=52 missed=3
+2026-11-11T22:27:10.338Z | EXIT | visit=59 lifecycle_visit=2 face=- track=52 anon=true frame=1476 video_t=58.962 conf=0.733 img=logs/e2e/exits/2025-06-20/2025-06-20T19-13-28.962Z_faceanon_visit2_track52.jpg
+2026-11-11T22:27:10.370Z | SUMMARY | unique=26 visits=59 entries=59 exits=59 anonymous=33 open=0

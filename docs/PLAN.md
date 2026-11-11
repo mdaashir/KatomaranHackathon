@@ -307,7 +307,21 @@ processed **30 frames / 10 detection cycles**, produced **1 unique, 1 entry,
 
 Acceptance: every visit has exactly one entry and one exit; unique count is
 stable across a re-run from an empty DB; sampled identities are correct by
-visual inspection; measured throughput ≥ 1.0× real-time on CPU.
+visual inspection; measured throughput ≥ 1.0× real-time on GPU (the CPU
+fallback is documented at ~0.47×).
+
+**Measured (2026-11-11, RTX 3050 6 GB, `imgsz=1600`, `frame_skip=3`):**
+22 clips / 33,044 frames produced 26 unique faces, 59 visits (33 anonymous),
+118 events and 0 open visits. `scripts/verify_outputs.py` reported integrity
+OK, 0 foreign-key violations, 0 missing images and 59/59 entries/exits. Face 13
+reappeared in a second clip (visits 29 and 51) and was counted once. One clip
+took 83.5 s including model load; the useful full-sequence time was ~27 min,
+with one transient GPU stall resumed in a fresh process. The 4K stress clip
+produced 32 visits and 0 registrations (motion blur). Calibration kept
+`similarity_threshold=0.45`, `min_face_size=60` and `exit_timeout_frames=75`.
+`samples/` contains 24 crops, CSV exports, `events.log`, `summary.json` and a
+README. The 2×2 tiling option was not needed for the primary 2K clips and was
+left out to keep the frame budget.
 
 ### Phase 9 — README, demo video, submission (`docs/readme-and-demo`)
 
@@ -342,6 +356,7 @@ entries/exits, and thumbnails. Must not touch the core pipeline.
 | R10 | Windows path/encoding issues. | `pathlib` everywhere, UTF-8, ISO timestamps with `-` instead of `:` in filenames. |
 | R11 | HEVC decode differences. | PyAV primary, OpenCV fallback; decode test in Phase 2 on all 22 clips. |
 | R12 | Face images are biometric data. | Local-only storage, no network upload, document retention/deletion in README. |
+| R13 | A long GPU session can stall after ~20 min (observed once: CPU idle, GPU spinning, later 510 MHz). | Run in shorter segments or restart the process; verify the DB after resume; use `imgsz=1280`/`frame_skip=3` on thermally limited hosts. The validated run resumed cleanly. |
 
 ---
 

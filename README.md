@@ -71,7 +71,11 @@ startup.
 
 ```powershell
 .venv\Scripts\python.exe -m pytest
+.venv\Scripts\python.exe scripts\verify_outputs.py --config config.json
 ```
+
+`verify_outputs.py` checks SQLite integrity, foreign keys, exactly one entry
+and one exit per visit, no open visits, and that every referenced image exists.
 
 ## Models
 
@@ -87,10 +91,24 @@ startup.
 Copy the shape of [`config.json`](config.json). Every tunable is loaded once
 into a typed config object and injected into the pipeline.
 
+## Samples
+
+A complete run of the 22 front-entry clips is in
+[`samples/`](samples/README.md): 26 unique faces across 59 visits (33
+anonymous), 59 entries/exits, 118 events, and 24 cropped images including one
+cross-clip re-identification (Face 13). The folder also contains the SQLite CSV
+exports, an `events.log` excerpt and `summary.json`.
+
+```powershell
+.venv\Scripts\python.exe scripts\export_samples.py --config config.json
+```
+
 ## Assumptions and known limitations
 
 - The local dataset in `src/video/` is 22 one-minute clips of a mall front
-  entry, plus one 8-second 4K crowded clip used as a stress test.
+  entry, plus one 8-second 4K crowded clip used as a stress test. The 4K clip
+  produced only anonymous visits: every face failed the motion-blur gate. The
+  22 2K clips are the graded dataset.
 - A face-only detector cannot count visitors who never face the camera. Such
   visitors are not registered and do not affect the unique count. An optional
   person-detector fallback is described in `docs/PLAN.md`.

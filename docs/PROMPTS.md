@@ -418,6 +418,59 @@ shutdown and an end-to-end smoke run.
 
 ---
 
+## 2026-11-11 — Phase 8: end-to-end validation and samples
+
+### Prompt
+
+> successfully merged the pr, deleted the branch in remote. start proceeding next make sure you always following the agents.md
+
+**Purpose:** run the whole 22-clip dataset, verify the event/visit invariants,
+calibrate the conservative gates, and produce the required `samples/` folder.
+
+**What the model did:**
+
+1. Synced `main`, removed `feature/pipeline-cli`, and created
+   `test/e2e-and-calibration`.
+2. Timed one 60 s clip (1,502 frames / 501 cycles / 83.5 s including model
+   load), then ran all 22 `record_*.mp4` clips on a fresh SQLite DB at
+   `imgsz=1600`, `frame_skip=3`.
+3. Added `scripts/verify_outputs.py` (DB integrity, FK check, one entry + one
+   exit per visit, no open visits, every referenced image exists).
+4. Added `scripts/export_samples.py` (CSV exports, log excerpt, 20 crop images,
+   re-entry images for faces seen in more than one visit).
+5. Ran `video_sample1.mp4` as a 4K crowded stress test.
+6. Found one cross-clip re-identification: Face 13 in visits 29 and 51; the
+   unique count stayed 26.
+7. Fixed `CropCache` so a quality-passing face crop wins over a merely large
+   fallback crop (the old cache could pick a back-of-head image).
+8. Updated PLAN/COMPUTE/README/memory and added two crop-cache tests.
+
+**Problems solved:**
+
+- A transient GPU stall after 21 clips left the process with no CPU progress
+  and the GPU spinning. A fresh process finished the last clips into the same
+  DB; `verify_outputs.py` then passed all checks. `nvidia-smi` later showed
+  510 MHz / 13.5 W, so this is recorded as a driver/power-state risk (PLAN R13).
+- The sample export initially took the largest crop, which produced
+  back-of-head images for faces recognized later. `CropCache` now prefers the
+  quality crop; the existing sample notes the earlier run's back-of-head
+  re-entry views.
+- Scripts launched from `scripts/` could not import `src`; both add the project
+  root to `sys.path`.
+
+**Measured:** 22 clips / 33,044 frames, 26 unique, 59 visits, 33 anonymous,
+118 events, 0 open; 24 sample images; 4K stress 240 frames / 32 visits /
+0 registered (motion blur).
+
+**Tests:** `210 passed`.
+
+**Outputs:** `samples/`, `scripts/verify_outputs.py`,
+`scripts/export_samples.py`, quality-first `CropCache`, updated docs.
+
+**Remaining:** Phase 9 README, demo video, submission.
+
+---
+
 ## Template for future phases
 
 ```markdown

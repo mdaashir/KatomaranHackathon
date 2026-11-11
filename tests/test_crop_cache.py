@@ -48,3 +48,32 @@ def test_pop_and_clear():
 
     cache.clear()
     assert len(cache) == 0
+
+
+def test_quality_crop_beats_a_larger_fallback():
+    cache = CropCache()
+    large_fallback = np.zeros((200, 200, 3), dtype=np.uint8)
+    small_quality = np.zeros((60, 60, 3), dtype=np.uint8)
+
+    cache.update(1, large_fallback)
+    cache.update(1, small_quality, quality_score=0.8)
+
+    assert cache.get(1) is small_quality
+
+    better_quality = np.zeros((50, 50, 3), dtype=np.uint8)
+    cache.update(1, better_quality, quality_score=0.9)
+    assert cache.get(1) is better_quality
+
+    worse_quality = np.zeros((80, 80, 3), dtype=np.uint8)
+    cache.update(1, worse_quality, quality_score=0.7)
+    assert cache.get(1) is better_quality
+
+
+def test_pop_removes_quality_and_fallback():
+    cache = CropCache()
+    cache.update(1, np.zeros((20, 20, 3), dtype=np.uint8))
+    cache.update(1, np.zeros((10, 10, 3), dtype=np.uint8), quality_score=0.9)
+
+    assert cache.pop(1) is not None
+    assert cache.get(1) is None
+    assert len(cache) == 0
