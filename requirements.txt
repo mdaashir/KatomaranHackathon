@@ -5,8 +5,10 @@ pytest>=8.0,<9.0
 numpy>=1.26,<3.0
 av>=12.0
 
-# Phase 3+ (uncomment as each phase is implemented)
-# opencv-python>=4.9
-# ultralytics>=8.2
+# Phase 3
+ultralytics>=8.4
+omegaconf>=2.3
+
+# Phase 4+ (uncomment as each phase is implemented)
 # insightface>=0.7.3
 # onnxruntime>=1.17
