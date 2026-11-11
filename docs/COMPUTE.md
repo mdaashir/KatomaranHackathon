@@ -1,9 +1,9 @@
 # COMPUTE — CPU, GPU, Memory, Storage
 
-> All numbers are **engineering estimates** for the chosen stack, not
-> benchmarks. They are deliberately given as ranges. Phase 3 measures the
-> detector and Phase 8 measures the full pipeline on the target machine; the
-> measured table replaces the estimate table before submission.
+> All numbers are **engineering estimates or measured values** for the chosen
+> stack. Rows marked **measured** come from the target machine; the remaining
+> ranges are planning context. Phase 3–6 measured the individual stages and
+> Phase 8 measured the complete 22-clip pass below.
 >
 > Benchmark helper planned: `scripts/benchmark.py` (p50/p95 latency per stage,
 > JSON output) so the interview machine can be profiled in one command.
@@ -419,11 +419,32 @@ One 30-frame run from `record_20250620_183903.mp4` on the RTX 3050:
 | First event | `2025-06-20T18:39:03.000Z` |
 
 Model load dominates this short run (~10 s); steady-state per-stage costs are
-the Phase 3–6 measurements. Phase 8 runs the full 22-clip sequence and replaces
-the projected runtimes with wall-clock results.
+the Phase 3–6 measurements.
 
-No estimate in this document should survive into the final submission
-unverified; replace §4 and §5 with measured rows.
+### Measured — Phase 8 (full 22-clip pass)
+
+RTX 3050 6 GB, `imgsz=1600`, `frame_skip=3`, `record_*.mp4` sequence:
+
+| Metric | Measured |
+|---|---:|
+| Clips / frames / detection cycles | 22 / 33,044 / 11,022 |
+| Unique faces / visits / anonymous | 26 / 59 / 33 |
+| Events / entries / exits / open | 118 / 59 / 59 / 0 |
+| Useful wall clock | ~27 min |
+| Effective throughput | ~21 fps |
+| One clip incl. model load | 83.5 s |
+| 4K stress (`video_sample1.mp4`) | 240 frames / 80 cycles, 105.3 s wall; 32 visits, 0 registered |
+
+The 4K crowd clip failed the motion-blur/size gates on every face, so it
+produced only anonymous visits; the primary 2K clips registered 26 faces. The
+full pass hit one transient GPU stall after 21 clips (CPU idle, GPU spinning).
+A fresh process finished the remaining clips in 105.8 s and 194.3 s; the DB was
+then verified clean. `nvidia-smi` later reported 510 MHz at 13.5 W, consistent
+with a driver/power-state issue rather than a pipeline defect. Mitigation is to
+run in shorter segments or restart the process (PLAN R13).
+
+The per-stage measured rows in §6–§9 and the full-run rows above are the
+authoritative numbers; the original ranges remain as planning context.
 
 ---
 

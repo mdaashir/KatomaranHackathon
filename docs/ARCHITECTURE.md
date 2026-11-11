@@ -249,7 +249,7 @@ sequenceDiagram
             else ACTIVE with no Face ID and retry due
                 V->>V: retry quality/embed/match
             else ACTIVE with Face ID
-                V->>V: update best crop only
+                V->>V: update quality crop; fallback largest
             end
         end
         P->>V: expire_tracks(index)

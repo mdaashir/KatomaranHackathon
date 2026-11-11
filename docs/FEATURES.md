@@ -286,8 +286,9 @@ absolute timestamp (first sight), event type `entry`, Face ID (or
 
 ### F-19 — Exit event (M, Phase 6)
 
-On `LOST → EXITED` or shutdown flush, write one exit event with the best crop
-from the visit, timestamp of last sight, type `exit`, and the same identity
+On `LOST → EXITED` or shutdown flush, write one exit event with the best
+quality crop from the visit (falling back to the largest crop if the quality
+gate never passed), timestamp of last sight, type `exit`, and the same identity
 fields.
 
 **Acceptance**

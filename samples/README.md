@@ -1,0 +1,75 @@
+# Sample output
+
+Curated output from a real run of the 22 `record_*.mp4` front-entry clips.
+
+- Generated: 2026-11-11T22:55:40+00:00
+- Source folder: `src/video` (`record_*.mp4`)
+- Frame skip: `3`
+- Detector: `imgsz=1600`, `device=auto`
+- Recognition: `model=buffalo_l`, `threshold=0.45`
+
+## Summary
+
+```json
+{
+  "unique_faces": 26,
+  "visits": 59,
+  "open_visits": 0,
+  "anonymous_visits": 33,
+  "entries": 59,
+  "exits": 59,
+  "first_event_at": "2025-06-20T18:39:03.000Z",
+  "last_event_at": "2025-06-20T19:13:28.962Z"
+}
+```
+
+- Faces exported: 26
+- Visits exported: 59
+- Events exported: 118
+- Images copied: 24
+
+## Files
+
+- `events.log` — excerpt of the mandatory audit log
+- `faces.csv`, `visits.csv`, `events.csv` — SQLite exports
+- `summary.json` — DB-derived unique/visit/event counts
+- `images/entries`, `images/exits` — cropped event images
+- `images/reentry` — images for faces appearing in more than one visit
+
+## Re-identification
+
+Face 13 appears in 2 visits (counted once)
+
+Event crops for a returning face can be back-of-head views when the subject is
+walking away; identity is anchored by the frontal embedding recorded in
+`events.csv` and `visits.csv`.
+
+## Run note
+
+The 22-clip pass was completed against the same SQLite database; one long GPU
+segment was interrupted by a transient GPU stall and resumed in a fresh
+process. The DB was verified independently: 0 open visits, 0 missing images,
+balanced entries/exits, and 0 foreign-key violations. The audit excerpt shows
+the restart boundary; image filenames use the lifecycle visit ID, while SQLite
+stores the canonical visit ID (`visits.csv` / `events.csv` are authoritative).
+
+## Calibration
+
+- `similarity_threshold=0.45`: real same-person pairs scored 0.70–0.73,
+  different people 0.118. Kept unchanged.
+- `exit_timeout_frames=75` (~3 s): produced 0 open visits and balanced
+  entry/exit counts.
+- `min_face_size=60` and `blur_threshold=60`: far, blurred or back-facing
+  faces become anonymous visits. Lowering the gates increases registrations
+  but also duplicate identities; the conservative values were kept.
+
+## How this was produced
+
+```powershell
+python main.py --config <e2e-config>
+python scripts/export_samples.py --config <e2e-config>
+```
+
+No input videos or model weights are included. Anonymous visits are logged but
+excluded from the unique count; far/back-facing visitors may never produce a
+usable embedding.

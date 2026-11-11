@@ -457,3 +457,37 @@ Last updated: 2026-11-11
 
 - PR #7: https://github.com/mdaashir/KatomaranHackathon/pull/7
 - State: open, waiting for review/merge. Do not start Phase 8 until merged.
+
+---
+
+## Phase 8 — end-to-end validation and samples (2026-11-11)
+
+- Branch: `test/e2e-and-calibration`.
+- Ran all 22 `record_*.mp4` clips on a fresh DB (`data/e2e.db`,
+  `logs/e2e`, `imgsz=1600`, `frame_skip=3`): 33,044 frames, 11,022 detection
+  cycles, 26 unique faces, 59 visits, 33 anonymous, 59 entries, 59 exits,
+  0 open.
+- One cross-clip re-identification: Face 13 in visits 29 and 51; unique count
+  counts it once.
+- Added `scripts/verify_outputs.py`: integrity OK, 0 FK violations, 0 missing
+  event/visit images, exactly two events per visit, 0 open.
+- Added `scripts/export_samples.py`: `samples/` has 24 images (entries, exits,
+  re-entry), `faces.csv`, `visits.csv`, `events.csv`, `events.log` excerpt,
+  `summary.json`, `README.md`.
+- 4K `video_sample1.mp4` stress: 240 frames / 80 cycles, 32 visits, 0
+  registrations (motion blur); 105.3 s wall.
+- One transient GPU stall after 21 clips (CPU idle, GPU spinning); a fresh
+  process finished the last clips in 105.8 s + 194.3 s. `nvidia-smi` later
+  showed 510 MHz / 13.5 W. Recorded as PLAN R13; mitigation is segment restarts.
+- Fixed `CropCache` to prefer quality-passing crops over larger fallback crops;
+  added two tests. The existing sample's re-entry images predate the fix and are
+  back-of-head views; the README explains the DB is authoritative.
+- `pytest`: 210 passed.
+- Updated PLAN, COMPUTE, PROMPTS, README, memory.
+- PR pending creation in this phase; stop and wait for review/merge.
+
+## Next session starts with
+
+- After merge: sync `main`, delete `test/e2e-and-calibration`, start Phase 9
+  (`docs/readme-and-demo`): final README, Loom/YouTube walkthrough, repository
+  link and submission form. Keep the mandatory Katomaran line last.
