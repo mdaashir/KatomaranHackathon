@@ -149,6 +149,54 @@ local RTSP server is available in this environment.
 
 ---
 
+## 2026-11-11 — Phase 3: YOLO face detector
+
+### Prompt
+
+> successfully merged the pr, deleted the branch in remote, always append
+> memory dont overwrite. start proceeding next make sure you always following
+> the agents.md
+
+**Purpose:** implement Phase 3 (`PLAN.md §7`): the YOLO face detector wrapper,
+native-coordinate filtering, and measured latency.
+
+**What the model did:**
+
+1. Restored `memory.md`, confirmed PR #2 was merged, pulled `main`, deleted the
+   merged local branch, and created `feature/yolo-face-detector`.
+2. Downloaded and vendored `models/yolov8n-face.pt` (6,247,374 bytes, SHA256
+   recorded in `models/README.md`).
+3. Added `src/detection/`: `FaceDetection`, `DetectorError`, and
+   `YoloFaceDetector` with a lazy Ultralytics import, an injectable model
+   factory, native-coordinate clamping, the 40 px size gate, and device
+   mapping.
+4. Added 14 fake-model tests and 2 real-image tests (91 total).
+5. Benchmarked the real model at `imgsz` 1280/1600/1920 on a 2K front-entry
+   frame and the 4K crowd frame; recorded counts and latency in `COMPUTE.md`.
+
+**Problems solved:**
+
+- The checkpoint needs `omegaconf`, which Ultralytics does not install; added
+  it to `requirements.txt`.
+- The checkpoint is **detect-only** (`task=detect`, no keypoint head). The
+  interface returns `keypoints=None`; Phase 4 will use InsightFace landmarks
+  for ArcFace alignment. `PLAN.md` and `ARCHITECTURE.md` were updated.
+- The first CPU inference includes ~9 s of PyTorch warmup; documented and
+  excluded from steady-state measurements.
+- Measured CPU latency is 196/297/417 ms at 1280/1600/1920, materially higher
+  than the estimate. The compute budget and CPU profiles were corrected.
+
+**Tests:** `91 passed`.
+
+**Outputs:** `src/detection/`, `models/yolov8n-face.pt`,
+`models/README.md`, `tests/test_detector*.py`, updated `requirements.txt`,
+`PLAN.md`, `ARCHITECTURE.md`, `COMPUTE.md`.
+
+**Remaining manual check:** far-face recall is still partial (1–2 faces at
+40 s depending on `imgsz`); optional 2×2 tiling remains a Phase 8 decision.
+
+---
+
 ## Template for future phases
 
 ```markdown
