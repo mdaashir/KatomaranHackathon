@@ -54,6 +54,8 @@ class TrackingConfig:
     """Tracker and track-lifecycle settings."""
 
     tracker: str = "bytetrack"
+    track_activation_threshold: float = 0.25
+    minimum_matching_threshold: float = 0.8
     confirm_hits: int = 3
     exit_timeout_frames: int = 75
     lost_track_buffer: int = 30
