@@ -510,7 +510,9 @@ Last updated: 2026-11-11
 - The only remaining manual work is recording the public Loom/YouTube video
   and replacing `VIDEO_URL` in `README.md` and `docs/SUBMISSION.md`, then
   submitting through the Katomaran form.
-- PR pending creation in this phase; stop and wait for review/merge.
+- PR #9: https://github.com/mdaashir/KatomaranHackathon/pull/9
+- State: open, waiting for review/merge. The public video link is still the only
+  blocker before submission.
 
 ## Next session starts with
 
