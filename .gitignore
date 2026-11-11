@@ -17,10 +17,10 @@ logs/
 # Provided input datasets (kept locally, not in git)
 src/video/*.mp4
 
-# InsightFace model pack (fetched by scripts/download_models.py)
-models/insightface/*.zip
-models/insightface/models/
-models/insightface/pack/
+# Model weights (fetched locally by scripts/download_models.py, never committed)
+models/**/*.pt
+models/**/*.onnx
+models/**/*.zip
 
 # Environment
 .env

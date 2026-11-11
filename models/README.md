@@ -14,14 +14,16 @@
 - **Security:** the `.pt` file is a Python pickle. Only load weights from a
   source you trust; never load a checkpoint supplied by an untrusted third
   party.
+- **Not committed:** all model weights are excluded from git. Fetch and verify
+  this checkpoint with `scripts/download_models.py`.
 
 **Checkpoint behaviour:** this checkpoint is **detect-only** (`task=detect`,
 one class `face`). It does not emit the five ArcFace keypoints. The detector
 therefore returns `FaceDetection.keypoints = None`; Phase 4 derives alignment
 points with the InsightFace landmark model instead.
 
-To verify a fresh download:
+To download and verify every model:
 
 ```powershell
-.venv\Scripts\python.exe -c "import hashlib, pathlib; p=pathlib.Path('models/yolov8n-face.pt'); print(p.stat().st_size); print(hashlib.sha256(p.read_bytes()).hexdigest())"
+.venv\Scripts\python.exe scripts\download_models.py
 ```
