@@ -78,7 +78,7 @@ flowchart LR
 | `src/config` | Load and validate JSON into frozen typed config | — |
 | `src/video` | Decode files/folders/RTSP into `Frame` objects; reconnect | config, logging |
 | `src/detection` | YOLO face inference; native-coordinate boxes; detect-only checkpoint | config, types |
-| `src/recognition` | Quality gate, alignment, ArcFace embedding, cosine registry | config, storage |
+| `src/recognition` | Quality gate, 106→5 alignment, ArcFace embeddings, cosine registry, CUDA/CPU providers | config, storage |
 | `src/tracking` | ByteTrack association, track lifecycle, visits | config, recognition, events |
 | `src/events` | Atomic image writes, event + visit persistence, audit log | config, storage |
 | `src/storage` | SQLite connection, schema, repositories | config |
@@ -186,6 +186,13 @@ Contracts:
 - The bundled `yolov8n-face` checkpoint is detect-only, so `keypoints` is
   normally `None`. The aligner must derive 5 points with InsightFace landmarks
   when the detector cannot supply them.
+- InsightFace loads only the ArcFace recognizer (`w600k_r50.onnx`) and the
+  106-point landmark model (`2d106det.onnx`). YOLO supplies the face box, so
+  InsightFace's detector is never run on a full frame.
+- The 106→5 mapping is fixed: eye centroids `33:43` and `87:97`, nose `86`,
+  mouth corners `52` and `61`.
+- On Windows, PyTorch's CUDA/cuDNN DLL directory is added before ONNX Runtime
+  is imported; otherwise the CUDA provider silently falls back to CPU.
 - The embedder receives a 112×112 aligned BGR crop and returns a float32 vector
   with unit L2 norm.
 - The registry is confined to the pipeline thread; it is not thread-safe.
@@ -487,6 +494,8 @@ opens the file directly.
   },
   "recognition": {
     "model_name": "buffalo_l",
+    "model_dir": "models/insightface/models/buffalo_l",
+    "device": "auto",
     "similarity_threshold": 0.45,
     "min_face_size": 60,
     "min_confidence": 0.6,
@@ -526,6 +535,8 @@ opens the file directly.
 | `detector.min_face_size` | Native-pixel minimum to create a track. |
 | `detector.device` | `auto`, `cpu`, `cuda:0`. |
 | `recognition.min_face_size` | Native-pixel minimum to embed or register. Must be ≥ detector gate. |
+| `recognition.model_dir` | Directory containing `w600k_r50.onnx` and `2d106det.onnx`; fetched by `scripts/download_models.py`. |
+| `recognition.device` | `auto`, `cpu`, `cuda`, or `cuda:<index>`. `auto` prefers `CUDAExecutionProvider` when available. |
 | `recognition.similarity_threshold` | Cosine threshold for re-identification. |
 | `recognition.register_quality_threshold` | Higher bar for creating a new identity; prevents garbage registrations. |
 | `recognition.max_embeddings_per_face` | Pose variants stored per identity. |

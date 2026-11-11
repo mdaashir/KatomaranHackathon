@@ -126,19 +126,19 @@ per-track, not per-frame. Add `new_faces_per_second × 10 ms` (CPU) or
 
 | Profile | Effective FPS | 33 044 frames | Notes |
 |---|---:|---:|---|
-| CPU, `imgsz=1280`, skip 3 | 11–12 | **47–49 min** | Measured CPU correction |
+| CPU, `imgsz=1280`, skip 3 | 11–12 | **47–49 min** | CPU-only Torch build |
 | CPU, `imgsz=1280`, skip 4 | 14–15 | **39–41 min** | Best CPU fallback |
 | CPU, `imgsz=1600`, skip 4 | 10–11 | **52–55 min** | Better far-face recall |
-| GPU, `imgsz=1920`, skip 3 | 40–50 | **11–14 min** | Estimated; no GPU host measured |
-| GPU, `imgsz=1280`, skip 3 | 50–60 | **9–12 min** | Estimated; fastest |
+| GPU, `imgsz=1280`, skip 3 | ~38 | **14–15 min** | Measured YOLO 36.5 ms |
+| GPU, `imgsz=1600`, skip 3 | ~27–28 | **20–21 min** | Measured YOLO 66.5 ms |
 
-`video_sample1.mp4` (240 frames): **23–31 s CPU** (measured detector cost),
-**6–12 s GPU** (estimated).
+`video_sample1.mp4` (240 frames): **23–31 s CPU** (Phase 3 CPU build),
+**10–13 s GPU** (measured detection cost).
 
-The CPU rows are extrapolated from the measured Phase 3 detector latency
-(196 ms @1280, 297 ms @1600) plus 20 ms/frame decode and 2 ms overhead. The
-original 90 ms estimate was optimistic by roughly 2–3× on this host. GPU rows
-remain estimates because no CUDA device was available.
+The CPU rows use the CPU-only Torch build measured in Phase 3 (196 ms @1280,
+297 ms @1600). The CUDA build's CPU fallback measured **524/552 ms**, so prefer
+GPU on this host. GPU rows use measured YOLO latency (36.5/66.5 ms) plus
+13 ms/frame decode and ~1 ms amortised embedding; no T4 was available.
 
 These assume sequential file processing with no dropped frames. The pipeline
 does not sleep in file mode; it processes as fast as the hardware allows.
@@ -167,19 +167,24 @@ provided decode runs on a separate thread and stale frames are dropped. On a
 4-core machine, use `imgsz=1280` with `frame_skip=6` (or `imgsz=960`), or run
 file mode. The earlier 90 ms estimate was optimistic by ~2× on this host.
 
-### GPU profile (`imgsz=1920`, skip 3) — estimated, not measured
+### GPU profile (`imgsz=1600`, skip 3) — measured on RTX 3050 6 GB
 
 | Consumer | ms per second | Share |
 |---|---:|---:|
-| Decode (CPU) | 425 | 0.42 core |
-| Detect 8.33 × 14 ms | 117 | ~12 % GPU |
-| Embedding 2 × 2 ms | 4 | ~0.4 % GPU |
-| **GPU utilisation** | — | **10–18 %** |
-| **VRAM** | — | **0.8–1.4 GB** |
+| Decode 25 × 13 ms | 325 | 0.33 core |
+| Detect 8.33 × 66.5 ms | 554 | ~55 % GPU |
+| Landmarks 2 × 4.1 ms | 8 | ~1 % GPU |
+| Embedding 2 × 12.7 ms | 25 | ~2.5 % GPU |
+| **GPU utilisation** | — | **~55–60 %** |
+| **VRAM** | — | **~2–3 GB** |
 
-**Verdict:** GPU is not the bottleneck; decode is. A T4 handles 3–5 concurrent
-streams before GPU compute matters, but each stream needs ~0.5 CPU core for
-decode.
+At `imgsz=1280`, detection drops to ~36.5 ms per cycle and GPU utilisation is
+~30 %. Decode remains ~0.33 CPU core. A 6 GB laptop GPU is sufficient; the
+model and CUDA context leave roughly 2–3 GB headroom for other applications.
+
+**Verdict:** 25 fps RTSP is comfortable on the RTX 3050 at 1600/skip 3 and
+very comfortable at 1280/skip 3. The previous T4 estimate (10–18 % GPU) was
+too optimistic; the measured 55–60 % is the number to plan around.
 
 ---
 
@@ -348,6 +353,33 @@ Observations:
 - At `imgsz=1600`, detection alone costs ~2.5 cores at 8.33 cycles/s. The
   original 90 ms estimate in §4 was optimistic by ~2–3× on this host.
 
+### Measured — Phase 4 (RTX 3050 6 GB, CUDA 12.8)
+
+Environment: `torch 2.11.0+cu128`, `onnxruntime-gpu 1.22.0`, CUDA 12.8 with
+cuDNN DLLs from the Torch wheel. ONNX Runtime reports
+`['CUDAExecutionProvider', 'CPUExecutionProvider']`.
+
+| Stage | GPU median | CPU fallback median |
+|---|---:|---:|
+| YOLO face @1280 | **36.5 ms** | 524 ms |
+| YOLO face @1600 | **66.5 ms** | 552 ms |
+| 106-point landmarks | **4.1 ms** | 10.1 ms |
+| ArcFace 512-d | **12.7 ms** | 96.6 ms |
+
+Observations:
+
+- The GPU embedding path is ~7.6× faster than CPU for ArcFace and ~2.5× faster
+  for landmarks.
+- A same-person pair at 0.4 s / 0.8 s scores **0.733 / 0.701** cosine; a
+  different person scores **0.118**. The default threshold of 0.45 is
+  comfortably between them on this sample.
+- `onnxruntime-gpu==1.22.0` is pinned deliberately: 1.31 requests CUDA 13
+  DLLs (`cublasLt64_13.dll`), while Torch's cu128 wheel ships CUDA 12.8.
+- Most 4K crowd faces fail `blur_threshold=60` because of motion blur; one
+  passing face was enough to validate a different-identity embedding. The
+  primary 2K front-entry camera is sharper. Phase 8 can tune this threshold if
+  registration recall is too low.
+
 No estimate in this document should survive into the final submission
 unverified; replace §4 and §5 with measured rows.
 
@@ -356,6 +388,6 @@ unverified; replace §4 and §5 with measured rows.
 ## 12. Energy and thermal notes
 
 - CPU profile: ~1.7–2.5 cores sustained, package power ~25–45 W on a laptop.
-- GPU profile: 8–15 % of a T4 (~10–20 W) plus CPU decode (~8–15 W).
+- GPU profile: ~55 % of a 65 W RTX 3050 (~30–40 W) plus CPU decode (~8–15 W).
 - Thermal throttling on thin laptops can reduce YOLO throughput by 20–30 %
   over a 20-minute run. If the demo stutters, use file mode or GPU.
