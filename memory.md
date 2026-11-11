@@ -534,9 +534,9 @@ Last updated: 2026-11-11
   59 visits, 24 recent events, 24 thumbnails. `samples/README.md` links it.
 - Updated README, PLAN, FEATURES, ARCHITECTURE, PROMPTS and `.gitignore`
   (`/dashboard/`).
-- PR pending creation in this phase; stop and wait for review/merge.
-- The public demo video link remains the only blocker before the actual
-  submission.
+- PR #10: https://github.com/mdaashir/KatomaranHackathon/pull/10
+- State: open, waiting for review/merge. The public demo video link remains the
+  only blocker before the actual submission.
 
 ## Next session starts with
 
