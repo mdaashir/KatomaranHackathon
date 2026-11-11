@@ -52,6 +52,55 @@ diagrams before writing any code.
 
 ---
 
+## 2026-11-11 — Phase 1: foundations
+
+### Prompt
+
+> commit the current staged and start proceeding make sure you always
+> following the agents.md
+
+**Purpose:** commit the approved planning baseline and start Phase 1 of the
+build without crossing the architecture boundaries.
+
+**What the model did:**
+
+1. Restored project context via `/remember restore` (no `memory.md` yet;
+   `AGENTS.md` was the only context file).
+2. Committed the baseline on `main`, including the docs and project files.
+3. Discovered that committing the 232 MB of input `.mp4` files made the push
+   fail; removed them from git history, kept them on disk, added
+   `src/video/*.mp4` to `.gitignore`, and documented `src/video/README.md`.
+4. Built the Phase 1 foundations:
+   - `src/config/` — frozen dataclasses, strict loader, `${ENV_VAR}`
+     expansion, key-level validation.
+   - `src/storage/` — SQLite WAL connection, schema, transaction context,
+     repositories for faces, embeddings, visits and events.
+   - `src/logging_setup.py` — rotating console/app/debug logs and the
+     pipe-delimited `events.log` formatter.
+5. Wrote 56 pytest tests and ran the `/review` skill. Fixed the review findings:
+   quality range validation, anonymous/linked event consistency, negative
+   track IDs, and log field escaping.
+6. Pushed `main` and `feature/config-storage-logging`; opened PR #1.
+
+**Key follow-up prompts used during the session:**
+
+- “Why did the push time out?” → auth was fine; the 232 MB input dataset was
+  the problem. Removed it from git history.
+- “Does the DB enforce one entry and one exit per visit?” → added
+  `UNIQUE(visit_id, event_type)` and a duplicate-event test.
+- “Are anonymous and linked events allowed to mix?” → no; added validation and
+  tests.
+
+**Tests:** `56 passed`.
+
+**Outputs:** `src/config/`, `src/storage/`, `src/logging_setup.py`,
+`tests/`, PR #1.
+
+**Open questions:** the five sign-off items in `PLAN.md §10` are still
+unresolved; implementation proceeded with the documented defaults.
+
+---
+
 ## Template for future phases
 
 ```markdown
