@@ -471,6 +471,50 @@ calibrate the conservative gates, and produce the required `samples/` folder.
 
 ---
 
+## 2026-11-11 — Phase 9: README, demo and submission
+
+### Prompt
+
+> successfully merged the pr, deleted the branch in remote. start proceeding next make sure you always following the agents.md
+
+**Purpose:** make the repository self-contained for review: final README,
+recording script, submission checklist and a reproducible demo config.
+
+**What the model did:**
+
+1. Synced `main`, removed `test/e2e-and-calibration`, and created
+   `docs/readme-and-demo`.
+2. Rewrote `README.md` with setup for GPU and CPU, a fresh-clone path, run
+   commands, output layout, a Mermaid architecture diagram, sample config,
+   measured results, samples, tests, limitations, submission links and the
+   mandatory Katomaran line.
+3. Added `docs/DEMO.md`: a 4–5 minute, section-by-section walkthrough with the
+   exact commands and the artifacts to show.
+4. Added `docs/demo_config.json` (one clip, isolated `data/demo.db` and
+   `logs/demo`) so the live demo does not touch the main database.
+5. Added `docs/SUBMISSION.md` with the repository link, video placeholder and
+   pre-submission checks.
+6. Re-ran the demo command: 300 frames / 100 cycles / 50.2 s, 1 unique, 1
+   visit, 1 entry, 1 exit, 0 open; `verify_outputs.py` clean.
+
+**Problems solved:**
+
+- The demo needs a clean count without deleting the real DB; the dedicated
+  `docs/demo_config.json` isolates `data/demo.db` and `logs/demo`.
+- A fake/relative video link would 404; the README uses a clearly marked
+  `VIDEO_URL` placeholder until the author records the walkthrough.
+
+**Tests:** `210 passed` (unchanged); demo verifier clean.
+
+**Outputs:** final README, `docs/DEMO.md`, `docs/demo_config.json`,
+`docs/SUBMISSION.md`, updated memory/plan.
+
+**Remaining:** record the Loom/YouTube video, replace `VIDEO_URL` in README and
+SUBMISSION, and submit through the Katomaran form. Do not mark the PR as the
+final submission until that is done.
+
+---
+
 ## Template for future phases
 
 ```markdown

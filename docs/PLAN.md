@@ -333,6 +333,12 @@ left out to keep the frame budget.
 Acceptance: a fresh clone can run the sample in ≤10 minutes following the
 README; video link is public and plays.
 
+**Status (2026-11-11):** README, `docs/DEMO.md`, `docs/SUBMISSION.md` and
+`docs/demo_config.json` are complete. The 300-frame demo command was re-run:
+1 unique / 1 visit / 1 entry / 1 exit / 0 open, and `verify_outputs.py` is
+clean. The public video recording and the `VIDEO_URL` replacement are the only
+remaining author action before submission.
+
 ### Phase 10 — Optional dashboard (`feature/dashboard`) — only after Phases 0–9
 
 Small read-only page or CLI report showing current unique count, recent

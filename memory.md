@@ -492,3 +492,28 @@ Last updated: 2026-11-11
 - After merge: sync `main`, delete `test/e2e-and-calibration`, start Phase 9
   (`docs/readme-and-demo`): final README, Loom/YouTube walkthrough, repository
   link and submission form. Keep the mandatory Katomaran line last.
+
+---
+
+## Phase 9 — README, demo and submission (2026-11-11)
+
+- Branch: `docs/readme-and-demo`.
+- Rewrote `README.md`: final status, GPU/CPU setup, fresh-clone path, run
+  commands, output layout, Mermaid architecture diagram, sample config,
+  measured results, samples, tests, business rules, limitations, submission
+  links and the mandatory Katomaran line.
+- Added `docs/DEMO.md` (4–5 minute recording script with exact commands),
+  `docs/demo_config.json` (one clip, isolated `data/demo.db`/`logs/demo`) and
+  `docs/SUBMISSION.md` (checklist and video placeholder).
+- Validated the demo command: 300 frames / 100 cycles / 50.2 s, 1 unique,
+  1 visit, 1 entry, 1 exit, 0 open; `verify_outputs.py` clean. `pytest`: 210.
+- The only remaining manual work is recording the public Loom/YouTube video
+  and replacing `VIDEO_URL` in `README.md` and `docs/SUBMISSION.md`, then
+  submitting through the Katomaran form.
+- PR pending creation in this phase; stop and wait for review/merge.
+
+## Next session starts with
+
+- After merge: sync `main`, delete `docs/readme-and-demo`, and either record the
+  demo or start the optional Phase 10 dashboard only after the submission is
+  complete. Do not add a dashboard before the core submission is final.
