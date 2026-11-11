@@ -258,6 +258,56 @@ thresholds in Phase 8; real RTSP kill/restore remains a manual check.
 
 ---
 
+## 2026-11-11 — Phase 5: tracking and visit lifecycle
+
+### Prompt
+
+> successfully merged the pr, deleted the branch in remote, exclude all models
+> from git. start proceeding next make sure you always following the agents.md
+
+**Purpose:** implement Phase 5 (ByteTrack + exactly one entry/exit per visit)
+and remove every model weight from git tracking.
+
+**What the model did:**
+
+1. Synced `main`, deleted the merged local branch, and created
+   `feature/tracking-lifecycle`.
+2. Excluded all `*.pt`, `*.onnx` and `*.zip` files under `models/` from git,
+   removed the tracked YOLO checkpoint from the index, and extended
+   `scripts/download_models.py` to fetch and verify the YOLO checkpoint too.
+3. Pinned `supervision==0.25.1`; 0.31 removed the ByteTrack module.
+4. Added `src/tracking/`:
+   - `ByteTrackAdapter` configured with `frame_rate = fps / frame_skip`.
+   - `TrackLifecycle` implementing `NEW → ACTIVE → LOST → EXITED` plus
+     `DROPPED`, confirmation, reacquisition, window/stream flush, and
+     identity-anchored open visits.
+   - `TrackedBox`, `Track`, `Visit`, `VisitEvent`, `LifecycleSummary` types.
+5. Added tracking thresholds (`track_activation_threshold`,
+   `minimum_matching_threshold`) to config and validation.
+6. Added 23 tests (154 total), including a ByteTrack→lifecycle seam test.
+
+**Problems solved:**
+
+- `supervision` 0.31 has no `tracker` package at all; pin 0.25.1.
+- Removing the YOLO checkpoint from git would break model loading, so the
+  downloader now fetches and SHA256-verifies it alongside buffalo_l.
+- Identity anchoring can only be reliable if recognition runs before
+  confirmation. `observe(..., face_ids=...)` supports that; `assign_face()`
+  fills an anonymous open visit later, and Phase 6 updates the stored entry.
+
+**Measured:** ByteTrack update with 10 boxes is **1.77 ms median** / 4.22 ms
+p95. Lifecycle cost is negligible.
+
+**Tests:** `154 passed`.
+
+**Outputs:** `src/tracking/`, config thresholds, 23 tests, model-exclusion
+updates, updated plan/architecture/compute/README/memory.
+
+**Remaining:** persist events/images/DB and derive the unique count (Phase 6);
+wire the full pipeline (Phase 7).
+
+---
+
 ## Template for future phases
 
 ```markdown
