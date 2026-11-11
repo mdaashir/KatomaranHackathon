@@ -29,6 +29,7 @@ def test_bytetrack_and_lifecycle_emit_one_entry_and_one_exit():
                 boxes,
                 frame_index=frame_index,
                 timestamp=BASE_TIME + timedelta(seconds=frame_index / 25.0),
+                video_time_s=frame_index / 25.0,
                 source_id="clip.mp4",
                 window_id="clip.mp4",
             )
