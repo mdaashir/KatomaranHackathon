@@ -217,6 +217,18 @@ class TrackLifecycle:
                 events.append(self._close_visit(visit, visit.last_track_id))
         return events
 
+    def reset(self) -> list[VisitEvent]:
+        """Flush and clear per-track state for a new source window.
+
+        Closed visits are kept for the run summary; tracks are discarded so a
+        reused ByteTrack ID cannot inherit old state.
+        """
+
+        events = self.flush()
+        self._tracks.clear()
+        self._window_id = None
+        return events
+
     def _handle_missing(
         self,
         track: Track,

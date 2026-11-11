@@ -246,7 +246,7 @@ def _parse_logging(data: Mapping[str, Any]) -> LoggingConfig:
 
 def _read_json(path: Path) -> dict[str, Any]:
     try:
-        text = path.read_text(encoding="utf-8")
+        text = path.read_text(encoding="utf-8-sig")
     except FileNotFoundError as exc:
         raise ConfigError(f"{path}: configuration file not found") from exc
     except OSError as exc:

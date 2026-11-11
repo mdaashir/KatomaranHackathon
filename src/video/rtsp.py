@@ -11,7 +11,7 @@ import av
 
 from src.logging_setup import get_logger, log_event
 from src.video.bounded_queue import BoundedFrameQueue
-from src.video.helpers import frame_to_bgr, video_stream
+from src.video.helpers import frame_to_bgr, stream_fps, video_stream
 from src.video.types import Frame, VideoSourceError
 
 logger = get_logger(__name__)
@@ -90,6 +90,7 @@ class RTSPSource:
         self._closed = False
         self._index = 0
         self._first_monotonic: float | None = None
+        self._fps: float = 25.0
 
     @property
     def source_id(self) -> str:
@@ -137,6 +138,7 @@ class RTSPSource:
                 attempt = 0
 
                 stream = video_stream(container, self._source_id)
+                self._fps = stream_fps(stream)
                 for raw in container.decode(stream):
                     if self._stop.is_set():
                         break
@@ -211,6 +213,7 @@ class RTSPSource:
             source_id=self._source_id,
             window_id=self._source_id,
             is_window_end=False,
+            fps=self._fps,
         )
 
     def close(self) -> None:

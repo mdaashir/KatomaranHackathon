@@ -126,6 +126,7 @@ class FileSource:
             source_id=self._source_id,
             window_id=self._window_id,
             is_window_end=is_window_end,
+            fps=fps,
         )
 
     def close(self) -> None:

@@ -383,3 +383,77 @@ Last updated: 2026-11-11
 
 - PR #6: https://github.com/mdaashir/KatomaranHackathon/pull/6
 - State: open, waiting for review/merge. Do not start Phase 7 until merged.
+
+---
+
+# Memory — Phase 7 append
+
+Last updated: 2026-11-11
+
+## What was built
+
+- Phase 7 branch `feature/pipeline-cli`.
+- `src/pipeline/`:
+  - `Pipeline` frame loop, `frame_skip`, recognition-before-confirmation,
+    per-window flush/reset, crop cache, per-track recognition retry.
+  - `CropCache` for exit images after the face leaves the frame.
+  - `PipelineResult` summary type.
+- `main.py` composition root and CLI: `--config`, `--source`, `--path`,
+  `--rtsp-url`, `--start-time`, `--max-frames`, `--log-level`, `--report`,
+  `--verify-db`.
+- `Frame.fps` added to file/folder/RTSP sources so ByteTrack gets the real
+  detection cadence.
+- Config loader accepts UTF-8 with or without BOM.
+- 22 new tests (208 total).
+
+## Decisions made
+
+- `main.py` builds the source before installing signals; the signal handler
+  sets the stop event and closes the source, waking a blocked RTSP queue.
+- `run_pipeline` closes the source if pipeline construction fails.
+- Recognition runs before `lifecycle.observe`; late recognition uses
+  `assign_face()` + `EventLogger.link_face()`.
+- Best crop per track is cached for exits; window end/change flushes and
+  resets tracker, lifecycle tracks, crop cache, and retry timers.
+- `--start-time` overrides single-file mtime; folder mode uses filename
+  timestamps; RTSP uses wall clock.
+- A failed embedding-cache write is non-fatal.
+
+## Problems solved
+
+- Ctrl+C during a stalled RTSP stream could hang; closing the source wakes the
+  queue.
+- PowerShell-written configs have a UTF-8 BOM; the loader now reads
+  `utf-8-sig`.
+- Source cleanup is guaranteed even if pipeline construction fails.
+
+## State at end of Phase 7
+
+- `pytest`: 208 passed.
+- End-to-end smoke: 30 frames / 10 cycles, 1 unique, 1 entry, 1 exit, 0 open;
+  crops 9.3 KB / 8.8 KB; first event `2025-06-20T18:39:03Z`.
+- `--report` matches the DB summary.
+- PR pending creation; waiting for review/merge.
+- Do not start Phase 8 until the PR is merged.
+
+## Next session starts with
+
+- After merge: sync `main`, delete the merged branch, create
+  `test/e2e-and-calibration`, run all 22 clips and `video_sample1.mp4` on a
+  fresh DB, inspect duplicates/far-face recall, tune thresholds, and build
+  `samples/` (events.log excerpt, images, DB export, summary).
+
+## Open questions still standing
+
+1. Lifecycle-based vs direction-based entry/exit.
+2. Face-only limitation vs optional person-detector fallback.
+3. `record_*` clips as the primary dataset.
+4. 40 px tracking / 60 px registration gates.
+5. Frontend deferred until Phases 0–9.
+6. Whether Phase 8 needs 2×2 tiling to improve far-face recall.
+7. Whether `blur_threshold=60` is too strict for the 4K crowd clip.
+
+## Phase 7 PR
+
+- PR #7: https://github.com/mdaashir/KatomaranHackathon/pull/7
+- State: open, waiting for review/merge. Do not start Phase 8 until merged.

@@ -26,6 +26,7 @@ class Frame:
         source_id: Stable identifier for the clip or camera.
         window_id: Logical window that tracks must not cross.
         is_window_end: True on the last frame of a file window.
+        fps: Source frame rate, used to configure ByteTrack.
     """
 
     index: int
@@ -36,6 +37,7 @@ class Frame:
     source_id: str
     window_id: str
     is_window_end: bool = False
+    fps: float = 25.0
 
 
 class VideoSource(Protocol):
