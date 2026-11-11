@@ -235,3 +235,71 @@ Last updated: 2026-11-11
 
 - PR #4: https://github.com/mdaashir/KatomaranHackathon/pull/4
 - State: open, waiting for review/merge. Do not start Phase 5 until merged.
+
+---
+
+# Memory — Phase 5 append
+
+Last updated: 2026-11-11
+
+## What was built
+
+- Phase 5 branch `feature/tracking-lifecycle`.
+- `src/tracking/`:
+  - `types.py` — `TrackedBox`, `Track`, `Visit`, `VisitEvent`, `TrackState`.
+  - `tracker.py` — `ByteTrackAdapter` with `frame_rate = fps / frame_skip`.
+  - `lifecycle.py` — `TrackLifecycle` state machine and visit manager.
+- Config adds `tracking.track_activation_threshold` and
+  `tracking.minimum_matching_threshold`.
+- 23 new tests (154 total), including a ByteTrack→lifecycle seam test.
+- All model weights are now excluded from git (`models/**/*.pt`, `*.onnx`,
+  `*.zip`); `models/yolov8n-face.pt` was removed from the index.
+- `scripts/download_models.py` now fetches and verifies both the YOLO
+  checkpoint and the two InsightFace models.
+
+## Decisions made
+
+- Pin `supervision==0.25.1`: 0.31 removed the tracker module.
+- ByteTrack is updated once per detection cycle and receives
+  `frame_rate = fps / frame_skip`.
+- Lifecycle is storage-agnostic: returns `VisitEvent` objects with an optional
+  sink; Phase 6 owns images/DB/events.log.
+- Entry is emitted after `confirm_hits` but timestamped at first sight; exit is
+  emitted at timeout but timestamped at last sight.
+- `LOST → ACTIVE` absorbs short gaps; a closed visit is never reopened.
+- Identity anchoring attaches a new track to an existing open visit when it
+  carries the same Face ID. Recognition must run before confirmation;
+  `assign_face()` can fill an anonymous open visit later.
+- Window changes flush and clear tracks; end-of-stream calls `flush()`.
+
+## Problems solved
+
+- Supervision 0.31 had no `ByteTrack`; downgraded to 0.25.1.
+- Model exclusion would break loading; the downloader now fetches YOLO too.
+- Remote history still contains the previously committed YOLO checkpoint;
+  future commits do not. Purging history was not done because it would rewrite
+  the merged remote.
+
+## State at end of Phase 5
+
+- `pytest`: 154 passed.
+- ByteTrack: 1.77 ms median / 4.22 ms p95 for 10 boxes.
+- PR pending creation; waiting for review/merge.
+- Do not start Phase 6 until the PR is merged.
+
+## Next session starts with
+
+- After merge: sync `main`, delete the merged branch, create
+  `feature/event-logging-and-counter`, and implement Phase 6: atomic image
+  store, `EventLogger` (image → DB transaction → events.log), unique counter,
+  and summary/report. Wire `TrackLifecycle` events into the DB.
+
+## Open questions still standing
+
+1. Lifecycle-based vs direction-based entry/exit.
+2. Face-only limitation vs optional person-detector fallback.
+3. `record_*` clips as the primary dataset.
+4. 40 px tracking / 60 px registration gates.
+5. Frontend deferred until Phases 0–9.
+6. Whether Phase 8 needs 2×2 tiling to improve far-face recall.
+7. Whether `blur_threshold=60` is too strict for the 4K crowd clip.
