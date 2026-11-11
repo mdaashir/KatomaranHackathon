@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import shutil
+import subprocess
 from typing import Any, Callable
 
 import pytest
@@ -66,3 +68,44 @@ def write_config(tmp_path: Path) -> Callable[[dict[str, Any]], Path]:
         return path
 
     return _write
+
+
+@pytest.fixture
+def make_video(tmp_path: Path) -> Callable[..., Path]:
+    """Generate a small deterministic MP4 with ffmpeg, or skip if absent."""
+
+    ffmpeg = shutil.which("ffmpeg")
+
+    def _make(
+        name: str,
+        *,
+        frames: int = 10,
+        fps: int = 5,
+        size: str = "160x120",
+    ) -> Path:
+        if ffmpeg is None:
+            pytest.skip("ffmpeg is not available")
+        path = tmp_path / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        subprocess.run(
+            [
+                ffmpeg,
+                "-y",
+                "-v",
+                "error",
+                "-f",
+                "lavfi",
+                "-i",
+                f"testsrc=size={size}:rate={fps}",
+                "-frames:v",
+                str(frames),
+                "-c:v",
+                "mpeg4",
+                str(path),
+            ],
+            check=True,
+            capture_output=True,
+        )
+        return path
+
+    return _make
