@@ -431,6 +431,14 @@ class VisitRepository:
         ).fetchone()
         return int(row[0])
 
+    def count_anonymous(self) -> int:
+        """Return the number of anonymous visits."""
+
+        row = self._db.connect().execute(
+            "SELECT COUNT(*) FROM visits WHERE is_anonymous = 1"
+        ).fetchone()
+        return int(row[0])
+
 
 class EventRepository:
     """Insert and query entry/exit events."""
@@ -460,6 +468,198 @@ class EventRepository:
             StorageError: if a required string is empty.
         """
 
+        try:
+            with self._db.transaction() as connection:
+                event_id = self._insert_event(
+                    connection,
+                    visit_id=visit_id,
+                    face_id=face_id,
+                    event_type=event_type,
+                    occurred_at=occurred_at,
+                    video_time_s=video_time_s,
+                    source_id=source_id,
+                    image_path=image_path,
+                    bbox_json=bbox_json,
+                    confidence=confidence,
+                    similarity=similarity,
+                    is_anonymous=is_anonymous,
+                )
+        except sqlite3.IntegrityError as exc:
+            message = str(exc)
+            if (
+                "UNIQUE constraint failed: events.visit_id, events.event_type"
+                in message
+            ):
+                raise DuplicateEventError(
+                    f"visit {visit_id} already has a {event_type} event"
+                ) from exc
+            raise
+
+        return event_id
+
+    def create_visit_with_entry(
+        self,
+        *,
+        face_id: int | None,
+        track_id: int,
+        source_id: str,
+        entry_at: datetime,
+        is_anonymous: bool,
+        entry_image_path: str,
+        occurred_at: datetime,
+        video_time_s: float,
+        image_path: str,
+        bbox_json: str | None = None,
+        confidence: float | None = None,
+        similarity: float | None = None,
+    ) -> tuple[int, int]:
+        """Create a visit and its entry event in one transaction.
+
+        Returns:
+            ``(visit_id, event_id)``.
+        """
+
+        if track_id < 0:
+            raise StorageError("track_id: must not be negative")
+        entry_timestamp = utc_iso(entry_at)
+        with self._db.transaction() as connection:
+            cursor = connection.execute(
+                """
+                INSERT INTO visits
+                    (face_id, track_id, source_id, entry_at, exit_at, status,
+                     is_anonymous, entry_image_path, exit_image_path)
+                VALUES (?, ?, ?, ?, NULL, 'open', ?, ?, NULL)
+                """,
+                (
+                    face_id,
+                    track_id,
+                    source_id,
+                    entry_timestamp,
+                    int(is_anonymous),
+                    entry_image_path,
+                ),
+            )
+            visit_id = int(cursor.lastrowid)
+            event_id = self._insert_event(
+                connection,
+                visit_id=visit_id,
+                face_id=face_id,
+                event_type="entry",
+                occurred_at=occurred_at,
+                video_time_s=video_time_s,
+                source_id=source_id,
+                image_path=image_path,
+                bbox_json=bbox_json,
+                confidence=confidence,
+                similarity=similarity,
+                is_anonymous=is_anonymous,
+            )
+        return visit_id, event_id
+
+    def close_visit_with_exit(
+        self,
+        *,
+        visit_id: int,
+        face_id: int | None,
+        occurred_at: datetime,
+        video_time_s: float,
+        source_id: str,
+        image_path: str,
+        bbox_json: str | None = None,
+        confidence: float | None = None,
+        similarity: float | None = None,
+        is_anonymous: bool = False,
+    ) -> int:
+        """Insert the exit event and close the visit in one transaction."""
+
+        with self._db.transaction() as connection:
+            row = connection.execute(
+                "SELECT status FROM visits WHERE visit_id = ?",
+                (visit_id,),
+            ).fetchone()
+            if row is None:
+                raise StorageError(f"visit {visit_id} does not exist")
+            if row["status"] != "open":
+                raise StorageError(f"visit {visit_id} is already closed")
+
+            event_id = self._insert_event(
+                connection,
+                visit_id=visit_id,
+                face_id=face_id,
+                event_type="exit",
+                occurred_at=occurred_at,
+                video_time_s=video_time_s,
+                source_id=source_id,
+                image_path=image_path,
+                bbox_json=bbox_json,
+                confidence=confidence,
+                similarity=similarity,
+                is_anonymous=is_anonymous,
+            )
+            cursor = connection.execute(
+                """
+                UPDATE visits
+                SET exit_at = ?, status = 'closed', exit_image_path = ?
+                WHERE visit_id = ? AND status = 'open'
+                """,
+                (utc_iso(occurred_at), image_path, visit_id),
+            )
+            if cursor.rowcount != 1:
+                raise StorageError(f"visit {visit_id} could not be closed")
+        return event_id
+
+    def link_face(self, visit_id: int, face_id: int) -> bool:
+        """Link an anonymous visit and its entry event to a Face ID."""
+
+        with self._db.transaction() as connection:
+            row = connection.execute(
+                "SELECT face_id FROM visits WHERE visit_id = ?",
+                (visit_id,),
+            ).fetchone()
+            if row is None:
+                raise StorageError(f"visit {visit_id} does not exist")
+            if row["face_id"] is not None:
+                return int(row["face_id"]) == face_id
+
+            connection.execute(
+                "UPDATE visits SET face_id = ?, is_anonymous = 0 "
+                "WHERE visit_id = ?",
+                (face_id, visit_id),
+            )
+            connection.execute(
+                "UPDATE events SET face_id = ?, is_anonymous = 0 "
+                "WHERE visit_id = ? AND event_type = 'entry'",
+                (face_id, visit_id),
+            )
+        return True
+
+    def visit_face(self, visit_id: int) -> int | None:
+        """Return the Face ID linked to a visit, or ``None``."""
+
+        row = self._db.connect().execute(
+            "SELECT face_id FROM visits WHERE visit_id = ?",
+            (visit_id,),
+        ).fetchone()
+        if row is None:
+            raise StorageError(f"visit {visit_id} does not exist")
+        return int(row["face_id"]) if row["face_id"] is not None else None
+
+    def _insert_event(
+        self,
+        connection: sqlite3.Connection,
+        *,
+        visit_id: int,
+        face_id: int | None,
+        event_type: str,
+        occurred_at: datetime,
+        video_time_s: float,
+        source_id: str,
+        image_path: str,
+        bbox_json: str | None,
+        confidence: float | None,
+        similarity: float | None,
+        is_anonymous: bool,
+    ) -> int:
         if event_type not in _EVENT_TYPES:
             raise StorageError(
                 f"event_type: expected one of {sorted(_EVENT_TYPES)}, "
@@ -480,43 +680,29 @@ class EventRepository:
                 "is_anonymous: must be false when face_id is set"
             )
 
-        try:
-            with self._db.transaction() as connection:
-                cursor = connection.execute(
-                    """
-                    INSERT INTO events
-                        (visit_id, face_id, event_type, occurred_at,
-                         video_time_s, source_id, image_path, bbox_json,
-                         confidence, similarity, is_anonymous)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    """,
-                    (
-                        visit_id,
-                        face_id,
-                        event_type,
-                        utc_iso(occurred_at),
-                        float(video_time_s),
-                        source_id,
-                        image_path,
-                        bbox_json,
-                        confidence,
-                        similarity,
-                        int(is_anonymous),
-                    ),
-                )
-                event_id = int(cursor.lastrowid)
-        except sqlite3.IntegrityError as exc:
-            message = str(exc)
-            if (
-                "UNIQUE constraint failed: events.visit_id, events.event_type"
-                in message
-            ):
-                raise DuplicateEventError(
-                    f"visit {visit_id} already has a {event_type} event"
-                ) from exc
-            raise
-
-        return event_id
+        cursor = connection.execute(
+            """
+            INSERT INTO events
+                (visit_id, face_id, event_type, occurred_at,
+                 video_time_s, source_id, image_path, bbox_json,
+                 confidence, similarity, is_anonymous)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                visit_id,
+                face_id,
+                event_type,
+                utc_iso(occurred_at),
+                float(video_time_s),
+                source_id,
+                image_path,
+                bbox_json,
+                confidence,
+                similarity,
+                int(is_anonymous),
+            ),
+        )
+        return int(cursor.lastrowid)
 
     def get(self, event_id: int) -> EventRecord | None:
         """Return an event by ID, or ``None``."""
@@ -545,3 +731,13 @@ class EventRepository:
             (event_type,),
         ).fetchone()
         return int(row[0])
+
+    def time_range(self) -> tuple[str | None, str | None]:
+        """Return the first and last event timestamps, or ``(None, None)``."""
+
+        row = self._db.connect().execute(
+            "SELECT MIN(occurred_at), MAX(occurred_at) FROM events"
+        ).fetchone()
+        first = str(row[0]) if row[0] is not None else None
+        last = str(row[1]) if row[1] is not None else None
+        return first, last

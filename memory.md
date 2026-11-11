@@ -308,3 +308,78 @@ Last updated: 2026-11-11
 
 - PR #5: https://github.com/mdaashir/KatomaranHackathon/pull/5
 - State: open, waiting for review/merge. Do not start Phase 6 until merged.
+
+---
+
+# Memory — Phase 6 append
+
+Last updated: 2026-11-11
+
+## What was built
+
+- Phase 6 branch `feature/event-logging-and-counter`.
+- `src/events/`:
+  - `image_store.py` — atomic 256 px JPEG writes to dated entry/exit folders;
+    black placeholder for a missing crop.
+  - `event_logger.py` — image → DB transaction → `events.log`, lifecycle→DB
+    visit mapping, image rollback on DB failure, `link_face()`.
+- `src/counting/counter.py` — DB-derived `get_unique_count()` and
+  `CounterSummary`.
+- `src/tracking/types.py` / `lifecycle.py` now carry `video_time_s` and optional
+  `similarity` per event.
+- Storage adds `create_visit_with_entry`, `close_visit_with_exit`,
+  `link_face`, `visit_face`, `count_anonymous`, `time_range`.
+- 29 new tests (185 total).
+
+## Decisions made
+
+- `EventLogger` is synchronous in Phase 6; Phase 7 can offload it.
+- A lifecycle visit ID maps to a DB visit ID in memory. Image filenames use the
+  lifecycle ID; logs carry both `visit` and `lifecycle_visit`.
+- Image writes happen before the DB transaction; on failure the image is
+  removed. A missing crop writes a black placeholder so no event is lost.
+- `link_face()` updates the visit and its entry event. The exit path rejects a
+  conflicting Face ID.
+- Unique count is always `COUNT(*) FROM faces WHERE is_active=1`; anonymous
+  visits are excluded.
+- Cross-table persistence lives in `EventRepository`, not in the event logger.
+
+## Problems solved
+
+- Test FK violations required seeding Face IDs; fixtures now seed two faces.
+- The merge deleting the previously tracked YOLO model removed it from disk.
+  The new downloader restored and verified it, validating the model-exclusion
+  workflow.
+- Exits were re-logging `VISIT_LINKED`; added `visit_face()` and a conflict
+  guard.
+
+## State at end of Phase 6
+
+- `pytest`: 185 passed.
+- Entry persistence 4.78 ms median / 6.36 p95.
+- Exit persistence 4.76 ms / 5.54 p95.
+- PR pending creation; waiting for review/merge.
+- Do not start Phase 7 until the PR is merged.
+
+## Next session starts with
+
+- After merge: sync `main`, delete the merged branch, create
+  `feature/pipeline-cli`, and wire the composition root: config → video source
+  → detector → tracker → lifecycle → recognizer/registry → event logger →
+  counter, with frame_skip, window resets, signal handling, flush, and
+  `--report`.
+
+## Open questions still standing
+
+1. Lifecycle-based vs direction-based entry/exit.
+2. Face-only limitation vs optional person-detector fallback.
+3. `record_*` clips as the primary dataset.
+4. 40 px tracking / 60 px registration gates.
+5. Frontend deferred until Phases 0–9.
+6. Whether Phase 8 needs 2×2 tiling to improve far-face recall.
+7. Whether `blur_threshold=60` is too strict for the 4K crowd clip.
+
+## Phase 6 PR
+
+- PR #6: https://github.com/mdaashir/KatomaranHackathon/pull/6
+- State: open, waiting for review/merge. Do not start Phase 7 until merged.

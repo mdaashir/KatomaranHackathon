@@ -308,6 +308,60 @@ wire the full pipeline (Phase 7).
 
 ---
 
+## 2026-11-11 — Phase 6: event logging and counting
+
+### Prompt
+
+> successfully merged the pr, deleted the branch in remote. start proceeding
+> next make sure you always following the agents.md
+
+**Purpose:** persist lifecycle events as images + DB rows + `events.log`, and
+expose the DB-derived unique count and run summary.
+
+**What the model did:**
+
+1. Synced `main`, deleted the merged branch, and created
+   `feature/event-logging-and-counter`.
+2. Added per-window `video_time_s` and optional `similarity` to lifecycle
+   events, so the DB carries `events.video_time_s` correctly.
+3. Added cross-table repository operations:
+   - `create_visit_with_entry()` — visit + entry in one transaction.
+   - `close_visit_with_exit()` — exit + close in one transaction.
+   - `link_face()` / `visit_face()` — retroactive anonymous-to-identity link.
+4. Added `src/events/`:
+   - `ImageStore` — atomic JPEG writes with fsync + rename, dated folders,
+     safe filenames, black placeholder for a missing crop.
+   - `EventLogger` — image → DB transaction → `events.log`, lifecycle→DB visit
+     mapping, rollback of the image on DB failure.
+5. Added `src/counting/`:
+   - `UniqueCounter.get_unique_count()` from `faces WHERE is_active=1`.
+   - `get_summary()` with visits, open/anonymous visits, entries/exits and the
+     event time range.
+6. Added 29 tests (185 total) for image storage, event persistence, counters,
+   and the new repository methods.
+
+**Problems solved:**
+
+- FK violations in tests showed that seeded Face IDs are required; production
+  IDs always come from the registry. Fixtures now seed faces.
+- The merged PR deleted the previously tracked YOLO checkpoint from disk during
+  checkout. `scripts/download_models.py` restored and verified it — exactly the
+  workflow the model-exclusion change was meant to support.
+- Exits were re-logging `VISIT_LINKED` for already-linked faces. Added
+  `visit_face()` and a conflicting-face guard.
+
+**Measured:** Entry persistence **4.78 ms** median / 6.36 ms p95; exit
+persistence **4.76 ms** / 5.54 ms p95 (256 px JPEG + SQLite transaction).
+
+**Tests:** `185 passed`.
+
+**Outputs:** `src/events/`, `src/counting/`, lifecycle `video_time_s`, storage
+cross-table methods, 29 tests, updated plan/architecture/compute/README/memory.
+
+**Remaining:** wire the pipeline + CLI and graceful shutdown (Phase 7).
+
+---
+
 ## Template for future phases
 
 ```markdown

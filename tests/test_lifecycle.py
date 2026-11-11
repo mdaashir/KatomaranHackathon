@@ -44,6 +44,7 @@ def _observe(
         boxes,
         frame_index=frame,
         timestamp=BASE_TIME + timedelta(seconds=frame / 25.0),
+        video_time_s=frame / 25.0,
         source_id="clip.mp4",
         window_id=window_id,
         face_ids=face_ids,
@@ -274,6 +275,7 @@ def test_invalid_observe_arguments():
             [],
             frame_index=0,
             timestamp=BASE_TIME,
+            video_time_s=0.0,
             source_id="",
             window_id="clip",
         )
@@ -282,6 +284,7 @@ def test_invalid_observe_arguments():
             [],
             frame_index=0,
             timestamp=BASE_TIME,
+            video_time_s=0.0,
             source_id="clip.mp4",
             window_id="",
         )

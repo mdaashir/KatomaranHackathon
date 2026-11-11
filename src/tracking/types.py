@@ -37,6 +37,8 @@ class Track:
     last_seen_frame: int
     first_seen_time: datetime
     last_seen_time: datetime
+    first_seen_video_s: float
+    last_seen_video_s: float
     hits: int
     missed_frames: int
     bbox: tuple[float, float, float, float]
@@ -54,8 +56,10 @@ class Visit:
     face_id: int | None
     entry_frame: int
     entry_time: datetime
+    entry_video_s: float
     last_seen_frame: int
     last_seen_time: datetime
+    last_seen_video_s: float
     last_bbox: tuple[float, float, float, float]
     last_confidence: float
     last_track_id: int
@@ -75,11 +79,13 @@ class VisitEvent:
     face_id: int | None
     frame_index: int
     occurred_at: datetime
+    video_time_s: float
     source_id: str
     window_id: str
     bbox: tuple[float, float, float, float]
     confidence: float
     is_anonymous: bool
+    similarity: float | None = None
 
 
 @dataclass

@@ -110,6 +110,7 @@ class TrackLifecycle:
         *,
         frame_index: int,
         timestamp: datetime,
+        video_time_s: float,
         source_id: str,
         window_id: str,
         face_ids: Mapping[int, int | None] | None = None,
@@ -120,6 +121,7 @@ class TrackLifecycle:
             tracked_boxes: ByteTrack output for this detection cycle.
             frame_index: Global source-frame index, used for timeouts.
             timestamp: Absolute UTC time of this frame.
+            video_time_s: Seconds from the start of the current source window.
             source_id: Clip or camera identifier for events.
             window_id: Logical window; a change flushes the previous window.
             face_ids: Optional recognized Face ID per tracker ID. Recognition
@@ -155,6 +157,7 @@ class TrackLifecycle:
                     box,
                     frame_index,
                     timestamp,
+                    video_time_s,
                     source_id,
                     window_id,
                     recognized,
@@ -238,6 +241,7 @@ class TrackLifecycle:
         box: TrackedBox,
         frame_index: int,
         timestamp: datetime,
+        video_time_s: float,
         source_id: str,
         window_id: str,
         face_ids: Mapping[int, int | None],
@@ -254,6 +258,8 @@ class TrackLifecycle:
                 last_seen_frame=frame_index,
                 first_seen_time=timestamp,
                 last_seen_time=timestamp,
+                first_seen_video_s=video_time_s,
+                last_seen_video_s=video_time_s,
                 hits=1,
                 missed_frames=0,
                 bbox=box.bbox,
@@ -265,6 +271,7 @@ class TrackLifecycle:
             track.confidence = box.confidence
             track.last_seen_frame = frame_index
             track.last_seen_time = timestamp
+            track.last_seen_video_s = video_time_s
             track.hits += 1
             track.missed_frames = 0
             if track.state == TrackState.LOST:
@@ -312,8 +319,10 @@ class TrackLifecycle:
             face_id=face_id,
             entry_frame=track.first_seen_frame,
             entry_time=track.first_seen_time,
+            entry_video_s=track.first_seen_video_s,
             last_seen_frame=track.last_seen_frame,
             last_seen_time=track.last_seen_time,
+            last_seen_video_s=track.last_seen_video_s,
             last_bbox=track.bbox,
             last_confidence=track.confidence,
             last_track_id=track.track_id,
@@ -334,6 +343,7 @@ class TrackLifecycle:
             face_id=face_id,
             frame_index=track.first_seen_frame,
             occurred_at=track.first_seen_time,
+            video_time_s=track.first_seen_video_s,
             source_id=source_id,
             window_id=window_id,
             bbox=track.bbox,
@@ -365,6 +375,7 @@ class TrackLifecycle:
             face_id=visit.face_id,
             frame_index=visit.last_seen_frame,
             occurred_at=visit.last_seen_time,
+            video_time_s=visit.last_seen_video_s,
             source_id=visit.source_id,
             window_id=visit.window_id,
             bbox=visit.last_bbox,
@@ -377,6 +388,7 @@ class TrackLifecycle:
         if track.last_seen_frame >= visit.last_seen_frame:
             visit.last_seen_frame = track.last_seen_frame
             visit.last_seen_time = track.last_seen_time
+            visit.last_seen_video_s = track.last_seen_video_s
             visit.last_bbox = track.bbox
             visit.last_confidence = track.confidence
             visit.last_track_id = track.track_id

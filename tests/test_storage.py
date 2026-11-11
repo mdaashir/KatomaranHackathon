@@ -335,6 +335,144 @@ def test_duplicate_event_rejected(events, visits, faces):
     ]
 
 
+def test_create_visit_with_entry_is_atomic(events, visits, faces):
+    face_id = _create_face(faces)
+
+    visit_id, event_id = events.create_visit_with_entry(
+        face_id=face_id,
+        track_id=7,
+        source_id="clip.mp4",
+        entry_at=NOW,
+        is_anonymous=False,
+        entry_image_path="entries/e.jpg",
+        occurred_at=NOW,
+        video_time_s=1.0,
+        image_path="entries/e.jpg",
+        bbox_json="[1, 2, 3, 4]",
+        confidence=0.9,
+        similarity=0.7,
+    )
+
+    visit = visits.get(visit_id)
+    event = events.get(event_id)
+    assert visit.status == "open"
+    assert visit.entry_image_path == "entries/e.jpg"
+    assert event.event_type == "entry"
+    assert event.face_id == face_id
+    assert event.similarity == pytest.approx(0.7)
+
+
+def test_create_visit_with_entry_rolls_back_on_bad_event(
+    events, visits
+):
+    with pytest.raises(StorageError, match="is_anonymous"):
+        events.create_visit_with_entry(
+            face_id=None,
+            track_id=1,
+            source_id="clip.mp4",
+            entry_at=NOW,
+            is_anonymous=False,
+            entry_image_path="entries/e.jpg",
+            occurred_at=NOW,
+            video_time_s=0.0,
+            image_path="entries/e.jpg",
+        )
+
+    assert visits.count_all() == 0
+
+
+def test_close_visit_with_exit_is_atomic(events, visits):
+    visit_id, _ = events.create_visit_with_entry(
+        face_id=None,
+        track_id=1,
+        source_id="clip.mp4",
+        entry_at=NOW,
+        is_anonymous=True,
+        entry_image_path="entries/e.jpg",
+        occurred_at=NOW,
+        video_time_s=0.0,
+        image_path="entries/e.jpg",
+    )
+
+    event_id = events.close_visit_with_exit(
+        visit_id=visit_id,
+        face_id=None,
+        occurred_at=NOW + timedelta(seconds=3),
+        video_time_s=3.0,
+        source_id="clip.mp4",
+        image_path="exits/e.jpg",
+        is_anonymous=True,
+    )
+
+    visit = visits.get(visit_id)
+    event = events.get(event_id)
+    assert visit.status == "closed"
+    assert visit.exit_image_path == "exits/e.jpg"
+    assert event.event_type == "exit"
+
+    with pytest.raises(StorageError, match="already closed"):
+        events.close_visit_with_exit(
+            visit_id=visit_id,
+            face_id=None,
+            occurred_at=NOW + timedelta(seconds=4),
+            video_time_s=4.0,
+            source_id="clip.mp4",
+            image_path="exits/e2.jpg",
+            is_anonymous=True,
+        )
+
+
+def test_link_face_updates_visit_and_entry(events, visits, faces):
+    face_id = _create_face(faces)
+    visit_id, event_id = events.create_visit_with_entry(
+        face_id=None,
+        track_id=1,
+        source_id="clip.mp4",
+        entry_at=NOW,
+        is_anonymous=True,
+        entry_image_path="entries/e.jpg",
+        occurred_at=NOW,
+        video_time_s=0.0,
+        image_path="entries/e.jpg",
+    )
+
+    assert events.link_face(visit_id, face_id) is True
+    assert visits.get(visit_id).face_id == face_id
+    assert events.get(event_id).face_id == face_id
+    assert events.link_face(visit_id, face_id) is True
+    assert events.link_face(visit_id, face_id + 1) is False
+
+
+def test_anonymous_count_and_event_time_range(events, visits):
+    events.create_visit_with_entry(
+        face_id=None,
+        track_id=1,
+        source_id="clip.mp4",
+        entry_at=NOW,
+        is_anonymous=True,
+        entry_image_path="entries/a.jpg",
+        occurred_at=NOW,
+        video_time_s=0.0,
+        image_path="entries/a.jpg",
+    )
+    events.create_visit_with_entry(
+        face_id=None,
+        track_id=2,
+        source_id="clip.mp4",
+        entry_at=NOW + timedelta(seconds=5),
+        is_anonymous=True,
+        entry_image_path="entries/b.jpg",
+        occurred_at=NOW + timedelta(seconds=5),
+        video_time_s=5.0,
+        image_path="entries/b.jpg",
+    )
+
+    assert visits.count_anonymous() == 2
+    first, last = events.time_range()
+    assert first == "2025-06-20T18:39:03.000Z"
+    assert last == "2025-06-20T18:39:08.000Z"
+
+
 def test_event_foreign_key_enforced(events):
     with pytest.raises(sqlite3.IntegrityError):
         events.insert(
