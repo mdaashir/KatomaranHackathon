@@ -300,6 +300,22 @@ Procedure:
 5. Run the full 22-clip sequence once and record wall time, peak RSS, images
    written, final unique count.
 
+### Measured — Phase 2 (local machine)
+
+PyAV software decode of `record_20250620_183903.mp4` (HEVC, 2688×1520,
+1,502 frames):
+
+| Metric | Measured |
+|---|---:|
+| Decode time | 19.6–20.1 s |
+| Decode throughput | **74.8–76.7 fps** |
+| Real-time factor | **~3×** |
+| Frame shape | `(1520, 2688, 3)` |
+
+Decode is therefore **not** the bottleneck on this machine; YOLO remains the
+dominant cost. These numbers replace the decode ranges in §4 for this host and
+will be re-measured with detection enabled in Phase 3.
+
 No estimate in this document should survive into the final submission
 unverified; replace §4 and §5 with measured rows.
 

@@ -101,6 +101,54 @@ unresolved; implementation proceeded with the documented defaults.
 
 ---
 
+## 2026-11-11 — Phase 2: video sources
+
+### Prompt
+
+> successfully merged the pr, deleted the branch in remote. start proceeding
+> next make sure you always following the agents.md
+
+**Purpose:** implement Phase 2 (`PLAN.md §7`) on a fresh branch after the
+Phase 1 merge.
+
+**What the model did:**
+
+1. Restored context from `memory.md`, confirmed PR #1 was merged, pulled
+   `main`, deleted the merged local branch, and created
+   `feature/video-source`.
+2. Added the `Frame` contract with `global_index`, `window_id`, and
+   `is_window_end`, so the pipeline can keep a stable cadence and flush tracks
+   at every clip boundary.
+3. Added `FileSource` (PyAV decode, PTS timestamps, one-frame lookahead for the
+   final-frame marker), `FileSequenceSource` (ordered clips, filename timestamp
+   parsing, corrupt-clip skip), and `RTSPSource` (bounded drop-oldest queue,
+   exponential reconnect, safe shutdown).
+4. Added 19 tests (75 total) and a real-data smoke test on
+   `record_20250620_183903.mp4`: 1,502 frames, 59.96 s, 2688×1520, 74.8–76.7
+   decode fps.
+5. Ran `/review`. Fixed a Windows access violation caused by closing a PyAV
+   container while its generator was suspended; decoder lifetime now belongs to
+   the generator. Removed the equivalent cross-thread close from `RTSPSource`.
+
+**Problems solved:**
+
+- The rebase onto the rewritten baseline deleted the ignored `.mp4` files
+  because the old baseline tracked them. Restored all 23 from the dangling
+  baseline commit without re-adding them to git.
+- PyAV is not thread-safe for container close. `FileSource.close()` now only
+  requests a stop; `RTSPSource.close()` stops and joins, and never closes the
+  container from the consumer thread.
+
+**Tests:** `75 passed`.
+
+**Outputs:** `src/video/`, `tests/test_video.py`, updated `requirements.txt`.
+
+**Remaining manual check:** killing and restoring a real RTSP loop. The
+automated tests cover reconnect/backoff and a fake-container decode path; no
+local RTSP server is available in this environment.
+
+---
+
 ## Template for future phases
 
 ```markdown
