@@ -142,29 +142,64 @@ class ReadModel:
         finally:
             connection.close()
 
-        items = []
-        for row in rows:
-            items.append(
-                {
-                    "event_id": int(row["event_id"]),
-                    "event_type": str(row["event_type"]),
-                    "occurred_at": str(row["occurred_at"]),
-                    "face_id": (
-                        int(row["face_id"]) if row["face_id"] is not None else None
-                    ),
-                    "visit_id": int(row["visit_id"]),
-                    "track_id": int(row["track_id"]),
-                    "source_id": str(row["source_id"]),
-                    "confidence": (
-                        float(row["confidence"])
-                        if row["confidence"] is not None
-                        else None
-                    ),
-                    "is_anonymous": bool(row["is_anonymous"]),
-                    "image_url": f"/images/{row['event_id']}",
-                }
-            )
+        items = [self._event_item(row) for row in rows]
         return {"items": items, "total": int(total), "limit": limit, "offset": offset}
+
+    def events_after(
+        self, after_id: int, *, limit: int = 50
+    ) -> list[dict[str, object]]:
+        """Return new events in ascending ID order for the activity feed."""
+
+        if not self._db_path.is_file():
+            return []
+        connection = sqlite3.connect(str(self._db_path))
+        connection.row_factory = sqlite3.Row
+        try:
+            rows = connection.execute(
+                """
+                SELECT e.event_id, e.event_type, e.occurred_at, e.face_id,
+                       e.visit_id, e.source_id, e.image_path, e.confidence,
+                       e.is_anonymous, v.track_id
+                FROM events e
+                JOIN visits v ON v.visit_id = e.visit_id
+                WHERE e.event_id > ?
+                ORDER BY e.event_id ASC
+                LIMIT ?
+                """,
+                (after_id, limit),
+            ).fetchall()
+        finally:
+            connection.close()
+        return [self._event_item(row) for row in rows]
+
+    def latest_event_id(self) -> int:
+        """Return the newest event ID, or zero for an empty/missing DB."""
+
+        if not self._db_path.is_file():
+            return 0
+        connection = sqlite3.connect(str(self._db_path))
+        try:
+            value = connection.execute("SELECT MAX(event_id) FROM events").fetchone()[0]
+        finally:
+            connection.close()
+        return int(value or 0)
+
+    @staticmethod
+    def _event_item(row: sqlite3.Row) -> dict[str, object]:
+        return {
+            "event_id": int(row["event_id"]),
+            "event_type": str(row["event_type"]),
+            "occurred_at": str(row["occurred_at"]),
+            "face_id": (int(row["face_id"]) if row["face_id"] is not None else None),
+            "visit_id": int(row["visit_id"]),
+            "track_id": int(row["track_id"]),
+            "source_id": str(row["source_id"]),
+            "confidence": (
+                float(row["confidence"]) if row["confidence"] is not None else None
+            ),
+            "is_anonymous": bool(row["is_anonymous"]),
+            "image_url": f"/images/{row['event_id']}",
+        }
 
     def log_tail(
         self,

@@ -17,7 +17,7 @@ from src.counting import UniqueCounter
 from src.detection import YoloFaceDetector
 from src.events import EventLogger, ImageStore
 from src.logging_setup import configure_logging, log_event, shutdown_logging
-from src.pipeline import Pipeline, PipelineResult
+from src.pipeline import FrameSink, Pipeline, PipelineResult
 from src.recognition import (
     ArcFaceEmbedder,
     FaceRegistry,
@@ -93,6 +93,7 @@ def run_pipeline(
     max_frames: int | None = None,
     verify_db: bool = False,
     start_time: datetime | None = None,
+    frame_sink: FrameSink | None = None,
 ) -> PipelineResult:
     """Wire every dependency and run one pipeline."""
 
@@ -133,6 +134,7 @@ def run_pipeline(
                     events_logger=setup.events_logger,
                 ),
                 UniqueCounter(database, face_repository=faces),
+                frame_sink=frame_sink,
                 events_logger=setup.events_logger,
                 app_logger=setup.app_logger,
             )
