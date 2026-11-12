@@ -1,5 +1,9 @@
 name: CI
 
+# A PR merge runs this workflow twice by design: once for pull_request on the
+# head commit (review gate) and once for push to main (merged-tree/direct-commit
+# safety net). The dependency and Docker layers are cached between runs.
+
 on:
   pull_request:
     branches: [main]

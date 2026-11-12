@@ -364,10 +364,11 @@ standalone HTML snapshot. `samples/dashboard/index.html` is generated from the
   RTSP smoke test.
 - `ci/pr-checks` and `ci/security-and-release` follow.
 
-**Status (2026-11-12):** Docker/compose, core `ci.yml` and the file+RTSP e2e
-job are implemented. File e2e: 1 unique / 2 visits / 2 entries / 2 exits /
-0 open after two runs. RTSP e2e: 1 unique, 2 visits, balanced, 0 open through
-MediaMTX. PR-hygiene and security/release remain; API/UI assertions wait for P2.
+**Status (2026-11-12):** Docker/compose, core `ci.yml`, file+RTSP e2e and PR
+hygiene (conventional title, no attribution trailers, template, Dependabot)
+are implemented. File e2e: 1 unique / 2 visits / 2 entries / 2 exits / 0 open;
+RTSP e2e: 1 unique, 2 visits, balanced, 0 open through MediaMTX. Security/release
+remain; API/UI assertions wait for P2.
 
 ---
 

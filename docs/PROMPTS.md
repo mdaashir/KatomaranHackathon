@@ -718,6 +718,39 @@ and YAML valid.
 
 ---
 
+## 2026-11-12 — P1 PR hygiene and Dependabot
+
+### Prompt
+
+> successfully merged the pr, deleted the branch in remote, i have an doubt if direct commit on main runs 5 workflows is okay, but pr merge also does it making it run twice. start proceeding next make sure you always following the agents.md
+
+**Purpose:** add the P1 PR-hygiene workflow, PR template and grouped
+Dependabot updates, and document the intentional duplicate CI run.
+
+**What the model did:**
+
+1. Added `.github/workflows/pr-checks.yml`: conventional PR title check and a
+   full-history commit-trailer check.
+2. Added `scripts/check_pr_trailers.py` (fails on `Co-authored-by`,
+   `Claude-Session` or `Generated with Claude Code`).
+3. Added `.github/pull_request_template.md` and grouped weekly Dependabot
+   updates for uv, Docker and GitHub Actions.
+4. Documented in `ci.yml` that a PR merge runs both the PR head and main merge
+   commit; kept both for the review gate and the direct-commit safety net.
+5. Updated README/PLAN/DEVOPS/FEATURES.
+
+**Duplicate-run decision:** PR merge → `pull_request` run on the head commit +
+`push` run on `main`; direct commit to main → only the push run. Keeping both is
+intentional; dropping push would remove the safety net. Caching makes the second
+pass cheaper.
+
+**Validated:** trailer script runs clean on the branch range; workflows and
+Dependabot YAML parse; ruff clean.
+
+**Remaining:** `ci/security-and-release` and P2 API/UI assertions.
+
+---
+
 ## Template for future phases
 
 ```markdown

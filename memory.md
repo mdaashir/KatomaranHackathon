@@ -653,3 +653,25 @@ Last updated: 2026-11-11
 - After merge: sync `main`, delete `test/e2e-fixture-and-verify`, then create
   `ci/pr-checks` (PR title/trailer checks, template, Dependabot) followed by
   `ci/security-and-release`. Do not start P2/UI before P1 checks are green.
+
+---
+
+## P1 PR hygiene and Dependabot (2026-11-12)
+
+- Branch: `ci/pr-checks`.
+- Added `.github/workflows/pr-checks.yml`: conventional PR title check plus a
+  full-history no-attribution-trailer check.
+- Added `scripts/check_pr_trailers.py`, `.github/pull_request_template.md`, and
+  grouped weekly Dependabot updates for uv, Docker and GitHub Actions.
+- Documented the intentional duplicate CI run: PR head validation plus main
+  merge/direct-commit safety net; both triggers are kept.
+- Validated: trailer script clean on the branch range; workflow/Dependabot YAML
+  parse; ruff clean.
+- PR pending creation in this phase; stop and wait for review/merge.
+
+## Next session starts with
+
+- After merge: sync `main`, delete `ci/pr-checks`, then create
+  `ci/security-and-release` (CodeQL, dependency review, gitleaks, pip-audit,
+  Trivy, GHCR publish, tagged release, nightly). Do not start P2/UI before P1
+  checks are green.

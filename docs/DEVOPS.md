@@ -1,8 +1,9 @@
 # Docker, CI & Release Requirements (P1 core, P3 extras)
 
-> **Status (2026-11-12):** P1 Docker/compose, core CI and the file+RTSP e2e job
-> are implemented. PR-hygiene and security/release workflows are the next
-> branches. API/UI e2e assertions are deferred until P2 exists.
+> **Status (2026-11-12):** P1 Docker/compose, core CI, file+RTSP e2e and PR
+> hygiene (title/trailer checks, template, Dependabot) are implemented.
+> Security/release workflows are the next branch; API/UI e2e assertions are
+> deferred until P2 exists.
 
 ## 1. Docker
 
