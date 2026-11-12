@@ -465,6 +465,20 @@ control/live view/uploads), F3 (folder/config) and F4 (visitors/system) remain.
 
 ---
 
+### Phase 13 — P2 F2 jobs, uploads and live view
+
+- One-worker `JobManager` over the existing `run_pipeline` composition; file,
+  folder and RTSP requests, queued/running/stopped/failed states, stop.
+- Uploads into `src/video`, filename-only job paths, and a 2 GiB cap.
+- Live MJPEG through a latest-frame buffer that copies only when a viewer is
+  attached; SSE activity feed from new DB events.
+- Streamlit Live Monitor and Sources & Jobs pages.
+
+**Status (2026-11-12):** F2 implemented. 230 tests, 90.58% coverage. F3 (folder
+polish/config) and F4 (visitors/system) remain.
+
+---
+
 ## 12. Compliance audit (2026-11-11)
 
 Every requirement in the problem statement is mapped to implementation evidence

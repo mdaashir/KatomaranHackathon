@@ -503,7 +503,9 @@ overrides in `docs/FRONTEND.md`; the pipeline runs without either.
 
 **Status:** F1 implemented: `/health`, `/stats`, `/events`, `/logs/tail`,
 `/images`, `/config`; Dashboard/Event Log/System Logs; API contract and
-Streamlit boot tests. F2–F4 next.
+Streamlit boot tests. F2 implemented: upload, one-worker job queue
+(file/folder/RTSP), stop, MJPEG live view, SSE activity feed, Live Monitor and
+Sources & Jobs. F3–F4 next.
 
 ### F-35 — Security and release automation (C, P3)
 

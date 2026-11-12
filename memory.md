@@ -720,3 +720,23 @@ Last updated: 2026-11-11
 - After merge: sync `main`, delete `feature/api-dashboard`, then start P2 F2
   (`feature/api-jobs-live`): background job worker, uploads, live MJPEG,
   activity feed and RTSP input. Keep the public video/form as the priority.
+
+---
+
+## P2 F2 jobs, uploads and live view (2026-11-12)
+
+- Branch: `feature/api-jobs-live`.
+- Pipeline now has an optional `frame_sink`; `LiveFrameBuffer` copies only
+  while viewers exist, so headless runs are unchanged.
+- `JobManager`: one daemon worker over `run_pipeline`; file/folder/RTSP,
+  filename-only paths under `src/video`, queued/running/stopped/failed, stop.
+- API: `/videos`, `/upload` (2 GiB, atomic), `/jobs`, `/jobs/{id}/stop`,
+  `/stream/live.mjpg`, `/events/stream` SSE; UI Live Monitor + Sources & Jobs.
+- Added `python-multipart`; tests: 230, coverage 90.58%; ruff clean.
+- PR pending creation; stop and wait for review/merge.
+
+## Next session starts with
+
+- After merge: sync `main`, delete `feature/api-jobs-live`, then start P2 F3
+  (`feature/api-folder-config`): folder processing UX and the runtime config
+  pane. Keep the public video/form as the priority.
