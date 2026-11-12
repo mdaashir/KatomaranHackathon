@@ -8,7 +8,7 @@ av>=12.0
 ultralytics>=8.4
 omegaconf>=2.3
 insightface>=2.1
-supervision==0.25.1
+supervision==0.31.5
 opencv-python-headless>=4.9
 
 # CPU ONNX Runtime. Replace with onnxruntime-gpu==1.22.0 for the GPU setup.
