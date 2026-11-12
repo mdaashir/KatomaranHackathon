@@ -560,7 +560,10 @@ Last updated: 2026-11-11
   kill/restore remains a hardware confirmation, not a code gap.
 - Updated README, PLAN (resolved sign-off defaults), FEATURES, COMPUTE,
   ARCHITECTURE, DEMO, SUBMISSION, sample README, PROMPTS and this memory.
-- PR pending creation in this phase; stop and wait for review/merge.
+- PR #11: https://github.com/mdaashir/KatomaranHackathon/pull/11
+- State: open, waiting for review/merge. The public video and Google Form remain
+  the only submission blockers; interview-hardware fps tuning is the only
+  performance follow-up.
 
 ## Next session starts with
 
