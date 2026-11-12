@@ -362,13 +362,14 @@ standalone HTML snapshot. `samples/dashboard/index.html` is generated from the
 - `ci/core-workflow` (next branch): lint, typecheck, tests, image builds.
 - `test/e2e-fixture-and-verify` (next branch): trimmed clip, compose e2e,
   RTSP smoke test.
-- `ci/pr-checks` and `ci/security-and-release` follow.
+- `ci/security-and-release` (this branch): `security.yml`, `release.yml`,
+  Dependabot.
 
-**Status (2026-11-12):** Docker/compose, core `ci.yml`, file+RTSP e2e and PR
-hygiene (conventional title, no attribution trailers, template, Dependabot)
-are implemented. File e2e: 1 unique / 2 visits / 2 entries / 2 exits / 0 open;
-RTSP e2e: 1 unique, 2 visits, balanced, 0 open through MediaMTX. Security/release
-remain; API/UI assertions wait for P2.
+**Status (2026-11-12):** Docker/compose, core `ci.yml`, file+RTSP e2e and P3
+security (`security.yml`) + tagged release (`release.yml`) are implemented.
+File e2e: 1 unique / 2 visits / 2 entries / 2 exits / 0 open; RTSP e2e: 1
+unique, 2 visits, balanced, 0 open through MediaMTX. PR-hygiene, edge publish
+and nightly were intentionally dropped; API/UI assertions wait for P2.
 
 ---
 

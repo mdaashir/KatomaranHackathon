@@ -675,3 +675,27 @@ Last updated: 2026-11-11
   `ci/security-and-release` (CodeQL, dependency review, gitleaks, pip-audit,
   Trivy, GHCR publish, tagged release, nightly). Do not start P2/UI before P1
   checks are green.
+
+---
+
+## P3 security and release (2026-11-12)
+
+- Branch: `ci/security-and-release`.
+- Added `security.yml`: CodeQL, dependency review, gitleaks, non-blocking
+  pip-audit, Trivy filesystem scan on PRs and built-image scan on pushes/
+  schedule.
+- Added `release.yml`: tag `v*.*.*` runs CI, pushes versioned GHCR images
+  (`vX.Y.Z`, `X.Y`, `latest`; no `latest` for `-rc`), generates release notes
+  and attaches `samples.zip`.
+- Kept grouped Dependabot updates.
+- Removed `pr-checks.yml`, `pull_request_template.md`, `docker-publish.yml`,
+  `nightly.yml` and `scripts/check_pr_trailers.py` per author correction.
+- Validated: workflow YAML parses; no Python changes; prior tests/e2e remain
+  green.
+- PR pending creation in this phase; stop and wait for review/merge.
+
+## Next session starts with
+
+- After merge: sync `main`, delete `ci/security-and-release`, then start P2
+  (`docs/FRONTEND.md`): FastAPI skeleton, Streamlit dashboard/event/log views,
+  then jobs/live view/config. Keep P0 submission video/form as the priority.

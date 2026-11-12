@@ -1,9 +1,9 @@
 # Docker, CI & Release Requirements (P1 core, P3 extras)
 
-> **Status (2026-11-12):** P1 Docker/compose, core CI, file+RTSP e2e and PR
-> hygiene (title/trailer checks, template, Dependabot) are implemented.
-> Security/release workflows are the next branch; API/UI e2e assertions are
-> deferred until P2 exists.
+> **Status (2026-11-12):** P1 Docker/CI/e2e and the P3 security + tagged-release
+> workflows are implemented. PR-hygiene, edge publishing and nightly workflows
+> were intentionally dropped by the author; Dependabot remains. API/UI e2e
+> assertions are deferred until P2 exists.
 
 ## 1. Docker
 
@@ -107,25 +107,12 @@ loop via MediaMTX, then runs `tests/e2e/verify_outputs.py`:
 Trim the fixture with ffmpeg to a few seconds and a small file size; do not
 commit the full provided video.
 
-### `pr-checks.yml` — PR hygiene
-
-- Conventional-commit PR title check (for example
-  `amannn/action-semantic-pull-request`).
-- Script that fails if any commit in the PR contains a `Co-authored-by` or
-  `Claude-Session` trailer (enforces the project's no-attribution rule).
-- PR template at `.github/pull_request_template.md` with a checklist: tested,
-  e2e passing, docs updated, no attribution trailers.
-
 ### `security.yml` — P3
 
 CodeQL (Python), `dependency-review` on PRs, secret scanning with gitleaks
-(RTSP credentials are a real risk), `pip-audit`, Trivy scan of the built
-image. Runs on PRs, pushes to `main`, and weekly on a schedule.
-
-### `docker-publish.yml` — P3
-
-On push to `main`: reuse `ci.yml`, then build and push images to GHCR with
-`edge` and short-SHA tags, buildx cache, and SBOM/provenance.
+(RTSP credentials are a real risk), `pip-audit`, and Trivy filesystem scan on
+PRs; the built CPU image is scanned on pushes/schedule. Runs on PRs, pushes to
+`main`, and weekly.
 
 ### `release.yml` — P3
 
@@ -135,15 +122,13 @@ Steps: reuse `ci.yml`, build and push versioned images
 notes automatically, attach a zip of `samples/` (logs, crops, DB export)
 to the GitHub Release.
 
-### `nightly.yml` — optional
-
-Scheduled full e2e plus security scan against `main` to catch dependency or
-model-download drift.
-
 ### `dependabot.yml`
 
-Weekly updates for `pip`, `docker`, and `github-actions`, grouped to keep PR
+Weekly updates for `uv`, `docker`, and `github-actions`, grouped to keep PR
 noise low.
+
+> Edge publishing (`docker-publish.yml`), the PR-hygiene workflow/template and
+> `nightly.yml` were dropped by the author to keep the workflow surface small.
 
 ## 3. Branch protection (recommended on `main`)
 
@@ -159,6 +144,4 @@ goes red, fixing it takes priority over new features.
    there is code to test, so later PRs are verified).
 3. `test/e2e-fixture-and-verify` — trimmed fixture, `verify_outputs.py`, e2e
    job, RTSP smoke test.
-4. `ci/pr-checks` — PR title + trailer checks, PR template, Dependabot.
-5. `ci/security-and-release` — `security.yml`, `docker-publish.yml`,
-   `release.yml`, optional `nightly.yml`.
+4. `ci/security-and-release` — `security.yml`, `release.yml`, Dependabot.
