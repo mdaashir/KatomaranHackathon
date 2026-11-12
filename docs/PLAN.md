@@ -479,6 +479,22 @@ polish/config) and F4 (visitors/system) remain.
 
 ---
 
+### Phase 14 — P2 F3 folder jobs and runtime config
+
+- `GET /folders`; folder jobs use `**/*.mp4` recursive, sorted, sequential
+  processing through the existing `FileSequenceSource`.
+- `ConfigStore`: base `config.json` + `data/runtime_overrides.json`, validated
+  via the same loader rules; five hot fields only, `frame_skip` stays
+  file-owned; atomic save-default.
+- `GET/PUT /config`, `POST /config/reset`, `POST /config/save-default`;
+  applied config reaches the next job.
+- Streamlit folder mode and Config page.
+
+**Status (2026-11-12):** F3 implemented. 235 tests, 90.65% coverage. F4
+(visitors/system polish) remains.
+
+---
+
 ## 12. Compliance audit (2026-11-11)
 
 Every requirement in the problem statement is mapped to implementation evidence

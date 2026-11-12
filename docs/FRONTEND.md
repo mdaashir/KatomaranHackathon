@@ -4,8 +4,9 @@
 > `/stats`, `/events`, `/logs/tail`, `/images`, `/config`) and Streamlit
 > Dashboard, Event Log and System Logs. F2 implemented: upload, one-worker job
 > control (file/RTSP), MJPEG live view and SSE activity feed, plus Live Monitor
-> and Sources & Jobs pages. F3–F4 are next; API/UI remain clients and never
-> block the pipeline.
+> and Sources & Jobs pages. F3 implemented: recursive folder jobs (`/folders`,
+> `**/*.mp4`) and validated runtime overrides (`/config` GET/PUT/reset/
+> save-default, persisted to `data/runtime_overrides.json`). F4 remains.
 
 **Status of the requirement:** the problem statement says a frontend "is not
 required, but including one will be considered an added advantage". It does

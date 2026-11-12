@@ -740,3 +740,22 @@ Last updated: 2026-11-11
 - After merge: sync `main`, delete `feature/api-jobs-live`, then start P2 F3
   (`feature/api-folder-config`): folder processing UX and the runtime config
   pane. Keep the public video/form as the priority.
+
+---
+
+## P2 F3 folder jobs and runtime config (2026-11-12)
+
+- Branch: `feature/api-folder-config`.
+- `/folders`; folder jobs use `**/*.mp4` recursive through `FileSequenceSource`.
+- `ConfigStore`: base `config.json` + `data/runtime_overrides.json`; five hot
+  fields; `frame_skip` rejected/file-owned; atomic save-default.
+- `GET/PUT /config`, reset/save-default; `JobManager.update_config` applies to
+  the next job only. Streamlit folder mode + Config page with diff/confirmation.
+- Validated: **235 tests**, **90.65% coverage**, ruff clean.
+- PR pending creation; stop and wait for review/merge.
+
+## Next session starts with
+
+- After merge: sync `main`, delete `feature/api-folder-config`, then start P2
+  F4 (`feature/api-visitors-system`): visitors gallery, system page and polish.
+  Keep the public video/form as the priority.

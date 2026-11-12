@@ -505,7 +505,9 @@ overrides in `docs/FRONTEND.md`; the pipeline runs without either.
 `/images`, `/config`; Dashboard/Event Log/System Logs; API contract and
 Streamlit boot tests. F2 implemented: upload, one-worker job queue
 (file/folder/RTSP), stop, MJPEG live view, SSE activity feed, Live Monitor and
-Sources & Jobs. F3–F4 next.
+Sources & Jobs. F3 implemented: recursive folder jobs, `/folders`, and
+validated persisted runtime overrides (five hot fields; `frame_skip`
+file-owned) with Config page. F4 next.
 
 ### F-35 — Security and release automation (C, P3)
 
