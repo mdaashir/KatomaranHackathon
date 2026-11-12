@@ -14,19 +14,56 @@ interviewed on every line and on the prompts used.
 
 ## Mandatory tech stack (do not deviate)
 
-| Concern          | Choice                                                        |
-|------------------|---------------------------------------------------------------|
-| Language         | Python 3.10+                                                  |
-| Face detection   | YOLO face model (YOLOv8 via `ultralytics`)                    |
-| Embeddings       | InsightFace (ArcFace, e.g. `buffalo_l`)                       |
-| Tracking         | ByteTrack or DeepSORT (OpenCV tracker only as fallback)       |
-| Database         | SQLite (WAL mode)                                             |
-| Config           | `config.json`                                                 |
+| Concern          | Choice                                                         |
+|------------------|----------------------------------------------------------------|
+| Language         | Python 3.10+                                                   |
+| Face detection   | YOLO face model (YOLOv8 via `ultralytics`)                     |
+| Embeddings       | InsightFace (ArcFace, e.g. `buffalo_l`)                        |
+| Tracking         | ByteTrack or DeepSORT (OpenCV tracker only as fallback)        |
+| Database         | SQLite (WAL mode)                                              |
+| Config           | `config.json`                                                  |
 | Input            | Video file in dev, **RTSP stream at interview** — support both |
+| API (bonus)      | FastAPI — thin control/streaming layer over the pipeline       |
+| UI (bonus)       | Streamlit (client of the API only)                             |
+| Containers       | Docker + Docker Compose (CPU default, GPU optional)            |
+| CI/CD            | GitHub Actions                                                 |
 
 - NEVER use the `face_recognition` library.
-- No frontend required. Only add one (e.g. a small dashboard) after every
-  core requirement works.
+
+## Scope and priority
+
+The PDF requires no frontend and no CLI: input comes from `config.json`
+(video file or RTSP). A frontend is only "an added advantage". So the graded
+core comes first and everything else must never put it at risk.
+
+- **P0 — graded core:** pipeline, logging, DB, unique count, `config.json`,
+  README, sample outputs, demo video. Must run headless with
+  `python main.py --config config.json` (a thin entrypoint, not a CLI
+  feature set) — this is what runs against the RTSP stream at the interview.
+- **P1 — Docker + core CI:** Dockerfile, compose, `ci.yml` (lint, test,
+  build, e2e on a trimmed clip).
+- **P2 — API + Streamlit UI:** live monitor, dashboard, upload/folder/RTSP
+  input, log view, runtime config pane.
+- **P3 — extras:** release/security/nightly workflows, visitor gallery
+  polish, folder-batch polish.
+
+If time runs short, cut from the bottom (P3, then P2, then P1). Never cut P0,
+and never skip the README or the demo video.
+
+Specs live in separate files so this one stays short. Read them on demand,
+before starting the matching work:
+
+- UI / API work: `docs/FRONTEND.md`
+- Docker / CI / release work: `docs/DEVOPS.md`
+
+UI/API rules that always apply:
+
+- The pipeline must run fully without the API or UI. They are clients, never
+  dependencies; the UI contains no business logic and never touches the DB
+  or pipeline code directly (it goes through the API).
+- The live view must never slow the pipeline (drop frames for the viewer).
+- Runtime config overrides use the same validated config model as
+  `config.json`; `frame_skip` still originates from `config.json`.
 
 ## Code standards
 
@@ -47,6 +84,9 @@ interviewed on every line and on the prompts used.
 ```
 config.json
 main.py                     # composition root: wires dependencies, runs pipeline
+Dockerfile  docker-compose.yml  .dockerignore  .env.example  Makefile
+.github/                    # workflows/, dependabot.yml
+ui/                         # Streamlit app (P2) — talks to src/api only
 src/
   config/                   # config loading + validation
   video/                    # VideoSource (file + RTSP, with reconnect)
@@ -57,6 +97,7 @@ src/
   storage/                  # SQLite connection, schema, repositories
   counting/                 # unique visitor counter (derived from DB)
   pipeline/                 # orchestrates one frame -> events
+  api/                      # FastAPI: jobs, stream, stats, logs, config (P2)
 logs/
   events.log
   entries/YYYY-MM-DD/       # cropped face images on entry
@@ -64,7 +105,8 @@ logs/
 data/                       # sqlite db
 docs/                       # PLAN.md FEATURES.md COMPUTE.md ARCHITECTURE.md PROMPTS.md
 samples/                    # sample logs, images, DB export from the provided video
-tests/
+scripts/                    # download_models.py, e2e helpers
+tests/                      # unit/, e2e/, fixtures/ (trimmed sample clip)
 ```
 
 ## Functional rules (these are graded)
@@ -106,6 +148,10 @@ tests/
 }
 ```
 
+Runtime overrides (UI config pane) layer on top of this file; see
+`docs/FRONTEND.md`. Never edit `config.json` at runtime except
+through an explicit "Save as default" action.
+
 ## Skills
 
 Do not load any skill by default. Check the task first — only invoke a skill
@@ -134,6 +180,10 @@ Keep these current as the work progresses; do not leave them for the end.
   `This project is a part of a hackathon run by https://katomaran.com`
 - `samples/` — real output from the provided video: `events.log`, cropped
   images, DB entries/export, final unique count.
+- `docs/FRONTEND.md` and `docs/DEVOPS.md` — keep
+  them in sync with what is actually built; they double as feature docs.
+- README also covers: `docker compose up`, UI URL, how to run headless, CI
+  badge, and the final image size / compute numbers.
 - **Git:** every change is committed and goes through a PR. Follow the
   Git workflow below on every task, without exception.
 
@@ -141,12 +191,15 @@ Keep these current as the work progresses; do not leave them for the end.
 
 `main` holds only the base folder structure and default files. Never commit
 or push feature work directly to `main`, and never merge a PR yourself —
-the author reviews and merges every PR.
+the author reviews and merges every PR. (CI also runs on every push to
+`main` as a safety net for the author's own merges and direct commits; it is
+not permission for Claude to push there.)
 
 1. **Start from fresh main:** `git checkout main && git pull`, then create
    one branch for one feature / function / requirement, named by what it
    does: `feature/yolo-face-detector`, `feature/insightface-embedder`,
-   `feature/entry-exit-state-machine`, `fix/...`, `docs/...`, `test/...`.
+   `feature/entry-exit-state-machine`, `fix/...`, `docs/...`, `test/...`,
+   `ci/...`, `chore/...`.
    Keep each branch small and focused on a single requirement.
 2. **Build it, committing as you go.** Every change is committed — never
    leave work uncommitted. Small, logical commits with clear messages in
@@ -160,7 +213,10 @@ the author reviews and merges every PR.
 4. **Complete, verify, test before the PR:** run the tests (`pytest`), run
    the affected part of the pipeline on the sample video, and confirm the
    behaviour against the Functional rules above. Run `/review` for any
-   non-trivial feature. Fix everything found before moving on.
+   non-trivial feature. Fix everything found before moving on. Once CI
+   exists, the PR's checks (lint, tests, build, e2e) must be green —
+   check with `gh pr checks` and fix failures before telling the author the
+   PR is ready.
 5. **Raise the PR to `main`:** push the branch and open it with
    `gh pr create --base main` (or give the author the compare link). The PR
    description covers what changed, why, how it was tested, and anything the
