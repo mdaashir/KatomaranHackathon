@@ -495,6 +495,20 @@ polish/config) and F4 (visitors/system) remain.
 
 ---
 
+### Phase 15 — P2 F4 visitors, system and polish
+
+- `GET /visitors` and `/visitors/{id}` from faces/visits/events, with event
+  image URLs for thumbnails and visit timelines.
+- `GET /system`: CPU/memory/disk, process RSS, DB size, uptime, ONNX providers,
+  model settings and GPU availability.
+- Streamlit Visitors gallery/timeline and System page; Event Log CSV export;
+  System Logs download.
+
+**Status (2026-11-12):** F4 implemented. 237 tests, 90.81% coverage. P2 is
+feature-complete; P0 video/form submission actions remain.
+
+---
+
 ## 12. Compliance audit (2026-11-11)
 
 Every requirement in the problem statement is mapped to implementation evidence

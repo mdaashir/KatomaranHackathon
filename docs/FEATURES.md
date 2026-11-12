@@ -501,13 +501,9 @@ API/UI assertions wait for P2.
 Thin FastAPI service and Streamlit client implementing the screens and runtime
 overrides in `docs/FRONTEND.md`; the pipeline runs without either.
 
-**Status:** F1 implemented: `/health`, `/stats`, `/events`, `/logs/tail`,
-`/images`, `/config`; Dashboard/Event Log/System Logs; API contract and
-Streamlit boot tests. F2 implemented: upload, one-worker job queue
-(file/folder/RTSP), stop, MJPEG live view, SSE activity feed, Live Monitor and
-Sources & Jobs. F3 implemented: recursive folder jobs, `/folders`, and
-validated persisted runtime overrides (five hot fields; `frame_skip`
-file-owned) with Config page. F4 next.
+**Status:** F1–F3 implemented as recorded above. F4 implemented: `/visitors`,
+`/visitors/{id}`, `/system`, Visitors gallery/timeline, System metrics/model
+info, Event Log CSV export and log download. P2 is feature-complete.
 
 ### F-35 — Security and release automation (C, P3)
 

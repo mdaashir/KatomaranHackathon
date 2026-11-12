@@ -759,3 +759,22 @@ Last updated: 2026-11-11
 - After merge: sync `main`, delete `feature/api-folder-config`, then start P2
   F4 (`feature/api-visitors-system`): visitors gallery, system page and polish.
   Keep the public video/form as the priority.
+
+---
+
+## P2 F4 visitors, system and polish (2026-11-12)
+
+- Branch: `feature/api-visitors-system`.
+- `/visitors`, `/visitors/{face_id}` with thumbnails + entry/exit image URLs.
+- `/system`: CPU/memory/disk/RSS, DB size, uptime, ONNX providers, model
+  settings, GPU availability (`psutil` added to the ui extra).
+- UI Visitors gallery/timeline, System page, Event Log CSV export, System Logs
+  download.
+- Validated: **237 tests**, **90.81% coverage**, ruff clean.
+- PR pending creation; stop and wait for review/merge.
+
+## Next session starts with
+
+- After merge: sync `main`, delete `feature/api-visitors-system`. P2 is
+  feature-complete; the remaining actions are the public demo video and Google
+  Form, plus the final submission check.
