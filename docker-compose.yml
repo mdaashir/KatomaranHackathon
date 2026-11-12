@@ -7,6 +7,13 @@ services:
     volumes:
       - models:/models
 
+  init-dirs:
+    image: busybox:1.36
+    command: ["sh", "-c", "mkdir -p /data /logs && chown -R 10001:10001 /data /logs"]
+    volumes:
+      - ./data:/data
+      - ./logs:/logs
+
   app:
     build:
       context: .
@@ -17,6 +24,8 @@ services:
     stop_grace_period: 30s
     depends_on:
       init-models:
+        condition: service_completed_successfully
+      init-dirs:
         condition: service_completed_successfully
     environment:
       CONFIG_PATH: ${CONFIG_PATH:-/app/config.json}
