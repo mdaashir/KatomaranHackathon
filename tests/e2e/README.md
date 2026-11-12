@@ -7,8 +7,12 @@ CPU image `intelligent-face-tracker:cpu`.
   front-entry clip (2688×1520 HEVC, 603 KB).
 - `config.file.json` runs the fixture twice. The second run must re-identify
   the Face ID without changing the unique count.
-- `config.rtsp.json` runs through MediaMTX and an ffmpeg publisher looping the
-  fixture, stopping after 300 frames so active tracks flush as exits.
+- `config.rtsp.json` confirms a track on its first detection (`confirm_hits: 1`)
+  because the CPU container processes slower than the real-time RTSP feed and
+  the bounded queue intentionally drops stale frames; the production
+  `config.json` keeps the 3-hit confirmation. It runs through MediaMTX and an
+  ffmpeg publisher looping the fixture, stopping after 300 frames so active
+  tracks flush as exits.
 - `verify_outputs.py` runs inside the app container (UID 10001), opens SQLite,
   and checks counts, integrity, foreign keys, one entry/exit per visit, every
   referenced image and the required `events.log` event types.
