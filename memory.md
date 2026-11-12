@@ -617,7 +617,9 @@ Last updated: 2026-11-11
   workflow YAML parses.
 - README/PLAN/DEVOPS/FEATURES updated with the CI badge/status.
 - e2e fixture/RTSP smoke, PR checks, security/release remain.
-- PR pending creation in this phase; stop and wait for review/merge.
+- PR #13: https://github.com/mdaashir/KatomaranHackathon/pull/13
+- State: open, waiting for review/merge. Core CI is in place; e2e/RTSP,
+  PR-hygiene and security/release are the next branches.
 
 ## Next session starts with
 
