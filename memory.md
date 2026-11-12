@@ -778,3 +778,16 @@ Last updated: 2026-11-11
 - After merge: sync `main`, delete `feature/api-visitors-system`. P2 is
   feature-complete; the remaining actions are the public demo video and Google
   Form, plus the final submission check.
+
+---
+
+## Final submission audit (2026-11-12)
+
+- Branch: `docs/final-submission-audit`.
+- P2 F1–F4 complete; repo-side submission complete.
+- Updated `COMPLIANCE.md` (35 features, 237 tests/90.81%, full P2 UI evidence)
+  and `SUBMISSION.md` (P2 UI smoke + evidence).
+- No code changes. Remaining external actions: record/upload the 4–5 minute
+  walkthrough, replace `VIDEO_URL` in README/SUBMISSION, submit the Google
+  Form before 2:00 PM Friday 13 Nov 2026.
+- PR pending creation; stop and wait for review/merge.

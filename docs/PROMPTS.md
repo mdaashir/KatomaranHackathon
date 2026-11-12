@@ -931,6 +931,28 @@ passes with the API down.
 
 ---
 
+## 2026-11-12 — Final submission audit
+
+### Prompt
+
+> successfully merged the pr, deleted the branch in remote. start proceeding next make sure you always following the agents.md
+
+**Purpose:** close the repository-side submission gap after P2 F4.
+
+**What the model did:**
+
+1. Re-checked README, compliance, submission checklist, feature count and test
+   evidence.
+2. Updated `COMPLIANCE.md` from 31 to 35 features, from 216 to 237 tests, and
+   recorded the full optional P2 API/UI in 6.1.
+3. Added the optional P2 UI smoke and evidence to `SUBMISSION.md`.
+4. Confirmed the exact Katomaran footer and the remaining external actions.
+
+**Validated:** 237 tests, 90.81% coverage; no code changes; video and Google
+Form remain author actions.
+
+---
+
 ## Template for future phases
 
 ```markdown
