@@ -107,6 +107,12 @@ def load_config(path: str | Path) -> AppConfig:
     return config
 
 
+def validate_config(config: AppConfig) -> None:
+    """Validate an in-memory config with the same rules as file loading."""
+
+    _validate(config)
+
+
 def _parse_source(data: Mapping[str, Any]) -> SourceConfig:
     section = _section(data, "source", _SOURCE_KEYS)
     return SourceConfig(
