@@ -1,0 +1,57 @@
+name: intelligent-face-tracker
+
+services:
+  init-models:
+    image: busybox:1.36
+    command: ["sh", "-c", "mkdir -p /models && chown -R 10001:10001 /models"]
+    volumes:
+      - models:/models
+
+  app:
+    build:
+      context: .
+      target: cpu
+    image: intelligent-face-tracker:cpu
+    init: true
+    stop_signal: SIGTERM
+    stop_grace_period: 30s
+    depends_on:
+      init-models:
+        condition: service_completed_successfully
+    environment:
+      CONFIG_PATH: ${CONFIG_PATH:-/app/config.json}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      RTSP_URL: ${RTSP_URL:-}
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./src/video:/app/src/video:ro
+      - models:/app/models
+
+  mediamtx:
+    image: bluenviron/mediamtx:1.9.3
+    profiles: ["rtsp-test"]
+    ports:
+      - "8554:8554"
+
+  rtsp-publisher:
+    image: jrottenberg/ffmpeg:6.0-ubuntu
+    profiles: ["rtsp-test"]
+    depends_on:
+      - mediamtx
+    volumes:
+      - ./src/video:/videos:ro
+    command:
+      - "-re"
+      - "-stream_loop"
+      - "-1"
+      - "-i"
+      - "/videos/record_20250620_183903.mp4"
+      - "-c"
+      - "copy"
+      - "-f"
+      - "rtsp"
+      - "rtsp://mediamtx:8554/camera"
+
+volumes:
+  models:

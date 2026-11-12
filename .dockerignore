@@ -1,0 +1,23 @@
+# Docker build context.
+.git
+.gitignore
+.venv
+venv
+**/__pycache__
+*.py[cod]
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.coverage
+htmlcov
+data
+logs
+models
+samples
+src/video/*.mp4
+tests
+docs
+.env
+.env.*
+.vscode
+.idea
