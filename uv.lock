@@ -1805,7 +1805,7 @@ requires-dist = [
     { name = "opencv-python-headless", specifier = ">=4.9" },
     { name = "pydantic", marker = "extra == 'ui'", specifier = ">=2.7,<3.0" },
     { name = "streamlit", marker = "extra == 'ui'", specifier = ">=1.36,<2.0" },
-    { name = "supervision", specifier = "==0.31.5" },
+    { name = "supervision", specifier = "==0.25.1" },
     { name = "ultralytics", specifier = ">=8.4" },
     { name = "uvicorn", extras = ["standard"], marker = "extra == 'ui'", specifier = ">=0.30,<1.0" },
 ]
@@ -4482,15 +4482,6 @@ wheels = [
 ]
 
 [[package]]
-name = "pydeprecate"
-version = "0.14.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/95/13/b4df17e52b5cc282545f782a38e8ae76c640b54c0ffe53945672d6d31151/pydeprecate-0.14.0.tar.gz", hash = "sha256:c4db48015a4efdfdf4bef190e6681d0cd82234426dd6d824fedf931175e9a611", size = 291062, upload-time = "2026-10-20T17:45:25.263Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/e9/f2/6985432c1a86fe3b053605ea62a378626da87086bd33c530ed403da30ffc/pydeprecate-0.14.0-py3-none-any.whl", hash = "sha256:01048c81ff85f24952a92829c553778312fad7a27539a4d8dffd9671ab9abca7", size = 218077, upload-time = "2026-10-20T17:45:23.688Z" },
-]
-
-[[package]]
 name = "pygments"
 version = "2.21.0"
 source = { registry = "https://pypi.org/simple" }
@@ -5560,12 +5551,12 @@ wheels = [
 
 [[package]]
 name = "supervision"
-version = "0.31.5"
+version = "0.25.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "av", version = "17.1.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
-    { name = "av", version = "18.1.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.11.*'" },
-    { name = "av", version = "19.0.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+    { name = "contourpy", version = "1.3.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
+    { name = "contourpy", version = "1.3.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.11.*'" },
+    { name = "contourpy", version = "1.4.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "defusedxml" },
     { name = "matplotlib", version = "3.10.9", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "matplotlib", version = "3.11.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
@@ -5573,9 +5564,10 @@ dependencies = [
     { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11' and sys_platform != 'darwin'" },
     { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.11.*'" },
     { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+    { name = "opencv-python", version = "4.11.0.86", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11' and sys_platform == 'darwin'" },
+    { name = "opencv-python", version = "5.0.0.93", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11' or sys_platform != 'darwin'" },
     { name = "pillow", version = "12.3.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "pillow", version = "13.0.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
-    { name = "pydeprecate" },
     { name = "pyyaml" },
     { name = "requests" },
     { name = "scipy", version = "1.15.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
@@ -5583,9 +5575,9 @@ dependencies = [
     { name = "scipy", version = "1.18.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "tqdm" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/31/99/2572ba018e65d1ce992286099880118bca67d8446a05ff087496eb2bbecb/supervision-0.31.5.tar.gz", hash = "sha256:9c9c57c1cacdb9efc3ed28791132311ec341913288df709dbd2007612e5ccf36", size = 447144, upload-time = "2026-11-05T18:36:15.372Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/4c/87/3daaa3aec1766f93d4c07d33f933a5ded0a6243a099b6b399b6268053bfe/supervision-0.25.1.tar.gz", hash = "sha256:61781b4abe4fa6ff95c58af6aec7dd3451a78e7e6a797e9ea2787f93771dd031", size = 146657, upload-time = "2024-12-13T13:12:10.64Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/50/b7/5d16bb5937272a1081f763b8de20e6c52d2fea43b90ff576389b9e434b6c/supervision-0.31.5-py3-none-any.whl", hash = "sha256:8fcb7327a62d30bb41331239057ef224f5743f404c8f1cec5a45610f87faff41", size = 489661, upload-time = "2026-11-05T18:36:13.517Z" },
+    { url = "https://files.pythonhosted.org/packages/c1/24/d3bcad7ece751166ed308c6deb7e7d02a62a7f5a6e01e61ff2787c538fb0/supervision-0.25.1-py3-none-any.whl", hash = "sha256:ebc015c22983bc64563beda75f5f529e465e4020b318da07948ce03148307a72", size = 181480, upload-time = "2024-12-13T13:12:08.1Z" },
 ]
 
 [[package]]
