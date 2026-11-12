@@ -592,7 +592,9 @@ Last updated: 2026-11-11
 - `pytest`: 216 passed; e2e verifier clean.
 - GPU image build is still pending; `ci/core-workflow`, e2e fixture/RTSP smoke,
   PR checks and release/security follow in separate branches.
-- PR pending creation in this phase; stop and wait for review/merge.
+- PR #12: https://github.com/mdaashir/KatomaranHackathon/pull/12
+- State: open, waiting for review/merge. The CPU image is validated; GPU build
+  and core CI/e2e are the next P1 branches.
 
 ## Next session starts with
 
