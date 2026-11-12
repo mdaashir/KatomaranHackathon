@@ -126,3 +126,40 @@ jobs:
           load: false
           cache-from: type=gha,scope=${{ matrix.target }}
           cache-to: type=gha,mode=max,scope=${{ matrix.target }}
+
+  e2e:
+    name: E2E (file + RTSP)
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build CPU image
+        run: |
+          docker buildx build \
+            --target cpu \
+            --load \
+            -t intelligent-face-tracker:cpu \
+            --cache-from type=gha,scope=cpu \
+            --cache-to type=gha,mode=max,scope=cpu \
+            .
+
+      - name: Run file and RTSP e2e
+        run: bash tests/e2e/run_e2e.sh
+
+      - name: Upload e2e artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-artifacts
+          path: |
+            data/e2e_*.db
+            logs/e2e_file/
+            logs/e2e_rtsp/
+            reports/e2e/
+          if-no-files-found: ignore

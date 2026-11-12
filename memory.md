@@ -627,3 +627,29 @@ Last updated: 2026-11-11
   `test/e2e-fixture-and-verify`: trim a small clip, add
   `tests/e2e/verify_outputs.py`, MediaMTX/RTSP smoke and the e2e job. Do not
   start P2/UI before P1 e2e is green.
+
+---
+
+## P1 e2e fixture and RTSP smoke (2026-11-12)
+
+- Branch: `test/e2e-fixture-and-verify`.
+- Fixture: `tests/fixtures/entry_exit_3s.mp4` — 3.04 s, 76 frames, 603 KB.
+- Added isolated `tests/e2e/config.file.json` and `config.rtsp.json`, expected
+  counts, and a `tests/e2e/verify_outputs.py` that runs inside the app
+  container (counts, integrity, FK, two events per visit, images, log events).
+- Added `tests/e2e/run_e2e.sh`: file fixture twice (re-ID) then MediaMTX + ffmpeg
+  publisher, 300-frame RTSP run, flush check, artifact JSON.
+- Added compose `init-dirs` (chown bind mounts for UID 10001) and a root cleanup
+  helper; the verifier runs in the app container so CI has the same DB
+  permissions as the writer.
+- Added CI `e2e` job after `build`, with CPU image cache and artifacts.
+- Validated: file 1 unique / 2 visits / 2 entry+exit / 0 open; RTSP 1 unique /
+  2 visits / 2 entry+exit / 0 open; ruff/format clean; 216 tests; compose/YAML
+  valid.
+- PR pending creation in this phase; stop and wait for review/merge.
+
+## Next session starts with
+
+- After merge: sync `main`, delete `test/e2e-fixture-and-verify`, then create
+  `ci/pr-checks` (PR title/trailer checks, template, Dependabot) followed by
+  `ci/security-and-release`. Do not start P2/UI before P1 checks are green.

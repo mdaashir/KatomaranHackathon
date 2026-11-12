@@ -1,0 +1,15 @@
+services:
+  rtsp-publisher:
+    volumes:
+      - ./tests/fixtures:/fixtures:ro
+    command:
+      - "-re"
+      - "-stream_loop"
+      - "-1"
+      - "-i"
+      - "/fixtures/entry_exit_3s.mp4"
+      - "-c"
+      - "copy"
+      - "-f"
+      - "rtsp"
+      - "rtsp://mediamtx:8554/camera"

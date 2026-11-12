@@ -7,9 +7,10 @@ visitor counting for a mall front-entry camera. It accepts a video file, a
 folder of clips, or an RTSP stream, and logs exactly one entry and one exit per
 visit.
 
-> **Status: P0 submission-ready; P1 container/CI in progress.** The core
+> **Status: P0 submission-ready; P1 container/CI/e2e complete.** The core
 > pipeline, samples and documentation are complete. The remaining core actions
-> are the public video and Google Form; P1 e2e/security is a bonus layer.
+> are the public video and Google Form; PR-hygiene/security is the remaining
+> bonus layer.
 
 - Problem statement: [Katomarans Problem Statement](<docs/Katomarans Problem Statement.pdf>)
 - Repository: https://github.com/mdaashir/KatomaranHackathon
@@ -277,9 +278,11 @@ GitHub Actions runs `.github/workflows/ci.yml`:
 - Mypy (non-blocking while the type baseline is cleaned up).
 - Pytest with an 85% coverage gate and uploaded JUnit/coverage artifacts.
 - CPU and GPU Docker image builds with GitHub Actions layer cache.
+- E2E: the trimmed fixture is processed twice (re-ID check), then an RTSP smoke
+  runs through MediaMTX with a 300-frame flush check.
 
-The trimmed e2e fixture, RTSP smoke test and PR-hygiene/security workflows are
-the next P1/P3 branches.
+The PR-hygiene and security/release workflows are the next P3 branches. The
+API/UI e2e assertions arrive with P2.
 
 ## Business rules implemented
 

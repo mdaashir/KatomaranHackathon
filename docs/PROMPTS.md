@@ -676,6 +676,48 @@ GPU image build still needs a green CI run.
 
 ---
 
+## 2026-11-12 — P1 e2e fixture and RTSP smoke
+
+### Prompt
+
+> successfully merged the pr, deleted the branch in remote, along with a pr raised by dependencebot. start proceeding next make sure you always following the agents.md
+
+**Purpose:** complete the P1 e2e branch: a committed trimmed fixture, DB/image/
+log verification, and a real MediaMTX RTSP smoke test in CI.
+
+**What the model did:**
+
+1. Trimmed the first front-entry clip to a 3.04 s / 76-frame, 603 KB fixture.
+2. Added isolated file and RTSP configs, expected-count files and a
+   `tests/e2e/verify_outputs.py` that runs inside the app container.
+3. Added `tests/e2e/run_e2e.sh`: file run twice (re-ID), then MediaMTX plus an
+   ffmpeg publisher looping the fixture, with a 300-frame RTSP run and exits
+   flushed.
+4. Added `init-dirs` to compose so the non-root app can write bind-mounted
+   data/logs, plus a root cleanup helper in the e2e script.
+5. Added the `e2e` CI job, wired after `build`, with CPU image cache and
+   artifact upload.
+6. Updated README/PLAN/DEVOPS/FEATURES and the e2e README.
+
+**Problems solved:**
+
+- The first RTSP window of 150 frames ended before the track confirmed; 300
+  frames gives two complete visits.
+- `jrottenberg/ffmpeg` uses ffmpeg as its entrypoint, so `sh -c` was invalid;
+  the override now passes ffmpeg arguments directly.
+- Bind-mounted data/logs are owned by UID 10001; `init-dirs` chowns them and a
+  root helper cleans previous runs. The verifier runs inside the app container
+  so SQLite integrity checks have the same permissions as the writer.
+- `docker compose run` in Compose 5.7 has no `--no-build`; removed it.
+
+**Validated:** file e2e 1 unique / 2 visits / 2 entry+exit / 0 open; RTSP e2e
+1 unique / 2 visits / 2 entry+exit / 0 open; ruff/format clean; 216 tests; compose
+and YAML valid.
+
+**Remaining:** PR-hygiene/security workflows and P2 API/UI assertions.
+
+---
+
 ## Template for future phases
 
 ```markdown
