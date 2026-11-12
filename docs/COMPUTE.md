@@ -448,6 +448,22 @@ run in shorter segments or restart the process (PLAN R13).
 The per-stage measured rows in §6–§9 and the full-run rows above are the
 authoritative numbers; the original ranges remain as planning context.
 
+### Docker images (P1, 2026-11-12)
+
+| Target | Size | Notes |
+|---|---:|---|
+| CPU | 2.23 GB | `python:3.11-slim-bookworm`, uv-synced CPU extras, Torch CPU, ONNX Runtime CPU, headless OpenCV |
+| GPU | pending build | CUDA 12.8 runtime base, uv-synced GPU extras, Torch cu128, ONNX Runtime GPU 1.22 |
+
+- Cold CPU build: ~15 minutes on this machine; a source-only rebuild is ~20
+  seconds with the dependency layer cached.
+- Model volume: 181 MB (6.2 MB YOLO + 174 MB ArcFace); first-start download and
+  verification took 101.8 s.
+- Container smoke (`imgsz=1280`, 30 frames): 1 unique, 1 entry, 1 exit, 0 open
+  on a clean output DB; 29.5 s including model load.
+- The image runs as UID 10001, uses `init: true`, `SIGTERM`, and a 30 s stop
+  grace period. No model weights, videos, logs or DB are baked in.
+
 ---
 
 ## 12. Energy and thermal notes

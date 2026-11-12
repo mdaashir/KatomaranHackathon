@@ -1,16 +1,22 @@
 # Docker, CI & Release Requirements (P1 core, P3 extras)
 
+> **Status (2026-11-12):** P1 Docker/compose implemented and the CPU image
+> smoke-tested end to end. `ci/core-workflow` and the e2e fixture/workflow are
+> the next P1 branches; security/release workflows remain P3.
+
 ## 1. Docker
 
 ### Files
 
 ```
 Dockerfile                  # multi-stage: targets `cpu` (default) and `gpu`
-ui/Dockerfile               # slim image for Streamlit (P2)
-docker-compose.yml          # app (+ ui) (+ mediamtx under profile rtsp-test)
-docker-compose.gpu.yml      # override: CUDA image + GPU reservation
-.dockerignore  .env.example  Makefile
-scripts/download_models.py  # idempotent; used by the container and by CI
+entrypoint.sh               # root entrypoint: model bootstrap, then exec
+docker-compose.yml          # app (+ optional mediamtx under profile rtsp-test)
+docker-compose.gpu.yml      # override: GPU target + reservation
+.dockerignore
+pyproject.toml  uv.lock    # authoritative dependency groups and lockfile
+requirements.txt           # compatibility fallback for pip-only environments
+scripts/download_models.py # idempotent; used by the container and by CI
 ```
 
 ### Efficiency rules
@@ -19,17 +25,18 @@ scripts/download_models.py  # idempotent; used by the container and by CI
   stage copies only the venv and the source. `python:3.11-slim` base (match
   the version CI tests).
 - Copy dependency manifests first, source last, so code edits don't bust the
-  dependency layer. Use BuildKit cache mounts for pip.
-- Pinned, locked dependencies. Split `requirements/` into `base`, `ui`, `dev`
-  so the runtime and UI images don't carry test tooling.
+  dependency layer. Use BuildKit/uv cache mounts.
+- Pinned dependencies in `pyproject.toml` with `cpu`, `gpu` and `ui` extras,
+  `dev` in a dependency group, and `uv.lock`; `requirements.txt` is the pip
+  fallback only.
 - `opencv-python-headless` (no GUI libs). CPU image uses CPU-only PyTorch
-  (`--extra-index-url https://download.pytorch.org/whl/cpu`) and
-  `onnxruntime`; the GPU target uses a CUDA runtime base and
-  `onnxruntime-gpu`.
-- Run as a non-root user, `init: true`, `STOPSIGNAL SIGTERM`, a
-  `HEALTHCHECK` hitting `/health`, and `stop_grace_period: 30s` so the
-  pipeline can flush active tracks as exit events and close the DB cleanly.
-- Do not bake models, data, logs or inputs into the image. Model weights
+  and `onnxruntime`; the GPU target uses a CUDA runtime base, the cu128 Torch
+  wheel and `onnxruntime-gpu`.
+- Run as a non-root user, `init: true`, `STOPSIGNAL SIGTERM`, and a
+  `stop_grace_period: 30s` so the pipeline can flush active tracks as exit
+  events and close the DB cleanly. P1 uses a model-readiness healthcheck; P2
+  switches it to `/health`.
+- Do not bake models, data, logs or clips into the image. Model weights
   (InsightFace, YOLO) download on first start into a **named volume**; the
   download script is idempotent and verifies files exist before starting.
 - Record the final image sizes and build time in `docs/COMPUTE.md` and the
@@ -37,20 +44,18 @@ scripts/download_models.py  # idempotent; used by the container and by CI
 
 ### Compose
 
-- Services: `app` (API + pipeline, port 8000), `ui` (Streamlit, port 8501,
-  depends on `app` being healthy), optional `mediamtx` plus an ffmpeg
-  publisher that loops a sample clip (profile `rtsp-test`) for local RTSP
-  testing.
-- Volumes: `./data`, `./logs`, `./inputs` bind mounts so outputs are visible on
-  the host; `models` named volume.
+- Services: `app` (P1 headless pipeline; P2 API + pipeline, port 8000),
+  optional `mediamtx` plus an ffmpeg publisher that loops a sample clip
+  (profile `rtsp-test`) for local RTSP testing.
+- Volumes: `./data`, `./logs`, `./src/video` bind mounts so the clips and
+  outputs are visible on the host; `models` named volume.
 - Config through env vars (`CONFIG_PATH`, `API_URL`, `LOG_LEVEL`, `RTSP_URL`)
-  with `.env.example` committed and `.env` ignored. Secrets are never baked
+  with defaults in compose. No `.env` file is required; secrets are never baked
   into images or printed in logs.
 - One-command start: `docker compose up --build`. Headless run (interview
   mode): `docker compose run --rm app python main.py --config config.json`.
   GPU: `docker compose -f docker-compose.yml -f docker-compose.gpu.yml up`.
-- `Makefile` mirrors CI so local and CI behave the same: `make lint test
-  build e2e up down`.
+- Use `uv` for local dependencies and Docker builds; no Makefile is required.
 
 ## 2. CI workflows (`.github/workflows/`)
 
@@ -148,7 +153,7 @@ goes red, fixing it takes priority over new features.
 ## 4. Build order (one branch and PR each)
 
 1. `chore/dockerfile-and-compose` — headless image, compose, `.dockerignore`,
-   `download_models.py`.
+   root `entrypoint.sh`, `download_models.py`.
 2. `ci/core-workflow` — `ci.yml` with lint, test, build (add this as early as
    there is code to test, so later PRs are verified).
 3. `test/e2e-fixture-and-verify` — trimmed fixture, `verify_outputs.py`, e2e

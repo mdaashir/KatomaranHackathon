@@ -25,5 +25,5 @@ points with the InsightFace landmark model instead.
 To download and verify every model:
 
 ```powershell
-.venv\Scripts\python.exe scripts\download_models.py
+uv run --no-sync python scripts\download_models.py
 ```

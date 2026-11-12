@@ -1,5 +1,9 @@
 # Frontend & API Requirements (P2 — bonus layer)
 
+> **Status (2026-11-12):** P2 not started. The P0 pipeline and P1 Docker layer
+> are the current priorities; this document is the implementation contract for
+> the API/UI follow-up.
+
 **Status of the requirement:** the problem statement says a frontend "is not
 required, but including one will be considered an added advantage". It does
 not ask for a CLI either; the system is driven by `config.json` and a video
@@ -19,10 +23,10 @@ Streamlit wins on time and risk. Its two weak spots are handled like this:
   embeds it with an `<img src=...>` inside `st.components.v1.html`, so the
   browser pulls frames directly and Streamlit never re-runs per frame. Metrics
   and activity feed refresh with `st.fragment(run_every=...)`.
-- **"Process all files in a folder":** a server-side folder picker over a
-  mounted `inputs/` directory (dropdown/tree populated by `GET /inputs`) plus a
-  "Process all in folder" button. Multi-file drag-and-drop covers browser-side
-  selection.
+- **"Process all files in a folder":** a server-side folder picker over the
+  mounted `src/video/` directory (dropdown/tree populated by `GET /videos`)
+  plus a "Process all in folder" button. Multi-file drag-and-drop covers
+  browser-side selection.
 
 ### Architecture
 
@@ -43,8 +47,8 @@ Browser ── Streamlit (ui/) ──HTTP──▶ FastAPI (src/api) ──▶ p
 | Method & path | Purpose |
 |---|---|
 | `GET /health` | liveness + pipeline state |
-| `POST /upload` | multipart, one or many video files → saved to `inputs/` |
-| `GET /inputs` | list files/folders under the inputs root (traversal-safe) |
+| `POST /upload` | multipart, one or many video files → saved to `src/video/` |
+| `GET /videos` | list files/folders under `src/video/` (traversal-safe) |
 | `POST /jobs` | start a job: `{type: file\|folder\|rtsp, path\|url}` |
 | `GET /jobs`, `GET /jobs/{id}` | queue, status, per-file progress |
 | `POST /jobs/{id}/stop` | graceful stop (flushes active tracks as exits) |
@@ -75,7 +79,7 @@ Browser ── Streamlit (ui/) ──HTTP──▶ FastAPI (src/api) ──▶ p
 2. **Sources & Jobs**
    - Drag-and-drop area for one or many video files (validate extension and
      size limit; show errors inline).
-   - **Process folder:** choose a folder under `inputs/` and process every
+   - **Process folder:** choose a folder under `src/video/` and process every
      video in it (recursive, sorted, sequential). Per-file status and progress
      bar, continue on failure, summary at the end (entries/exits/new IDs per
      file).
@@ -129,7 +133,7 @@ session" (with confirmation) starts a fresh count without deleting history.
   slow, frames are dropped for the viewer only.
 - RTSP credentials are masked in every log line, API response and UI view.
 - Upload hardening: extension allow-list, size limit, safe filenames,
-  path-traversal protection on `/inputs`, `/images`, and job paths.
+  path-traversal protection on `/videos`, `/images`, and job paths.
 - API CORS limited to the UI origin; no auth required for the hackathon, but
   document that ports should not be exposed publicly.
 - Basic tests: API contract tests (pytest + `TestClient`), and a Streamlit

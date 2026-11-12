@@ -84,7 +84,8 @@ UI/API rules that always apply:
 ```
 config.json
 main.py                     # composition root: wires dependencies, runs pipeline
-Dockerfile  docker-compose.yml  .dockerignore  .env.example  Makefile
+pyproject.toml  uv.lock  .python-version
+Dockerfile  docker-compose.yml  docker-compose.gpu.yml  .dockerignore  entrypoint.sh
 .github/                    # workflows/, dependabot.yml
 ui/                         # Streamlit app (P2) — talks to src/api only
 src/

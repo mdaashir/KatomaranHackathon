@@ -10,7 +10,7 @@ font, and keep `samples/` open in Explorer or the editor.
 
 1. Activate the environment and confirm the GPU:
    ```powershell
-   .venv\Scripts\python.exe -c "import torch; print('cuda', torch.cuda.is_available())"
+   uv run --no-sync python -c "import torch; print('cuda', torch.cuda.is_available())"
    ```
 2. Confirm the models exist:
    ```powershell
@@ -51,7 +51,7 @@ Scroll to the Mermaid diagram, then open `docs/ARCHITECTURE.md`.
 Show the README quick start and run the GPU check.
 
 ```powershell
-.venv\Scripts\python.exe -c "import torch, onnxruntime as ort; print(torch.cuda.is_available(), ort.get_available_providers())"
+uv run --no-sync python -c "import torch, onnxruntime as ort; print(torch.cuda.is_available(), ort.get_available_providers())"
 ```
 
 > “Models are downloaded and SHA256-verified by `scripts/download_models.py`;
@@ -63,7 +63,7 @@ Show the README quick start and run the GPU check.
 Run one clip into the demo database:
 
 ```powershell
-.venv\Scripts\python.exe main.py --config docs/demo_config.json `
+uv run --no-sync python main.py --config docs/demo_config.json `
   --start-time 2025-06-20T18:39:03Z --max-frames 300
 ```
 
@@ -71,7 +71,7 @@ Then show:
 
 ```powershell
 Get-Content logs\demo\events.log -Tail 12
-.venv\Scripts\python.exe main.py --config docs/demo_config.json --report
+uv run --no-sync python main.py --config docs/demo_config.json --report
 ```
 
 Open one entry image and one exit image from `logs\demo\entries\` and
@@ -94,8 +94,8 @@ Open `samples/README.md`, `summary.json`, `events.log` and
 ## 3:45–4:30 — Verification and resilience
 
 ```powershell
-.venv\Scripts\python.exe scripts\verify_outputs.py --config docs/demo_config.json
-.venv\Scripts\python.exe -m pytest -q
+uv run --no-sync python scripts\verify_outputs.py --config docs/demo_config.json
+uv run --no-sync python -m pytest -q
 ```
 
 > “The verifier checks SQLite integrity, foreign keys, exactly one entry and one
@@ -105,7 +105,7 @@ Open `samples/README.md`, `summary.json`, `events.log` and
 Show the RTSP command and explain Ctrl+C:
 
 ```powershell
-.venv\Scripts\python.exe main.py --source rtsp --rtsp-url rtsp://camera/stream
+uv run --no-sync python main.py --source rtsp --rtsp-url rtsp://camera/stream
 ```
 
 > “At the interview I switch the source to RTSP. The source reconnects with

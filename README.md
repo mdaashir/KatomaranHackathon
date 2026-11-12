@@ -72,7 +72,7 @@ This installs the CUDA 12.8 PyTorch build, ONNX Runtime GPU 1.22, the remaining
 dependencies, and the SHA256-verified models. Verify:
 
 ```powershell
-.venv\Scripts\python.exe -c "import torch, onnxruntime as ort; print(torch.cuda.is_available(), ort.get_available_providers())"
+uv run --no-sync python -c "import torch, onnxruntime as ort; print(torch.cuda.is_available(), ort.get_available_providers())"
 ```
 
 ### CPU setup
@@ -80,9 +80,13 @@ dependencies, and the SHA256-verified models. Verify:
 ```powershell
 uv python install 3.11
 uv venv --python 3.11
-uv pip install -r requirements.txt
-.venv\Scripts\python.exe scripts\download_models.py
+uv sync --extra cpu
+uv run --no-sync python scripts\download_models.py
 ```
+
+`pyproject.toml` + `uv.lock` are the authoritative dependency definition.
+`requirements.txt` is kept as a compact pip fallback for environments without
+`uv`.
 
 Set `detector.device` and `recognition.device` to `cpu` in `config.json` to
 force CPU execution; `auto` prefers CUDA when available.
@@ -91,24 +95,57 @@ force CPU execution; `auto` prefers CUDA when available.
 
 ```powershell
 # One clip (explicit start time avoids the file mtime)
-.venv\Scripts\python.exe main.py --source file `
+uv run --no-sync python main.py --source file `
   --path src/video/record_20250620_183903.mp4 `
   --start-time 2025-06-20T18:39:03Z --max-frames 300
 
 # All front-entry clips (filename timestamps + per-clip flush)
-.venv\Scripts\python.exe main.py --source folder --path src/video
+uv run --no-sync python main.py --source folder --path src/video
 
 # Interview RTSP stream
-.venv\Scripts\python.exe main.py --source rtsp --rtsp-url rtsp://camera/stream
+uv run --no-sync python main.py --source rtsp --rtsp-url rtsp://camera/stream
 
 # Read the DB summary without processing
-.venv\Scripts\python.exe main.py --report
+uv run --no-sync python main.py --report
 ```
 
 Ctrl+C (or SIGTERM) stops the stream, flushes every open track as an exit, and
 writes a `SUMMARY` line. Use `--verify-db` to log `PRAGMA integrity_check` at
 startup. `--start-time`, `--source`, `--path` and `--rtsp-url` override the
 config at runtime.
+
+## Docker
+
+The CPU image is the default; the GPU target is built from the same multi-stage
+Dockerfile. Models are not baked into the image: they download into the
+`models` named volume on first start. The measured CPU image is **2.23 GB**;
+the model volume is 181 MB and the first download takes about 100 s here.
+
+```powershell
+docker compose up --build
+```
+
+The container reads the single `config.json` and processes
+`src/video/record_*.mp4`; compose mounts `src/video` read-only,
+`data/` and `logs/` are writable for inspection. The API and Streamlit UI are
+P2 and are not started by this compose file yet.
+
+```powershell
+# GPU (NVIDIA Container Toolkit required)
+docker compose -f docker-compose.yml -f docker-compose.gpu.yml up --build
+
+# One short headless run
+docker compose run --rm app python main.py `
+  --config config.json --source file `
+  --path /app/src/video/record_20250620_183903.mp4 `
+  --start-time 2025-06-20T18:39:03Z --max-frames 300
+
+# Stop
+docker compose down
+```
+
+The image runs as a non-root user with `init: true` and a 30-second stop grace
+period so active tracks flush as exits.
 
 ## Output layout
 
@@ -202,7 +239,7 @@ re-identification, `faces.csv`, `visits.csv`, `events.csv`, an `events.log`
 excerpt and `summary.json`.
 
 ```powershell
-.venv\Scripts\python.exe scripts\export_samples.py --config config.json
+uv run --no-sync python scripts\export_samples.py --config config.json
 ```
 
 ## Dashboard (optional)
@@ -211,7 +248,7 @@ A read-only HTML snapshot of the current database and recent event crops. It
 does not import the pipeline and adds no dependency:
 
 ```powershell
-.venv\Scripts\python.exe scripts\dashboard.py --config config.json --open
+uv run --no-sync python scripts\dashboard.py --config config.json --open
 ```
 
 Open [`samples/dashboard/index.html`](samples/dashboard/index.html) for the
@@ -220,8 +257,8 @@ snapshot generated from the 22-clip run.
 ## Tests and verification
 
 ```powershell
-.venv\Scripts\python.exe -m pytest
-.venv\Scripts\python.exe scripts\verify_outputs.py --config config.json
+uv run --no-sync python -m pytest
+uv run --no-sync python scripts\verify_outputs.py --config config.json
 ```
 
 `pytest` covers the registry/re-ID matching, the entry/exit state machine, the
