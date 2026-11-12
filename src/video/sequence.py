@@ -30,9 +30,9 @@ def parse_clip_start(path: str | Path) -> datetime | None:
     if match is None:
         return None
     date_part, time_part = match.groups()
-    return datetime.strptime(
-        f"{date_part}{time_part}", "%Y%m%d%H%M%S"
-    ).replace(tzinfo=timezone.utc)
+    return datetime.strptime(f"{date_part}{time_part}", "%Y%m%d%H%M%S").replace(
+        tzinfo=timezone.utc
+    )
 
 
 class FileSequenceSource:
@@ -68,9 +68,7 @@ class FileSequenceSource:
             path for path in self._directory.glob(glob) if path.is_file()
         )
         if not self._paths:
-            raise VideoSourceError(
-                f"{self._directory}: no files matched '{glob}'"
-            )
+            raise VideoSourceError(f"{self._directory}: no files matched '{glob}'")
 
         self._source_id = source_id or self._directory.name
         self._start_times = dict(start_times or {})

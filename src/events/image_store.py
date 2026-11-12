@@ -70,12 +70,10 @@ class ImageStore:
         date_part = timestamp.strftime("%Y-%m-%d")
         stamp = timestamp.strftime("%Y-%m-%dT%H-%M-%S.%f")[:-3] + "Z"
         face_part = f"face{face_id}" if face_id is not None else "faceanon"
-        filename = (
-            f"{stamp}_{face_part}_visit{visit_id}_track{track_id}.jpg"
+        filename = f"{stamp}_{face_part}_visit{visit_id}_track{track_id}.jpg"
+        folder = (
+            self._root / ("entries" if event_type == "entry" else "exits") / date_part
         )
-        folder = self._root / (
-            "entries" if event_type == "entry" else "exits"
-        ) / date_part
         folder.mkdir(parents=True, exist_ok=True)
         path = folder / filename
         temporary = path.with_name(path.name + ".tmp")
@@ -104,9 +102,7 @@ class ImageStore:
         if crop.ndim == 2:
             crop = cv2.cvtColor(crop, cv2.COLOR_GRAY2BGR)
         if crop.ndim != 3 or crop.shape[2] != 3:
-            raise ImageStoreError(
-                f"expected a BGR crop, got shape {crop.shape}"
-            )
+            raise ImageStoreError(f"expected a BGR crop, got shape {crop.shape}")
 
         height, width = crop.shape[:2]
         interpolation = (

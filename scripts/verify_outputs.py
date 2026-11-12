@@ -101,9 +101,7 @@ def main(argv: list[str] | None = None) -> int:
     for row in event_images:
         if not Path(row["image_path"]).is_file():
             missing_images += 1
-            errors.append(
-                f"event {row['event_id']} image missing: {row['image_path']}"
-            )
+            errors.append(f"event {row['event_id']} image missing: {row['image_path']}")
     checks["event_images"] = len(event_images)
     checks["missing_event_images"] = missing_images
 
@@ -119,9 +117,7 @@ def main(argv: list[str] | None = None) -> int:
             path = row[key]
             if path is not None and not Path(path).is_file():
                 missing_visit_images += 1
-                errors.append(
-                    f"visit {row['visit_id']} image missing: {path}"
-                )
+                errors.append(f"visit {row['visit_id']} image missing: {path}")
     checks["missing_visit_images"] = missing_visit_images
 
     entries = connection.execute(

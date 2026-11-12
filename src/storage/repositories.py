@@ -9,7 +9,6 @@ from __future__ import annotations
 import sqlite3
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any
 
 from src.storage.db import Database
 
@@ -41,9 +40,7 @@ def utc_iso(moment: datetime) -> str:
 
 def _validate_vector(vector: bytes, dim: int) -> None:
     if not isinstance(vector, (bytes, bytearray)):
-        raise StorageError(
-            f"vector: expected bytes, got {type(vector).__name__}"
-        )
+        raise StorageError(f"vector: expected bytes, got {type(vector).__name__}")
     if dim < 1:
         raise StorageError("dim: must be at least 1")
     if len(vector) != dim * 4:
@@ -54,9 +51,7 @@ def _validate_vector(vector: bytes, dim: int) -> None:
 
 def _validate_quality(quality: float) -> None:
     if not 0.0 <= quality <= 1.0:
-        raise StorageError(
-            f"quality: expected a value between 0 and 1, got {quality}"
-        )
+        raise StorageError(f"quality: expected a value between 0 and 1, got {quality}")
 
 
 @dataclass(frozen=True)
@@ -132,9 +127,7 @@ def _row_to_visit(row: sqlite3.Row) -> VisitRecord:
             else None
         ),
         exit_image_path=(
-            str(row["exit_image_path"])
-            if row["exit_image_path"] is not None
-            else None
+            str(row["exit_image_path"]) if row["exit_image_path"] is not None else None
         ),
     )
 
@@ -210,29 +203,37 @@ class FaceRepository:
     def get(self, face_id: int) -> FaceRecord | None:
         """Return a face by ID, or ``None``."""
 
-        row = self._db.connect().execute(
-            "SELECT * FROM faces WHERE face_id = ?", (face_id,)
-        ).fetchone()
+        row = (
+            self._db.connect()
+            .execute("SELECT * FROM faces WHERE face_id = ?", (face_id,))
+            .fetchone()
+        )
         return _row_to_face(row) if row is not None else None
 
     def count_active(self) -> int:
         """Return the unique-visitor count derived from the database."""
 
-        row = self._db.connect().execute(
-            "SELECT COUNT(*) FROM faces WHERE is_active = 1"
-        ).fetchone()
+        row = (
+            self._db.connect()
+            .execute("SELECT COUNT(*) FROM faces WHERE is_active = 1")
+            .fetchone()
+        )
         return int(row[0])
 
     def list_embeddings(self) -> list[tuple[int, bytes, int, float]]:
         """Return ``(face_id, vector, dim, quality)`` for every embedding."""
 
-        rows = self._db.connect().execute(
-            """
+        rows = (
+            self._db.connect()
+            .execute(
+                """
             SELECT face_id, vector, dim, quality
             FROM embeddings
             ORDER BY face_id, embedding_id
             """
-        ).fetchall()
+            )
+            .fetchall()
+        )
         return [
             (
                 int(row["face_id"]),
@@ -246,10 +247,14 @@ class FaceRepository:
     def count_embeddings(self, face_id: int) -> int:
         """Return the number of stored embeddings for a face."""
 
-        row = self._db.connect().execute(
-            "SELECT COUNT(*) FROM embeddings WHERE face_id = ?",
-            (face_id,),
-        ).fetchone()
+        row = (
+            self._db.connect()
+            .execute(
+                "SELECT COUNT(*) FROM embeddings WHERE face_id = ?",
+                (face_id,),
+            )
+            .fetchone()
+        )
         return int(row[0])
 
     def add_embedding(
@@ -331,13 +336,9 @@ class VisitRepository:
         if track_id < 0:
             raise StorageError("track_id: must not be negative")
         if face_id is None and not is_anonymous:
-            raise StorageError(
-                "is_anonymous: must be true when face_id is not set"
-            )
+            raise StorageError("is_anonymous: must be true when face_id is not set")
         if face_id is not None and is_anonymous:
-            raise StorageError(
-                "is_anonymous: must be false when face_id is set"
-            )
+            raise StorageError("is_anonymous: must be false when face_id is set")
 
         timestamp = utc_iso(entry_at)
         with self._db.transaction() as connection:
@@ -363,23 +364,29 @@ class VisitRepository:
     def get(self, visit_id: int) -> VisitRecord | None:
         """Return a visit by ID, or ``None``."""
 
-        row = self._db.connect().execute(
-            "SELECT * FROM visits WHERE visit_id = ?", (visit_id,)
-        ).fetchone()
+        row = (
+            self._db.connect()
+            .execute("SELECT * FROM visits WHERE visit_id = ?", (visit_id,))
+            .fetchone()
+        )
         return _row_to_visit(row) if row is not None else None
 
     def find_open_by_face(self, face_id: int) -> VisitRecord | None:
         """Return the newest open visit for a Face ID, or ``None``."""
 
-        row = self._db.connect().execute(
-            """
+        row = (
+            self._db.connect()
+            .execute(
+                """
             SELECT * FROM visits
             WHERE face_id = ? AND status = 'open'
             ORDER BY visit_id DESC
             LIMIT 1
             """,
-            (face_id,),
-        ).fetchone()
+                (face_id,),
+            )
+            .fetchone()
+        )
         return _row_to_visit(row) if row is not None else None
 
     def close(
@@ -402,9 +409,7 @@ class VisitRepository:
             if row["status"] != "open":
                 raise StorageError(f"visit {visit_id} is already closed")
             if timestamp < str(row["entry_at"]):
-                raise StorageError(
-                    f"visit {visit_id}: exit_at precedes entry_at"
-                )
+                raise StorageError(f"visit {visit_id}: exit_at precedes entry_at")
 
             connection.execute(
                 """
@@ -418,25 +423,27 @@ class VisitRepository:
     def count_open(self) -> int:
         """Return the number of visits still open."""
 
-        row = self._db.connect().execute(
-            "SELECT COUNT(*) FROM visits WHERE status = 'open'"
-        ).fetchone()
+        row = (
+            self._db.connect()
+            .execute("SELECT COUNT(*) FROM visits WHERE status = 'open'")
+            .fetchone()
+        )
         return int(row[0])
 
     def count_all(self) -> int:
         """Return the total number of visits."""
 
-        row = self._db.connect().execute(
-            "SELECT COUNT(*) FROM visits"
-        ).fetchone()
+        row = self._db.connect().execute("SELECT COUNT(*) FROM visits").fetchone()
         return int(row[0])
 
     def count_anonymous(self) -> int:
         """Return the number of anonymous visits."""
 
-        row = self._db.connect().execute(
-            "SELECT COUNT(*) FROM visits WHERE is_anonymous = 1"
-        ).fetchone()
+        row = (
+            self._db.connect()
+            .execute("SELECT COUNT(*) FROM visits WHERE is_anonymous = 1")
+            .fetchone()
+        )
         return int(row[0])
 
 
@@ -622,8 +629,7 @@ class EventRepository:
                 return int(row["face_id"]) == face_id
 
             connection.execute(
-                "UPDATE visits SET face_id = ?, is_anonymous = 0 "
-                "WHERE visit_id = ?",
+                "UPDATE visits SET face_id = ?, is_anonymous = 0 WHERE visit_id = ?",
                 (face_id, visit_id),
             )
             connection.execute(
@@ -636,10 +642,14 @@ class EventRepository:
     def visit_face(self, visit_id: int) -> int | None:
         """Return the Face ID linked to a visit, or ``None``."""
 
-        row = self._db.connect().execute(
-            "SELECT face_id FROM visits WHERE visit_id = ?",
-            (visit_id,),
-        ).fetchone()
+        row = (
+            self._db.connect()
+            .execute(
+                "SELECT face_id FROM visits WHERE visit_id = ?",
+                (visit_id,),
+            )
+            .fetchone()
+        )
         if row is None:
             raise StorageError(f"visit {visit_id} does not exist")
         return int(row["face_id"]) if row["face_id"] is not None else None
@@ -672,13 +682,9 @@ class EventRepository:
         if video_time_s < 0:
             raise StorageError("video_time_s: must not be negative")
         if face_id is None and not is_anonymous:
-            raise StorageError(
-                "is_anonymous: must be true when face_id is not set"
-            )
+            raise StorageError("is_anonymous: must be true when face_id is not set")
         if face_id is not None and is_anonymous:
-            raise StorageError(
-                "is_anonymous: must be false when face_id is set"
-            )
+            raise StorageError("is_anonymous: must be false when face_id is set")
 
         cursor = connection.execute(
             """
@@ -707,18 +713,24 @@ class EventRepository:
     def get(self, event_id: int) -> EventRecord | None:
         """Return an event by ID, or ``None``."""
 
-        row = self._db.connect().execute(
-            "SELECT * FROM events WHERE event_id = ?", (event_id,)
-        ).fetchone()
+        row = (
+            self._db.connect()
+            .execute("SELECT * FROM events WHERE event_id = ?", (event_id,))
+            .fetchone()
+        )
         return _row_to_event(row) if row is not None else None
 
     def list_for_visit(self, visit_id: int) -> list[EventRecord]:
         """Return all events for a visit in insertion order."""
 
-        rows = self._db.connect().execute(
-            "SELECT * FROM events WHERE visit_id = ? ORDER BY event_id",
-            (visit_id,),
-        ).fetchall()
+        rows = (
+            self._db.connect()
+            .execute(
+                "SELECT * FROM events WHERE visit_id = ? ORDER BY event_id",
+                (visit_id,),
+            )
+            .fetchall()
+        )
         return [_row_to_event(row) for row in rows]
 
     def count_by_type(self, event_type: str) -> int:
@@ -726,18 +738,24 @@ class EventRepository:
 
         if event_type not in _EVENT_TYPES:
             raise StorageError(f"event_type: unknown '{event_type}'")
-        row = self._db.connect().execute(
-            "SELECT COUNT(*) FROM events WHERE event_type = ?",
-            (event_type,),
-        ).fetchone()
+        row = (
+            self._db.connect()
+            .execute(
+                "SELECT COUNT(*) FROM events WHERE event_type = ?",
+                (event_type,),
+            )
+            .fetchone()
+        )
         return int(row[0])
 
     def time_range(self) -> tuple[str | None, str | None]:
         """Return the first and last event timestamps, or ``(None, None)``."""
 
-        row = self._db.connect().execute(
-            "SELECT MIN(occurred_at), MAX(occurred_at) FROM events"
-        ).fetchone()
+        row = (
+            self._db.connect()
+            .execute("SELECT MIN(occurred_at), MAX(occurred_at) FROM events")
+            .fetchone()
+        )
         first = str(row[0]) if row[0] is not None else None
         last = str(row[1]) if row[1] is not None else None
         return first, last

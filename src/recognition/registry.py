@@ -89,9 +89,7 @@ class FaceRegistry:
         best_index = int(np.argmax(similarities))
         best_similarity = float(similarities[best_index])
         cutoff = (
-            self._config.similarity_threshold
-            if threshold is None
-            else float(threshold)
+            self._config.similarity_threshold if threshold is None else float(threshold)
         )
         if best_similarity >= cutoff:
             return MatchResult(int(self._face_ids[best_index]), best_similarity)

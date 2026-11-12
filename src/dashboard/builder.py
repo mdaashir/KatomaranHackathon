@@ -59,9 +59,7 @@ class DashboardData:
 
 def _utc_now() -> str:
     return (
-        datetime.now(timezone.utc)
-        .isoformat(timespec="seconds")
-        .replace("+00:00", "Z")
+        datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
     )
 
 
@@ -369,9 +367,7 @@ class DashboardBuilder:
                     event_type=str(row["event_type"]),
                     occurred_at=str(row["occurred_at"]),
                     face_id=(
-                        int(row["face_id"])
-                        if row["face_id"] is not None
-                        else None
+                        int(row["face_id"]) if row["face_id"] is not None else None
                     ),
                     visit_id=int(row["visit_id"]),
                     track_id=int(row["track_id"]),
@@ -401,9 +397,7 @@ class DashboardBuilder:
         return [
             DashboardVisit(
                 visit_id=int(row["visit_id"]),
-                face_id=(
-                    int(row["face_id"]) if row["face_id"] is not None else None
-                ),
+                face_id=(int(row["face_id"]) if row["face_id"] is not None else None),
                 track_id=int(row["track_id"]),
                 source_id=str(row["source_id"]),
                 entry_at=str(row["entry_at"]),

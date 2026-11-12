@@ -78,17 +78,10 @@ class QualityGate:
             1.0,
             sharpness / (2.0 * self._config.blur_threshold),
         )
-        score = (
-            0.4 * size_score
-            + 0.3 * confidence_score
-            + 0.3 * sharpness_score
-        )
+        score = 0.4 * size_score + 0.3 * confidence_score + 0.3 * sharpness_score
         return QualityResult(True, float(score), None, crop)
 
     def register_quality_ok(self, result: QualityResult) -> bool:
         """Return whether a passed result clears the registration bar."""
 
-        return (
-            result.passed
-            and result.score >= self._config.register_quality_threshold
-        )
+        return result.passed and result.score >= self._config.register_quality_threshold

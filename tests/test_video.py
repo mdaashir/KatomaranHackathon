@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from pathlib import Path
 
 import numpy as np
 import pytest
@@ -87,9 +86,7 @@ def test_file_sequence_marks_each_clip_boundary(make_video, tmp_path):
     assert frames[5].window_id == "record_20250620_184049.mp4"
 
     expected_second_start = datetime(2025, 6, 20, 18, 40, 49, tzinfo=UTC)
-    delta = abs(
-        (frames[5].absolute_time - expected_second_start).total_seconds()
-    )
+    delta = abs((frames[5].absolute_time - expected_second_start).total_seconds())
     assert delta < 0.1
 
 

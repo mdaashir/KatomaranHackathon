@@ -53,13 +53,9 @@ class ByteTrackAdapter:
 
     def _new_tracker(self) -> sv.ByteTrack:
         return sv.ByteTrack(
-            track_activation_threshold=(
-                self._config.track_activation_threshold
-            ),
+            track_activation_threshold=(self._config.track_activation_threshold),
             lost_track_buffer=self._config.lost_track_buffer,
-            minimum_matching_threshold=(
-                self._config.minimum_matching_threshold
-            ),
+            minimum_matching_threshold=(self._config.minimum_matching_threshold),
             frame_rate=self._frame_rate,
             minimum_consecutive_frames=1,
         )

@@ -105,9 +105,7 @@ def _flush_log(logging_setup) -> str:
     return logging_setup.events_log_path.read_text(encoding="utf-8")
 
 
-def test_entry_persists_image_visit_event_and_log(
-    db, logger, logging_setup
-):
+def test_entry_persists_image_visit_event_and_log(db, logger, logging_setup):
     event_id = logger.handle(_event(), _crop())
 
     visit = VisitRepository(db).get(1)
@@ -157,9 +155,7 @@ def test_anonymous_entry_can_be_linked_to_a_face(db, logger):
     assert entry.is_anonymous is False
 
 
-def test_exit_automatically_links_a_recognized_anonymous_visit(
-    db, logger
-):
+def test_exit_automatically_links_a_recognized_anonymous_visit(db, logger):
     logger.handle(_event(face_id=None, is_anonymous=True), _crop())
     logger.handle(
         _event("exit", face_id=2, is_anonymous=False, seconds=2.0),
@@ -174,9 +170,7 @@ def test_exit_automatically_links_a_recognized_anonymous_visit(
     assert visit.status == "closed"
 
 
-def test_exit_does_not_relink_an_already_linked_face(
-    db, logger, logging_setup
-):
+def test_exit_does_not_relink_an_already_linked_face(db, logger, logging_setup):
     logger.handle(_event(face_id=1), _crop())
     logger.handle(_event("exit", face_id=1, seconds=1.0), _crop())
 
@@ -230,9 +224,7 @@ def test_db_failure_removes_the_written_image(db, tmp_path, logging_setup):
     assert list((tmp_path / "images").rglob("*.jpg")) == []
 
 
-def test_exit_db_failure_removes_the_exit_image(
-    db, tmp_path, logging_setup
-):
+def test_exit_db_failure_removes_the_exit_image(db, tmp_path, logging_setup):
     image_store = ImageStore(_storage(tmp_path))
     real = EventRepository(db)
 

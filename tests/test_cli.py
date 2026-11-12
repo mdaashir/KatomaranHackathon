@@ -25,9 +25,7 @@ def test_parser_defaults():
 
 
 def test_start_time_is_parsed():
-    args = build_parser().parse_args(
-        ["--start-time", "2025-06-20T18:39:03Z"]
-    )
+    args = build_parser().parse_args(["--start-time", "2025-06-20T18:39:03Z"])
 
     assert args.start_time == datetime(2025, 6, 20, 18, 39, 3, tzinfo=timezone.utc)
 
@@ -66,9 +64,7 @@ def test_missing_path_is_rejected(write_config, config_dict):
         apply_overrides(config, args)
 
 
-def test_report_prints_db_summary(
-    write_config, config_dict, capsys
-):
+def test_report_prints_db_summary(write_config, config_dict, capsys):
     config_path = write_config(config_dict)
     config = load_config(config_path)
     database = Database(config.storage.db_path)
@@ -98,9 +94,7 @@ def test_missing_config_returns_two(tmp_path, capsys):
     assert "config error" in capsys.readouterr().err
 
 
-def test_missing_source_returns_one(
-    write_config, config_dict, capsys
-):
+def test_missing_source_returns_one(write_config, config_dict, capsys):
     config_path = write_config(config_dict)
 
     code = main(
