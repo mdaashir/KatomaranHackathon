@@ -364,10 +364,10 @@ standalone HTML snapshot. `samples/dashboard/index.html` is generated from the
   RTSP smoke test.
 - `ci/pr-checks` and `ci/security-and-release` follow.
 
-**Status (2026-11-12):** Docker/compose and the core `ci.yml` (ruff,
-non-blocking mypy, pytest at 85% coverage, CPU/GPU image builds) are
-implemented. The trimmed e2e fixture/RTSP smoke and PR-hygiene/security
-workflows remain. GPU image build is pending a green CI run.
+**Status (2026-11-12):** Docker/compose, core `ci.yml` and the file+RTSP e2e
+job are implemented. File e2e: 1 unique / 2 visits / 2 entries / 2 exits /
+0 open after two runs. RTSP e2e: 1 unique, 2 visits, balanced, 0 open through
+MediaMTX. PR-hygiene and security/release remain; API/UI assertions wait for P2.
 
 ---
 
