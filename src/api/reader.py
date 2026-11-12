@@ -7,7 +7,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 import re
 import sqlite3
-from urllib.parse import quote
 
 from src.config import AppConfig
 from src.counting import UniqueCounter
@@ -162,7 +161,7 @@ class ReadModel:
                         else None
                     ),
                     "is_anonymous": bool(row["is_anonymous"]),
-                    "image_url": self._image_url(str(row["image_path"])),
+                    "image_url": f"/images/{row['event_id']}",
                 }
             )
         return {"items": items, "total": int(total), "limit": limit, "offset": offset}
@@ -193,11 +192,24 @@ class ReadModel:
             ]
         return {"path": str(path), "lines": selected[-lines:]}
 
-    def image_path(self, relative: str) -> Path | None:
-        """Resolve a log-relative image path without traversal."""
+    def image_path(self, event_id: int) -> Path | None:
+        """Resolve the stored image for one event ID."""
 
+        if not self._db_path.is_file():
+            return None
+        connection = sqlite3.connect(str(self._db_path))
+        connection.row_factory = sqlite3.Row
+        try:
+            row = connection.execute(
+                "SELECT image_path FROM events WHERE event_id = ?",
+                (event_id,),
+            ).fetchone()
+        finally:
+            connection.close()
+        if row is None:
+            return None
         root = self._log_dir.resolve()
-        candidate = (root / relative).resolve()
+        candidate = Path(str(row["image_path"])).resolve()
         if not candidate.is_relative_to(root) or not candidate.is_file():
             return None
         return candidate
@@ -221,10 +233,3 @@ class ReadModel:
             .isoformat(timespec="seconds")
             .replace("+00:00", "Z")
         )
-
-    def _image_url(self, image_path: str) -> str | None:
-        try:
-            relative = Path(image_path).resolve().relative_to(self._log_dir.resolve())
-        except ValueError:
-            return None
-        return f"/images/{quote(relative.as_posix(), safe='/')}"

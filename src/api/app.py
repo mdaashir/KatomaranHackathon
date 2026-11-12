@@ -78,9 +78,9 @@ def create_app(
     ) -> dict[str, object]:
         return reader.log_tail(lines=lines, text=text, level=level)
 
-    @app.get("/images/{path:path}")
-    def image(path: str) -> FileResponse:
-        resolved = reader.image_path(path)
+    @app.get("/images/{event_id}")
+    def image(event_id: int) -> FileResponse:
+        resolved = reader.image_path(event_id)
         if resolved is None:
             raise HTTPException(status_code=404, detail="image not found")
         return FileResponse(resolved, media_type="image/jpeg")

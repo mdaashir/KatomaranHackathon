@@ -117,11 +117,11 @@ def test_event_image_is_served(app):
     assert response.headers["content-type"].startswith("image/jpeg")
 
 
-def test_image_traversal_is_rejected(app):
+def test_missing_event_image_is_404(app):
     client = TestClient(app)
 
-    assert client.get("/images/../faces.db").status_code == 404
-    assert client.get("/images/%2e%2e/faces.db").status_code == 404
+    assert client.get("/images/999999").status_code == 404
+    assert client.get("/images/not-an-int").status_code == 422
 
 
 def test_log_tail(app):

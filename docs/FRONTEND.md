@@ -59,7 +59,7 @@ Browser ── Streamlit (ui/) ──HTTP──▶ FastAPI (src/api) ──▶ p
 | `GET /visitors`, `GET /visitors/{id}` | registered faces + visit history |
 | `GET /events` | filter by date, type, face ID; paged |
 | `GET /logs/tail` | tail of `events.log`, filter by level/text |
-| `GET /images/{path}` | serve cropped face images (traversal-safe) |
+| `GET /images/{event_id}` | serve cropped face images by event ID (DB-resolved) |
 | `GET /config`, `PUT /config` | effective config; apply runtime overrides |
 | `POST /config/reset` | drop overrides, back to `config.json` |
 | `POST /config/save-default` | explicitly write overrides into `config.json` |
