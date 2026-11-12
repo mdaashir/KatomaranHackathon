@@ -5,14 +5,17 @@ visitor counting for a mall front-entry camera. It accepts a video file, a
 folder of clips, or an RTSP stream, and logs exactly one entry and one exit per
 visit.
 
-> **Status: final submission (Phase 9).** The pipeline, validation pass and
-> sample outputs are complete. Record the walkthrough in
-> [`docs/DEMO.md`](docs/DEMO.md) and replace `VIDEO_URL` below before submitting.
+> **Status: submission-ready (Phase 10 + compliance audit).** The pipeline,
+> samples and documentation are complete. The only remaining actions are
+> recording the walkthrough in [`docs/DEMO.md`](docs/DEMO.md), replacing
+> `VIDEO_URL`, and submitting the Google Form. See
+> [`docs/COMPLIANCE.md`](docs/COMPLIANCE.md).
 
 - Problem statement: [Katomarans Problem Statement](<docs/Katomarans Problem Statement.pdf>)
 - Repository: https://github.com/mdaashir/KatomaranHackathon
 - Samples: [`samples/README.md`](samples/README.md)
 - Plan: [`docs/PLAN.md`](docs/PLAN.md)
+- Compliance audit: [`docs/COMPLIANCE.md`](docs/COMPLIANCE.md)
 
 ## Demo video
 
@@ -184,6 +187,7 @@ Validated on an RTX 3050 6 GB with `imgsz=1600`, `frame_skip=3`:
 | Events | 118 |
 | One clip incl. model load | 83.5 s |
 | Full 22-clip useful time | ~27 min |
+| Effective throughput | ~21 fps against a 25 fps source |
 | 4K crowd stress | 240 frames, 32 visits, 0 registered (motion blur) |
 
 Face 13 reappeared in a second clip (visits 29 and 51) and was counted once.
@@ -254,6 +258,9 @@ visits, and that every referenced image exists.
   Lowering them raises registrations but risks duplicate identities.
 - Long GPU sessions can stall after ~20 minutes on this laptop; restart the
   process or run in segments, then re-run `verify_outputs.py`. See PLAN R13.
+- The long 22-clip pass averaged ~21 fps against a 25 fps source; the RTSP
+  queue drops stale frames. Tune `imgsz` / `frame_skip` on the interview GPU if
+  the source cadence is 25 fps.
 - Face crops are biometric data and stay local. Nothing is uploaded.
 
 ## Submission
@@ -261,6 +268,8 @@ visits, and that every referenced image exists.
 - Repository: https://github.com/mdaashir/KatomaranHackathon
 - Demo video: `VIDEO_URL` — replace after recording.
 - Samples: [`samples/README.md`](samples/README.md)
+- Compliance audit: [`docs/COMPLIANCE.md`](docs/COMPLIANCE.md)
 - Submission checklist: [`docs/SUBMISSION.md`](docs/SUBMISSION.md)
+- Deadline: **2:00 PM, Friday 13 November 2026**.
 
 This project is a part of a hackathon run by https://katomaran.com

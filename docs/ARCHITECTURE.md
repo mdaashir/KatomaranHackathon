@@ -2,6 +2,9 @@
 
 > Companion to [`PLAN.md`](./PLAN.md) and [`FEATURES.md`](./FEATURES.md).
 > Diagrams use Mermaid and render on GitHub, GitLab and VS Code.
+>
+> **Status (2026-11-11):** final implementation. Requirement-by-requirement
+> evidence is in [`COMPLIANCE.md`](./COMPLIANCE.md).
 
 ---
 

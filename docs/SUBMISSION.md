@@ -1,12 +1,14 @@
 # Submission checklist
 
-The code, documentation and samples are complete. The **only manual step left**
-is recording the public demo video.
+The code, documentation and samples are complete. Two author actions remain:
+record the public demo video and submit the Google Form. The requirement audit
+is in [`COMPLIANCE.md`](COMPLIANCE.md).
 
 ## Before submitting
 
 - [ ] Repository is public: https://github.com/mdaashir/KatomaranHackathon
 - [ ] `README.md` opens cleanly and the final Katomaran line is present.
+- [ ] Review [`COMPLIANCE.md`](COMPLIANCE.md) and the `AUTHOR` items.
 - [ ] Record the walkthrough using [`docs/DEMO.md`](DEMO.md), upload to Loom or
       YouTube, and replace `VIDEO_URL` in `README.md` and this file.
 - [ ] Open the video link in a private browser window and confirm it plays.
@@ -15,7 +17,7 @@ is recording the public demo video.
       `--report`, and `scripts/verify_outputs.py`.
 - [ ] `pytest` passes and the verifier is clean.
 - [ ] Submit the repository and the public video through the Katomaran
-      submission form.
+      submission form before **2:00 PM, Friday 13 November 2026**.
 
 ## Video
 
@@ -31,3 +33,5 @@ is recording the public demo video.
 - 118 events, every one with a cropped image and a SQLite row.
 - 4K crowd stress: 32 visits, 0 registered because every face was
   motion-blurred.
+- Performance: ~21 fps against a 25 fps source in the long run; tune
+  `imgsz`/`frame_skip` on the interview GPU if needed.
