@@ -543,3 +543,28 @@ Last updated: 2026-11-11
 - After merge: sync `main`, delete `feature/dashboard`, record the public demo
   (still required), replace `VIDEO_URL`, and submit. Do not start another
   feature before the submission video is live.
+
+---
+
+## Compliance audit against the problem statement (2026-11-11)
+
+- Branch: `docs/compliance-audit`.
+- Extracted the four-page PDF with a scratchpad-only `pypdf` install; created
+  `docs/COMPLIANCE.md` with all 43 requirements mapped to evidence.
+- Re-ran `pytest`: 216 passed. `verify_outputs.py --db data/e2e.db`: clean
+  (26 unique, 59 visits, 59/59 entries/exits, 0 open, 0 missing images).
+- All functional requirements are done. Real-time throughput is a documented
+  performance caveat (~21 fps against 25 fps in the long run; tune imgsz/frame
+  skip on interview hardware). The only missing deliverable is the public demo
+  video; the Google Form submission is the only other author action. Real RTSP
+  kill/restore remains a hardware confirmation, not a code gap.
+- Updated README, PLAN (resolved sign-off defaults), FEATURES, COMPUTE,
+  ARCHITECTURE, DEMO, SUBMISSION, sample README, PROMPTS and this memory.
+- PR pending creation in this phase; stop and wait for review/merge.
+
+## Next session starts with
+
+- After merge: record the public video, replace `VIDEO_URL`, verify the link in
+  a private browser, submit the repository through the Katomaran form, and keep
+  the exact mandatory footer line last. Do not start another feature before the
+  submission is submitted.

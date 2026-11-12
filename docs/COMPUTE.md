@@ -5,8 +5,10 @@
 > ranges are planning context. Phase 3–6 measured the individual stages and
 > Phase 8 measured the complete 22-clip pass below.
 >
-> Benchmark helper planned: `scripts/benchmark.py` (p50/p95 latency per stage,
-> JSON output) so the interview machine can be profiled in one command.
+> Phase 8 used ad-hoc timing runs; a separate `scripts/benchmark.py` was not
+> needed. The measured rows below are the current numbers.
+>
+> Requirement audit: [`COMPLIANCE.md`](./COMPLIANCE.md).
 
 ---
 

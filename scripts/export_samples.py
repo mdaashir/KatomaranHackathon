@@ -179,6 +179,8 @@ def main(argv: list[str] | None = None) -> int:
 
     readme = f"""# Sample output
 
+Compliance audit: [`../docs/COMPLIANCE.md`](../docs/COMPLIANCE.md).
+
 Curated output from a real run of the 22 `record_*.mp4` front-entry clips.
 
 - Generated: {datetime.now(timezone.utc).isoformat(timespec="seconds")}

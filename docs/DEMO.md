@@ -1,5 +1,8 @@
 # Demo video script
 
+> Compliance audit: [`COMPLIANCE.md`](COMPLIANCE.md). This recording is the only
+> repository-external deliverable still missing.
+
 Target length: **4–5 minutes**. Record the terminal at 1080p with a readable
 font, and keep `samples/` open in Explorer or the editor.
 

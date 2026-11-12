@@ -4,6 +4,10 @@
 > (**M**ust / **S**hould / **C**ould), owning phase and objective acceptance
 > criteria. “Done” means the acceptance criteria are demonstrable from a log,
 > a DB row, an image file, or a test.
+>
+> **Final audit (2026-11-11):** F-01–F-31 are implemented and tested. F-30’s
+> public video link is the only author action; see
+> [`COMPLIANCE.md`](./COMPLIANCE.md).
 
 ---
 
@@ -442,6 +446,10 @@ limitations, demo video link, and the exact Katomaran footer line.
 - Fresh clone → sample run following README only.
 - Demo video shows: live run, entry/exit logs, image folders, DB count.
 - Footer line exactly: `This project is a part of a hackathon run by https://katomaran.com`
+
+**Status (2026-11-11):** README setup, assumptions, sample config, planning and
+architecture links, limitations, footer and prompts are done. The public video
+link is still an author action.
 
 ### F-31 — Optional dashboard (C, Phase 10)
 

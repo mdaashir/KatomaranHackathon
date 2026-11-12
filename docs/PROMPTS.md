@@ -554,6 +554,38 @@ submission form; the dashboard is an optional extra.
 
 ---
 
+## 2026-11-11 — Compliance audit against the problem statement
+
+### Prompt
+
+> successfully merged the pr, deleted the branch in remote. cross verify with @docs\"Katomarans Problem Statement.pdf" if all done as per what asked and stated if in case of missing do it next iteration. first create a checklist and validate. make sure you always following the agents.md. update all docs mds to current
+
+**Purpose:** verify the submission against the actual problem statement rather
+than against the project's own plan, and refresh every document to the final
+state.
+
+**What the model did:**
+
+1. Extracted the four-page PDF with `pypdf` in the scratchpad (not added to the
+   project dependencies) and read all 43 stated requirements.
+2. Created `docs/COMPLIANCE.md` mapping every requirement to its implementation
+   and evidence, with `DONE`, `PARTIAL`, `MISSING` and `AUTHOR` statuses.
+3. Re-ran `scripts/verify_outputs.py` on `data/e2e.db` and the full suite.
+4. Updated README, PLAN, FEATURES, COMPUTE, ARCHITECTURE, DEMO, SUBMISSION,
+   sample README, PROMPTS and memory to the final audit state.
+5. Recorded the remaining actions: public video, Google Form, real-time tuning
+   on the interview GPU, and an optional real-camera RTSP confirmation.
+
+**Result:** 216 tests pass; verifier is clean (26 unique, 59 visits, 59/59
+entries/exits, 0 open, 0 missing images). All functional requirements are done;
+real-time throughput is a documented performance caveat (~21 fps against 25
+fps in the long run). The public video is the only missing deliverable; the
+form is the only other external action.
+
+**Outputs:** `docs/COMPLIANCE.md` plus updated documentation.
+
+---
+
 ## Template for future phases
 
 ```markdown

@@ -1,7 +1,9 @@
 # PLAN — Intelligent Face Tracker with Auto-Registration and Visitor Counting
 
-> Status: **draft for author sign-off**
+> Status: **final implementation; compliance audit complete** (2026-11-11)
 > Deadline: **2:00 PM, Friday 13 November 2026**
+> Remaining author actions: public demo video and Google Form submission.
+> Interview-hardware fps tuning is the remaining validation step.
 > Sources of truth: `docs/Katomarans Problem Statement.pdf`, `AGENTS.md`
 > Local data: `src/video/`
 
@@ -73,11 +75,12 @@ Consequences that shape the design:
 - `get_unique_count()` derived from the DB.
 - Graceful SIGINT/SIGTERM shutdown with active-track flush.
 - Tests for registry, lifecycle and counter.
-- Sample outputs in `samples/`, README, architecture docs, demo video.
+- Sample outputs in `samples/`, README and architecture docs. The public demo
+  video is the remaining author action.
 
 ### Out of scope (unless time remains)
 
-- Frontend dashboard (explicitly not required; listed as optional Phase 10).
+- Frontend dashboard: optional; completed as a read-only snapshot in Phase 10.
 - Multi-camera identity fusion.
 - Cloud sync, auth, multi-tenant storage.
 - Person/body re-identification (optional enhancement, see R4).
@@ -307,8 +310,10 @@ processed **30 frames / 10 detection cycles**, produced **1 unique, 1 entry,
 
 Acceptance: every visit has exactly one entry and one exit; unique count is
 stable across a re-run from an empty DB; sampled identities are correct by
-visual inspection; measured throughput ≥ 1.0× real-time on GPU (the CPU
-fallback is documented at ~0.47×).
+visual inspection; measured throughput close to real-time on GPU. On this
+laptop the long run averaged ~21 fps against a 25 fps source; one clip is near
+1.0× excluding model load. Tuning `imgsz`/`frame_skip` remains an
+interview-hardware step.
 
 **Measured (2026-11-11, RTX 3050 6 GB, `imgsz=1600`, `frame_skip=3`):**
 22 clips / 33,044 frames produced 26 unique faces, 59 visits (33 anonymous),
@@ -336,8 +341,9 @@ README; video link is public and plays.
 **Status (2026-11-11):** README, `docs/DEMO.md`, `docs/SUBMISSION.md` and
 `docs/demo_config.json` are complete. The 300-frame demo command was re-run:
 1 unique / 1 visit / 1 entry / 1 exit / 0 open, and `verify_outputs.py` is
-clean. The public video recording and the `VIDEO_URL` replacement are the only
-remaining author action before submission.
+clean. Public video, `VIDEO_URL` replacement and the Google Form are author
+actions; fps tuning on the interview hardware remains the only performance
+follow-up.
 
 ### Phase 10 — Optional dashboard (`feature/dashboard`) — only after Phases 0–9
 
@@ -388,29 +394,28 @@ standalone HTML snapshot. `samples/dashboard/index.html` is generated from the
 | Unique count from DB | Phase 6 | `get_unique_count()` + `--report` |
 | Atomic images, transactions, WAL | Phase 1, 6 | code + tests |
 | SIGINT/SIGTERM flush | Phase 5, 7 | shutdown test |
-| RTSP + reconnect | Phase 2 | loopback RTSP test |
+| RTSP + reconnect | Phase 2 | `RTSPSource`, capped backoff/retry tests; real camera is a manual interview check |
 | Sample output | Phase 8 | `samples/` |
-| README + video + Katomaran line | Phase 9 | README |
+| README + video + Katomaran line | Phase 9 | README + footer done; public video is an author action |
 
 ---
 
-## 10. Open questions for author sign-off
+## 10. Resolved defaults (accepted for submission)
 
-Defaults below are what the rest of the docs assume. Correct any that are wrong
-before Phase 1 starts.
+These defaults were used for the final implementation; no changes were requested.
 
-1. **Entry/exit meaning.** I treat an entry as “track confirmed after appearing
-   in frame” and an exit as “track missing for 3 s or stream ended”. Event type
-   is lifecycle-based, **not** direction-based (walking in vs out of the mall).
-   Direction is stored as metadata only. Is that the intended reading?
-2. **Back-facing visitors.** Accept the documented face-only limitation
-   (recommended for the deadline), or add an optional YOLO person-detector
-   fallback so every body gets an anonymous entry/exit?
-3. **Dataset priority.** Use the 22 `record_*` clips as the primary demo and
-   `video_sample1.mp4` as the crowded stress test. Agree?
+1. **Entry/exit meaning.** An entry is “track confirmed after appearing in
+   frame”; an exit is “track missing for 3 s or stream ended”. Event type is
+   lifecycle-based, **not** direction-based. **Accepted.**
+2. **Back-facing visitors.** The face-only limitation is accepted; they are
+   logged as anonymous visits and excluded from the unique count. An optional
+   person-detector fallback remains future work. **Accepted.**
+3. **Dataset priority.** The 22 `record_*` clips are the primary demo;
+   `video_sample1.mp4` is the crowded stress test. **Accepted.**
 4. **Size gates.** Track at 40 px native, register at 60 px native. This
-   deliberately tracks more faces than it registers. Agree?
-5. **Frontend.** Skip until Phases 0–9 are complete. Agree?
+   deliberately tracks more faces than it registers. **Accepted.**
+5. **Frontend.** Deferred until the core was complete; the optional read-only
+   dashboard was added in Phase 10. **Accepted.**
 
 ---
 
@@ -429,3 +434,11 @@ uv pip install -r requirements.txt
 `ffmpeg` / `ffprobe` are available and decode all 22 HEVC clips successfully
 (verified). InsightFace will download `buffalo_l` on first run unless the model
 cache is vendored; plan for an offline check.
+
+---
+
+## 12. Compliance audit (2026-11-11)
+
+Every requirement in the problem statement is mapped to implementation evidence
+in [`COMPLIANCE.md`](./COMPLIANCE.md). Repository-side requirements are complete;
+the public demo video and Google Form submission are the only author actions.

@@ -1,5 +1,7 @@
 # Sample output
 
+Compliance audit: [`../docs/COMPLIANCE.md`](../docs/COMPLIANCE.md).
+
 Curated output from a real run of the 22 `record_*.mp4` front-entry clips.
 
 - Generated: 2026-11-11T23:29:28+00:00
