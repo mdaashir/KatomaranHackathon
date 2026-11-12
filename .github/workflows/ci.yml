@@ -45,7 +45,6 @@ jobs:
     name: Typecheck (non-blocking)
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    continue-on-error: true
     steps:
       - name: Check out
         uses: actions/checkout@v4
@@ -62,6 +61,7 @@ jobs:
           uv sync --extra cpu --group dev --no-install-project
 
       - name: Mypy
+        continue-on-error: true
         run: uv run --no-sync mypy src main.py scripts
 
   test:
