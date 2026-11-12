@@ -1,4 +1,4 @@
-"""Streamlit client for the read-only FastAPI layer.
+"""Streamlit client for the FastAPI control layer.
 
 This app never imports the pipeline, database or storage modules. It is a
 plain HTTP client; the API can be down without affecting the tracker.
@@ -10,8 +10,11 @@ import os
 
 import requests
 import streamlit as st
+import streamlit.components.v1 as components
 
 API_URL = os.getenv("API_URL", "http://127.0.0.1:8000").rstrip("/")
+REFRESH_SECONDS = None if os.getenv("FACETRACKER_REFRESH") == "0" else 5
+LIVE_REFRESH_SECONDS = None if REFRESH_SECONDS is None else 3
 
 st.set_page_config(
     page_title="Intelligent Face Tracker",
@@ -31,6 +34,27 @@ def api_get(path: str, params: dict[str, object] | None = None):
         return response.json()
     except (requests.RequestException, ValueError) as exc:
         st.error(f"API unavailable at {API_URL}: {exc}")
+        return None
+
+
+def api_post(
+    path: str,
+    *,
+    json_data: dict[str, object] | None = None,
+    files=None,
+    timeout: int = 15,
+):
+    try:
+        response = requests.post(
+            f"{API_URL}{path}",
+            json=json_data,
+            files=files,
+            timeout=timeout,
+        )
+        response.raise_for_status()
+        return response.json()
+    except (requests.RequestException, ValueError) as exc:
+        st.error(f"API request failed at {API_URL}{path}: {exc}")
         return None
 
 
@@ -67,7 +91,7 @@ def _event_table(events: list[dict[str, object]]) -> None:
                 st.image(url, caption=f"#{event['event_id']}", use_container_width=True)
 
 
-@st.fragment(run_every=5)
+@st.fragment(run_every=REFRESH_SECONDS)
 def dashboard() -> None:
     stats = api_get("/stats")
     if stats:
@@ -90,6 +114,124 @@ def dashboard() -> None:
     if events:
         st.subheader("Recent events")
         _event_table(events["items"])
+
+
+@st.fragment(run_every=LIVE_REFRESH_SECONDS)
+def live_refresh() -> None:
+    jobs = api_get("/jobs")
+    if jobs:
+        running = [job for job in jobs["jobs"] if job["status"] == "running"]
+        if running:
+            st.caption(f"Running: {running[0]['label']} ({running[0]['job_id']})")
+        else:
+            st.caption("No pipeline job is running.")
+    stats = api_get("/stats")
+    if stats:
+        cols = st.columns(4)
+        cols[0].metric("Unique faces", stats["unique_faces"])
+        cols[1].metric("In frame", stats["currently_in_frame"])
+        cols[2].metric("Entries", stats["entries"])
+        cols[3].metric("Exits", stats["exits"])
+    events = api_get("/events", {"limit": 8})
+    if events:
+        st.subheader("Activity")
+        _event_table(events["items"])
+
+
+def live_monitor() -> None:
+    st.subheader("Live monitor")
+    components.html(
+        f'<img src="{API_URL}/stream/live.mjpg" '
+        'style="width:100%;max-height:520px;object-fit:contain;background:#111" />',
+        height=530,
+        scrolling=False,
+    )
+    live_refresh()
+
+
+def sources_jobs() -> None:
+    st.subheader("Sources & jobs")
+    uploads = st.file_uploader(
+        "Upload videos",
+        type=["mp4", "avi", "mov", "mkv", "m4v"],
+        accept_multiple_files=True,
+    )
+    if uploads and st.button("Upload selected", type="primary"):
+        files = [
+            (
+                "files",
+                (
+                    upload.name,
+                    upload.getvalue(),
+                    upload.type or "video/mp4",
+                ),
+            )
+            for upload in uploads
+        ]
+        result = api_post("/upload", files=files, timeout=300)
+        if result:
+            st.success(f"Uploaded {len(result['uploaded'])} file(s).")
+
+    videos = api_get("/videos")
+    names = videos["videos"] if videos else []
+    if names:
+        st.caption("Available videos: " + ", ".join(names[:12]))
+    else:
+        st.info("No videos in the source folder yet.")
+
+    left, right = st.columns([1, 1])
+    with left:
+        source_mode = st.radio(
+            "Start from",
+            ["file", "rtsp"],
+            horizontal=True,
+        )
+        if source_mode == "file":
+            selected = st.selectbox("Video file", names or ["(upload one first)"])
+            payload = {"source_type": "file", "path": selected}
+        else:
+            rtsp_url = st.text_input(
+                "RTSP URL",
+                placeholder="rtsp://user:pass@camera/stream",
+                type="password",
+            )
+            payload = {"source_type": "rtsp", "url": rtsp_url}
+    with right:
+        st.write("The pipeline runs in the API process on one worker thread.")
+        if st.button("Start job", type="primary"):
+            result = api_post("/jobs", json_data=payload)
+            if result:
+                st.success(f"Queued job {result['job_id']}.")
+
+    jobs = api_get("/jobs")
+    if jobs and jobs["jobs"]:
+        st.subheader("Job queue")
+        st.dataframe(
+            [
+                {
+                    "Job": job["job_id"],
+                    "Source": job["label"],
+                    "Status": job["status"],
+                    "Started": job["started_at"],
+                    "Finished": job["finished_at"],
+                    "Error": job["error"],
+                }
+                for job in jobs["jobs"]
+            ],
+            use_container_width=True,
+            hide_index=True,
+        )
+        active = [
+            job["job_id"]
+            for job in jobs["jobs"]
+            if job["status"] in {"queued", "running"}
+        ]
+        if active:
+            stop_id = st.selectbox("Stop job", active)
+            if st.button("Stop selected job"):
+                result = api_post(f"/jobs/{stop_id}/stop")
+                if result:
+                    st.success(f"Stop requested for {stop_id}.")
 
 
 def event_log() -> None:
@@ -123,12 +265,19 @@ def system_logs() -> None:
 
 
 st.sidebar.title("Face Tracker")
-view = st.sidebar.radio("View", ["Dashboard", "Event log", "System logs"])
+view = st.sidebar.radio(
+    "View",
+    ["Dashboard", "Live Monitor", "Sources & Jobs", "Event log", "System logs"],
+)
 st.sidebar.caption(f"API: {API_URL}")
 st.sidebar.caption("Read-only client. The tracker runs independently.")
 
 if view == "Dashboard":
     dashboard()
+elif view == "Live Monitor":
+    live_monitor()
+elif view == "Sources & Jobs":
+    sources_jobs()
 elif view == "Event log":
     event_log()
 else:

@@ -820,6 +820,47 @@ system pages; P0 submission video/form still the priority.
 
 ---
 
+## 2026-11-12 — P2 F2 jobs, uploads, live view
+
+### Prompt
+
+> successfully merged the pr, deleted the branch in remote. start proceeding next make sure you always following the agents.md
+
+Previous PR follow-up (PR #22): **“see skipped workflow and comments fix it”** —
+corrected the skipped `trivy-image` PR job and confirmed the CodeQL review
+threads resolved.
+
+**Purpose:** add the F2 control surface without putting the graded pipeline at
+risk.
+
+**What the model did:**
+
+1. Added an optional pipeline `frame_sink`; it copies a frame only when a live
+   viewer is attached and never raises into the frame loop.
+2. Added `JobManager` (one daemon worker) over `run_pipeline`, with queued/
+   running/stopped/failed states, filename-only input paths, file/folder/RTSP
+   sources and a stop event.
+3. Added upload (2 GiB cap, atomic `.part` rename), `/videos`, `/jobs`,
+   `/stream/live.mjpg` and `/events/stream` SSE.
+4. Added Streamlit Live Monitor and Sources & Jobs pages; pure `requests`.
+5. Added `python-multipart`, API/job/live tests and a frame-sink test.
+
+**Problems solved:**
+
+- UI AppTest timed out because auto-refresh fragments kept scheduling with the
+  API down; `FACETRACKER_REFRESH=0` disables refresh for the smoke test.
+- Job inputs are filenames inside `src/video`, not arbitrary paths; this is
+  sufficient for uploads and keeps path traversal out.
+- Live frames are copied only when viewers exist, so the headless pipeline
+  pays nothing.
+
+**Validated:** 230 tests, 90.58% coverage, ruff/format clean, Streamlit smoke
+passes with the API down.
+
+**Remaining:** F3 folder/config, F4 visitors/system; P0 video/form priority.
+
+---
+
 ## Template for future phases
 
 ```markdown

@@ -2,8 +2,10 @@
 
 > **Status (2026-11-12):** F1 implemented: read-only FastAPI (`/health`,
 > `/stats`, `/events`, `/logs/tail`, `/images`, `/config`) and Streamlit
-> Dashboard, Event Log and System Logs. F2–F4 are next; API/UI remain clients
-> and never block the pipeline.
+> Dashboard, Event Log and System Logs. F2 implemented: upload, one-worker job
+> control (file/RTSP), MJPEG live view and SSE activity feed, plus Live Monitor
+> and Sources & Jobs pages. F3–F4 are next; API/UI remain clients and never
+> block the pipeline.
 
 **Status of the requirement:** the problem statement says a frontend "is not
 required, but including one will be considered an added advantage". It does

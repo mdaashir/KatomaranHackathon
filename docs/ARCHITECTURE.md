@@ -88,12 +88,22 @@ flowchart LR
 | `src/counting` | DB-derived unique count and summary | storage |
 | `src/dashboard` | Read-only HTML snapshot; copies event thumbnails | storage, counting |
 | `src/pipeline` | Frame loop, cadence, orchestration, shutdown | all of the above |
+| `src/api` | FastAPI read/control layer, job worker, live buffer | pipeline, storage, config |
+| `ui` | Streamlit HTTP client; pages only | `src/api` over HTTP |
 | `src/logging_setup` | Console/file handlers, formatters | config |
 | `main.py` | Composition root and CLI. Wires concrete classes. | all |
 
 **Dependency rule:** business classes never instantiate infrastructure. The
 detector, embedder, tracker, source, database, logger and clock are passed into
 constructors. Tests inject fakes.
+
+### P2 control layer
+
+`ui` never imports the pipeline or database. It calls the API, which owns one
+background `JobManager` worker reusing `main.run_pipeline`. The pipeline offers
+an optional `frame_sink`; `LiveFrameBuffer` copies the newest detection frame
+only while an MJPEG viewer is attached. The activity feed is SSE over new DB
+event IDs. Headless `main.py` is unchanged and never depends on the API/UI.
 
 ### Core types and interfaces
 

@@ -29,6 +29,12 @@ from src.tracking import (
 from src.video import Frame, VideoSource
 
 
+FrameSink = Callable[
+    [Frame, Sequence[TrackedBox], dict[int, int | None]],
+    None,
+]
+
+
 class DetectorLike(Protocol):
     def detect(self, image: np.ndarray) -> list[FaceDetection]: ...
 
@@ -56,6 +62,7 @@ class Pipeline:
         *,
         tracker_factory: Callable[[float, int], TrackerLike] | None = None,
         crop_cache: CropCache | None = None,
+        frame_sink: FrameSink | None = None,
         events_logger: logging.Logger | None = None,
         app_logger: logging.Logger | None = None,
     ) -> None:
@@ -76,6 +83,7 @@ class Pipeline:
             )
         )
         self._crops = crop_cache or CropCache()
+        self._frame_sink = frame_sink
         self._events_logger = events_logger or get_logger("events")
         self._app_logger = app_logger or get_logger(__name__)
         self._tracker: TrackerLike | None = None
@@ -186,6 +194,22 @@ class Pipeline:
         )
         self._log_transitions(previous)
         self._persist(events)
+        self._emit_frame(frame, boxes, face_ids)
+
+    def _emit_frame(
+        self,
+        frame: Frame,
+        boxes: Sequence[TrackedBox],
+        face_ids: dict[int, int | None],
+    ) -> None:
+        """Offer the annotated view to an optional, non-blocking sink."""
+
+        if self._frame_sink is None:
+            return
+        try:
+            self._frame_sink(frame, boxes, face_ids)
+        except Exception as exc:
+            self._app_logger.warning("frame sink failed: %s", exc)
 
     def _recognize(
         self,

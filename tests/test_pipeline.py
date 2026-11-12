@@ -193,6 +193,7 @@ def _pipeline(
     event_error=None,
     quality_results=None,
     matched=True,
+    frame_sink=None,
 ):
     config = _config()
     source = FakeSource(frames)
@@ -215,6 +216,7 @@ def _pipeline(
         event_logger,
         counter,
         tracker_factory=lambda fps, skip: tracker,
+        frame_sink=frame_sink,
         events_logger=logging.getLogger("test.events"),
         app_logger=logging.getLogger("test.app"),
     )
@@ -233,7 +235,6 @@ def test_frame_skip_entry_exit_and_crops():
     pipeline, parts = _pipeline(
         [_frame(index, is_end=(index == 7)) for index in range(8)]
     )
-
     result = pipeline.run()
 
     assert parts["detector"].calls == 4
@@ -248,6 +249,20 @@ def test_frame_skip_entry_exit_and_crops():
     assert parts["source"].closed is True
     assert parts["tracker"].resets >= 1
     assert result.frames_processed == 8
+    assert result.detection_cycles == 4
+
+
+def test_frame_sink_receives_detection_frames():
+    seen = []
+    pipeline, _ = _pipeline(
+        [_frame(index, is_end=(index == 7)) for index in range(8)],
+        frame_sink=lambda frame, boxes, face_ids: seen.append((frame, boxes, face_ids)),
+    )
+
+    result = pipeline.run()
+
+    assert seen
+    assert seen[0][0].source_id == "fake"
     assert result.detection_cycles == 4
 
 
