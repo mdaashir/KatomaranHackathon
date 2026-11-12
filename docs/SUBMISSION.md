@@ -1,8 +1,8 @@
 # Submission checklist
 
-The code, documentation and samples are complete. Two author actions remain:
-record the public demo video and submit the Google Form. The requirement audit
-is in [`COMPLIANCE.md`](COMPLIANCE.md).
+The code, documentation, samples and optional P2 API/UI are complete. Two
+author actions remain: record the public demo video and submit the Google Form.
+The requirement audit is in [`COMPLIANCE.md`](COMPLIANCE.md).
 
 ## Before submitting
 
@@ -15,7 +15,9 @@ is in [`COMPLIANCE.md`](COMPLIANCE.md).
 - [ ] `samples/` contains `summary.json`, CSVs, `events.log` and crops.
 - [ ] Fresh-clone smoke test: setup, download models, run one short clip,
       `--report`, and `scripts/verify_outputs.py`.
-- [ ] `pytest` passes and the verifier is clean.
+- [ ] `pytest` passes (237 tests, 90.81% coverage) and the verifier is clean.
+- [ ] Optional P2 UI smoke: `uv sync --extra cpu --extra ui`, run `uvicorn
+      src.api.app:app` + `streamlit run ui/app.py`, and open the dashboard.
 - [ ] Submit the repository and the public video through the Katomaran
       submission form before **2:00 PM, Friday 13 November 2026**.
 
@@ -35,3 +37,6 @@ is in [`COMPLIANCE.md`](COMPLIANCE.md).
   motion-blurred.
 - Performance: ~21 fps against a 25 fps source in the long run; tune
   `imgsz`/`frame_skip` on the interview GPU if needed.
+- Optional P2 UI: live MJPEG, job queue, folder/RTSP input, validated config,
+  visitor gallery and system diagnostics; API/UI are independent of the
+  headless pipeline.

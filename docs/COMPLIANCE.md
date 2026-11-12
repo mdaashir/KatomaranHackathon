@@ -2,11 +2,12 @@
 
 Source: [Katomarans Problem Statement](<Katomarans Problem Statement.pdf>)
 
-Status: **final audit — 2026-11-11**. All functional requirements are
-implemented and verified; real-time throughput is the one documented
-performance caveat. The public demo video is the only missing deliverable; the
-Google Form submission is the only other author action, and interview-hardware
-fps tuning is the only performance follow-up.
+Status: **final audit — 2026-11-12**. All functional requirements are
+implemented and verified; the optional P2 API/UI is feature-complete
+(237 tests). Real-time throughput is the one documented performance caveat.
+The public demo video is the only missing deliverable; the Google Form
+submission is the only other author action, and interview-hardware fps tuning
+is the only performance follow-up.
 
 This checklist maps every requirement in the problem statement to the
 implementation and the evidence a reviewer can inspect. Status values:
@@ -67,7 +68,7 @@ implementation and the evidence a reviewer can inspect. Status values:
 | # | Requirement | Status | Evidence |
 |---|---|---|---|
 | 5.1 | Planning document | DONE | `docs/PLAN.md` |
-| 5.2 | Features documented | DONE | `docs/FEATURES.md` (31 features) |
+| 5.2 | Features documented | DONE | `docs/FEATURES.md` (35 features) |
 | 5.3 | CPU and GPU compute estimates | DONE | `docs/COMPUTE.md` with measured Phase 3–8 numbers |
 | 5.4 | Architecture diagram | DONE | Mermaid diagrams in `README.md` and `docs/ARCHITECTURE.md` |
 | 5.5 | README setup instructions | DONE | `README.md` GPU and CPU setup, fresh-clone path |
@@ -84,7 +85,7 @@ implementation and the evidence a reviewer can inspect. Status values:
 
 | # | Requirement | Status | Evidence |
 |---|---|---|---|
-| 6.1 | Frontend is optional; bonus if included | DONE | Read-only dashboard in `src/dashboard`, `scripts/dashboard.py`, sample `samples/dashboard/index.html` |
+| 6.1 | Frontend is optional; bonus if included | DONE | Static dashboard plus the full optional P2 FastAPI/Streamlit UI: dashboard, live MJPEG, jobs, folder/RTSP, config, visitors, system; API/UI tests |
 | 6.2 | Log files are mandatory and used for verification | DONE | Full audit log format and sample excerpt |
 | 6.3 | Code is modular, scalable and clearly commented | DONE | `src/` modules, docstrings, tests |
 | 6.4 | Database and file logging consistent and resilient | DONE | WAL, transactions, atomic writes, `verify_outputs.py` |
@@ -99,7 +100,9 @@ implementation and the evidence a reviewer can inspect. Status values:
 
 ## 8. Validation evidence
 
-- `pytest`: 216 passed.
+- `pytest`: **237 passed**, 90.81% coverage; API/UI contract tests plus the
+  Streamlit boot smoke.
+- `docker compose config`: valid; CPU/GPU image builds and e2e run in CI.
 - `scripts/verify_outputs.py --db data/e2e.db`: integrity OK, 0 FK violations,
   0 missing images, 0 open visits, 59 entries / 59 exits.
 - Full dataset: 22 clips / 33,044 frames; 26 unique, 59 visits, 33 anonymous.

@@ -509,6 +509,19 @@ feature-complete; P0 video/form submission actions remain.
 
 ---
 
+### Phase 16 — Final submission audit
+
+- Re-audited the README, feature count, UI evidence and test numbers after F4.
+- Updated `COMPLIANCE.md` and `SUBMISSION.md` to 35 features, 237 tests,
+  90.81% coverage and the full optional P2 UI.
+- No repository code changes: the only remaining deliverables are the public
+  demo video and Google Form submission.
+
+**Status (2026-11-12):** repository-side submission is complete; external
+author actions remain.
+
+---
+
 ## 12. Compliance audit (2026-11-11)
 
 Every requirement in the problem statement is mapped to implementation evidence
