@@ -7,9 +7,9 @@ visitor counting for a mall front-entry camera. It accepts a video file, a
 folder of clips, or an RTSP stream, and logs exactly one entry and one exit per
 visit.
 
-> **Status: P0 submission-ready; P1/P3 complete; P2 F1+F2 API/UI complete.**
+> **Status: P0 submission-ready; P1/P3 complete; P2 F1–F3 API/UI complete.**
 > The core pipeline, samples and documentation are complete. The remaining
-> core actions are the public video and Google Form; F3/F4 UI work is the
+> core actions are the public video and Google Form; F4 UI polish is the
 > remaining bonus layer.
 
 - Problem statement: [Katomarans Problem Statement](<docs/Katomarans Problem Statement.pdf>)
@@ -257,11 +257,11 @@ uv run --no-sync python scripts\dashboard.py --config config.json --open
 Open [`samples/dashboard/index.html`](samples/dashboard/index.html) for the
 snapshot generated from the 22-clip run.
 
-## API and Streamlit UI (P2 F1+F2)
+## API and Streamlit UI (P2 F1–F3)
 
-The API exposes the dashboard/event/log reads plus upload, job control, live
-MJPEG and an SSE activity feed. The Streamlit UI is a pure HTTP client; the
-pipeline runs independently.
+The API exposes the dashboard/event/log reads plus upload, folder/file/RTSP job
+control, live MJPEG, an SSE activity feed and validated runtime overrides. The
+Streamlit UI is a pure HTTP client; the pipeline runs independently.
 
 ```powershell
 uv sync --extra cpu --extra ui
@@ -274,8 +274,9 @@ uv run streamlit run ui/app.py
 ```
 
 API docs: `http://127.0.0.1:8000/docs` · UI: `http://localhost:8501`.
-Uploads land in `src/video/`; start a file or RTSP job from **Sources & Jobs**
-and watch it in **Live Monitor**. See [`ui/README.md`](ui/README.md).
+Uploads land in `src/video/`; start a file, folder or RTSP job from **Sources &
+Jobs**, and tune the five hot fields in **Config**. `frame_skip` stays owned by
+`config.json`; **Save as default** is explicit. See [`ui/README.md`](ui/README.md).
 
 ## Tests and verification
 

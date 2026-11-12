@@ -16,5 +16,7 @@ Open `http://localhost:8501`. The API defaults to `http://127.0.0.1:8000`; set
 
 F1 provides the Dashboard, Event Log and System Logs views. F2 adds Live
 Monitor (MJPEG + activity feed) and Sources & Jobs (upload, file/RTSP start,
-queue/stop); uploads go to `src/video/` and job paths are filenames in that
-folder. Folder processing, the config pane and the visitor gallery are F3/F4.
+queue/stop). F3 adds recursive folder jobs and the Config page for the five
+hot-reloadable tunables (`frame_skip` stays file-owned). Uploads go to
+`src/video/`; job paths are filenames/folder names in that folder. The visitor
+gallery and system page are F4.

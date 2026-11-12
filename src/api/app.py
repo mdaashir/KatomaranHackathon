@@ -13,16 +13,18 @@ from fastapi import FastAPI, File, HTTPException, Query, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, StreamingResponse
 
+from src.api.config_store import ConfigOverrides, ConfigStore
 from src.api.jobs import (
     JobManager,
     VIDEO_SUFFIXES,
     input_root_for,
+    list_folders,
     list_videos,
 )
 from src.api.live import LiveFrameBuffer
 from src.api.models import JobRequest
 from src.api.reader import ReadModel
-from src.config import AppConfig, load_config
+from src.config import AppConfig, ConfigError, load_config
 
 MAX_UPLOAD_BYTES = 2 * 1024 * 1024 * 1024
 
@@ -35,6 +37,8 @@ def create_app(
     input_root: str | Path | None = None,
     job_manager: JobManager | None = None,
     frame_buffer: LiveFrameBuffer | None = None,
+    config_path: str | Path | None = None,
+    overrides_path: str | Path | None = None,
 ) -> FastAPI:
     """Build the API app.
 
@@ -42,7 +46,14 @@ def create_app(
     worker, but the headless ``main.py`` path remains fully independent.
     """
 
-    effective = config or load_config("config.json")
+    base_config = config or load_config(config_path or "config.json")
+    base_path = config_path or ("config.json" if config is None else None)
+    store = ConfigStore(
+        base_config,
+        base_path=base_path,
+        overrides_path=overrides_path,
+    )
+    effective = store.effective
     reader = ReadModel(
         db_path or effective.storage.db_path,
         log_dir or effective.storage.log_dir,
@@ -56,11 +67,13 @@ def create_app(
         input_root=input_root or input_root_for(effective),
         frame_buffer=buffer,
     )
+    if job_manager is not None:
+        manager.update_config(effective)
     upload_root = Path(input_root or manager.input_root).resolve()
 
     app = FastAPI(
         title="Intelligent Face Tracker API",
-        version="0.2.0",
+        version="0.3.0",
         description="Control and read layer over the tracker database.",
     )
     app.add_middleware(
@@ -69,7 +82,7 @@ def create_app(
             "http://localhost:8501",
             "http://127.0.0.1:8501",
         ],
-        allow_methods=["GET", "POST"],
+        allow_methods=["GET", "POST", "PUT"],
         allow_headers=["*"],
     )
 
@@ -134,14 +147,38 @@ def create_app(
 
     @app.get("/config")
     def get_config() -> dict[str, object]:
-        payload = reader.config_payload()
-        if payload is None:
-            raise HTTPException(status_code=404, detail="config not loaded")
-        return {"config": payload}
+        return store.snapshot()
+
+    @app.put("/config")
+    def update_config(payload: ConfigOverrides) -> dict[str, object]:
+        try:
+            updated = store.apply(payload)
+        except ConfigError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        manager.update_config(updated)
+        return store.snapshot()
+
+    @app.post("/config/reset")
+    def reset_config() -> dict[str, object]:
+        manager.update_config(store.reset())
+        return store.snapshot()
+
+    @app.post("/config/save-default")
+    def save_default_config() -> dict[str, object]:
+        try:
+            updated = store.save_default()
+        except (ConfigError, OSError) as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        manager.update_config(updated)
+        return store.snapshot()
 
     @app.get("/videos")
     def videos() -> dict[str, object]:
         return {"videos": list_videos(upload_root)}
+
+    @app.get("/folders")
+    def folders() -> dict[str, object]:
+        return {"folders": list_folders(upload_root)}
 
     @app.post("/upload")
     async def upload(files: list[UploadFile] = File(...)) -> dict[str, object]:

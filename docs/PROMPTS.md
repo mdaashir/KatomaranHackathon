@@ -861,6 +861,43 @@ passes with the API down.
 
 ---
 
+## 2026-11-12 — P2 F3 folder jobs and runtime config
+
+### Prompt
+
+> successfully merged the pr, deleted the branch in remote. start proceeding next make sure you always following the agents.md
+
+**Purpose:** add folder processing and the validated config pane without
+changing the pipeline's file-owned requirements.
+
+**What the model did:**
+
+1. Added `GET /folders` and recursive (`**/*.mp4`) folder jobs through the
+   existing `FileSequenceSource`.
+2. Added `ConfigStore`: base `config.json` + persisted
+   `data/runtime_overrides.json`, five hot fields, loader-equivalent
+   validation, atomic write, reset and explicit save-default.
+3. Added `PUT /config`, reset/save-default routes, and `JobManager.update_config`
+   so overrides reach the next job only.
+4. Added Streamlit folder mode and the Config page (diff, disabled
+   `frame_skip`, explicit save confirmation).
+5. Added config/folder contract tests.
+
+**Problems solved:**
+
+- Persisted overrides can be stale or cross-field-invalid; startup logs and
+  drops them instead of failing the API.
+- `frame_skip` is rejected by the override model (extra key), preserving the
+  PDF requirement that it originates in `config.json`.
+- Save-default is atomic and clears overrides only after the write succeeds.
+
+**Validated:** 235 tests, 90.65% coverage, ruff/format clean, Streamlit smoke
+passes with the API down.
+
+**Remaining:** F4 visitors/system/polish; P0 video/form priority.
+
+---
+
 ## Template for future phases
 
 ```markdown

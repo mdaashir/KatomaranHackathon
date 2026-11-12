@@ -42,6 +42,18 @@ def list_videos(root: Path) -> list[str]:
     )
 
 
+def list_folders(root: Path) -> list[str]:
+    """List immediate, non-hidden subfolders of the video root."""
+
+    if not root.is_dir():
+        return []
+    return sorted(
+        path.name
+        for path in root.iterdir()
+        if path.is_dir() and not path.name.startswith(".")
+    )
+
+
 def _now() -> str:
     return (
         datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
@@ -111,6 +123,12 @@ class JobManager:
     @property
     def frame_buffer(self) -> LiveFrameBuffer:
         return self._frame_buffer
+
+    def update_config(self, config: AppConfig) -> None:
+        """Use *config* for jobs started after this call."""
+
+        with self._lock:
+            self._config = config
 
     def start(self, request: JobRequest) -> Job:
         """Validate a request, enqueue it, and return the job record."""
@@ -186,6 +204,7 @@ class JobManager:
                 source,
                 type=request.source_type,
                 path=str(candidate),
+                glob=("**/*.mp4" if request.source_type == "folder" else source.glob),
             )
 
         url = (request.url or "").strip()

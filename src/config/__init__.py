@@ -1,6 +1,6 @@
 """Typed configuration objects."""
 
-from src.config.loader import ConfigError, load_config
+from src.config.loader import ConfigError, load_config, validate_config
 from src.config.models import (
     AppConfig,
     DetectorConfig,
@@ -25,4 +25,5 @@ __all__ = [
     "StorageConfig",
     "TrackingConfig",
     "load_config",
+    "validate_config",
 ]

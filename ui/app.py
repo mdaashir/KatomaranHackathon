@@ -43,9 +43,11 @@ def api_post(
     json_data: dict[str, object] | None = None,
     files=None,
     timeout: int = 15,
+    method: str = "POST",
 ):
     try:
-        response = requests.post(
+        response = requests.request(
+            method,
             f"{API_URL}{path}",
             json=json_data,
             files=files,
@@ -174,6 +176,8 @@ def sources_jobs() -> None:
 
     videos = api_get("/videos")
     names = videos["videos"] if videos else []
+    folders = api_get("/folders")
+    folder_names = folders["folders"] if folders else []
     if names:
         st.caption("Available videos: " + ", ".join(names[:12]))
     else:
@@ -183,12 +187,18 @@ def sources_jobs() -> None:
     with left:
         source_mode = st.radio(
             "Start from",
-            ["file", "rtsp"],
+            ["file", "folder", "rtsp"],
             horizontal=True,
         )
         if source_mode == "file":
             selected = st.selectbox("Video file", names or ["(upload one first)"])
             payload = {"source_type": "file", "path": selected}
+        elif source_mode == "folder":
+            selected_folder = st.selectbox(
+                "Folder (all videos, recursive)",
+                folder_names or ["(no folders)"],
+            )
+            payload = {"source_type": "folder", "path": selected_folder}
         else:
             rtsp_url = st.text_input(
                 "RTSP URL",
@@ -234,6 +244,112 @@ def sources_jobs() -> None:
                     st.success(f"Stop requested for {stop_id}.")
 
 
+def config_page() -> None:
+    st.subheader("Config")
+    data = api_get("/config")
+    if not data:
+        return
+    base = data["base"]
+    effective = data["effective"]
+    st.caption(
+        "Runtime overrides apply to the next job. frame_skip, source, storage "
+        "and logging stay owned by config.json."
+    )
+    st.metric("frame_skip (config.json)", data["effective"]["frame_skip"])
+
+    with st.form("config_form"):
+        left, right = st.columns(2)
+        conf = left.number_input(
+            "Detector confidence",
+            min_value=0.0,
+            max_value=1.0,
+            value=float(effective["detector"]["conf_threshold"]),
+            step=0.01,
+        )
+        detector_min = left.number_input(
+            "Detector min face size",
+            min_value=1,
+            value=int(effective["detector"]["min_face_size"]),
+            step=1,
+        )
+        similarity = right.number_input(
+            "Recognition similarity threshold",
+            min_value=0.0,
+            max_value=1.0,
+            value=float(effective["recognition"]["similarity_threshold"]),
+            step=0.01,
+        )
+        recognition_min = right.number_input(
+            "Recognition min face size",
+            min_value=1,
+            value=int(effective["recognition"]["min_face_size"]),
+            step=1,
+        )
+        exit_timeout = right.number_input(
+            "Exit timeout frames",
+            min_value=1,
+            value=int(effective["tracking"]["exit_timeout_frames"]),
+            step=1,
+        )
+        applied = st.form_submit_button("Apply overrides", type="primary")
+
+    if applied:
+        result = api_post(
+            "/config",
+            method="PUT",
+            json_data={
+                "detector": {
+                    "conf_threshold": conf,
+                    "min_face_size": detector_min,
+                },
+                "recognition": {
+                    "similarity_threshold": similarity,
+                    "min_face_size": recognition_min,
+                },
+                "tracking": {"exit_timeout_frames": exit_timeout},
+            },
+        )
+        if result:
+            st.success("Overrides applied to the next job.")
+            data = result
+            base = data["base"]
+            effective = data["effective"]
+
+    keys = (
+        ("detector.conf_threshold", ("detector", "conf_threshold")),
+        ("detector.min_face_size", ("detector", "min_face_size")),
+        ("recognition.similarity_threshold", ("recognition", "similarity_threshold")),
+        ("recognition.min_face_size", ("recognition", "min_face_size")),
+        ("tracking.exit_timeout_frames", ("tracking", "exit_timeout_frames")),
+    )
+    st.dataframe(
+        [
+            {
+                "Key": label,
+                "Base": base[section][key],
+                "Effective": effective[section][key],
+            }
+            for label, (section, key) in keys
+        ],
+        use_container_width=True,
+        hide_index=True,
+    )
+    st.json(data["overrides"])
+
+    reset_col, save_col = st.columns(2)
+    with reset_col:
+        if st.button("Reset to config.json"):
+            result = api_post("/config/reset")
+            if result:
+                st.success("Overrides cleared.")
+    with save_col:
+        confirmed = st.checkbox("I understand this rewrites config.json")
+        if st.button("Save as default", disabled=not confirmed):
+            result = api_post("/config/save-default")
+            if result:
+                st.success("Effective config saved as config.json.")
+
+
 def event_log() -> None:
     left, middle, right = st.columns([1, 1, 1])
     event_type = left.selectbox("Type", ["all", "entry", "exit"])
@@ -267,7 +383,14 @@ def system_logs() -> None:
 st.sidebar.title("Face Tracker")
 view = st.sidebar.radio(
     "View",
-    ["Dashboard", "Live Monitor", "Sources & Jobs", "Event log", "System logs"],
+    [
+        "Dashboard",
+        "Live Monitor",
+        "Sources & Jobs",
+        "Event log",
+        "Config",
+        "System logs",
+    ],
 )
 st.sidebar.caption(f"API: {API_URL}")
 st.sidebar.caption("Read-only client. The tracker runs independently.")
@@ -280,5 +403,7 @@ elif view == "Sources & Jobs":
     sources_jobs()
 elif view == "Event log":
     event_log()
+elif view == "Config":
+    config_page()
 else:
     system_logs()
