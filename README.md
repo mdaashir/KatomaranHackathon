@@ -16,6 +16,8 @@ visit.
 - Samples: [`samples/README.md`](samples/README.md)
 - Plan: [`docs/PLAN.md`](docs/PLAN.md)
 - Compliance audit: [`docs/COMPLIANCE.md`](docs/COMPLIANCE.md)
+- Docker/CI: [`docs/DEVOPS.md`](docs/DEVOPS.md)
+- P2 API/UI: [`docs/FRONTEND.md`](docs/FRONTEND.md)
 
 ## Demo video
 
