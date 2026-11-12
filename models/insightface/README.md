@@ -19,7 +19,7 @@ The files are **not committed** because the recognizer is 174 MB, above
 GitHub's per-file limit. Download and verify them with:
 
 ```powershell
-.venv\Scripts\python.exe scripts\download_models.py
+uv run --no-sync python scripts\download_models.py
 ```
 
 The script extracts only these two files, verifies the pinned checksums, and

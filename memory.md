@@ -571,3 +571,33 @@ Last updated: 2026-11-11
   a private browser, submit the repository through the Katomaran form, and keep
   the exact mandatory footer line last. Do not start another feature before the
   submission is submitted.
+
+---
+
+## P1 Docker and uv packaging (2026-11-12)
+
+- Branch: `chore/dockerfile-and-compose`.
+- Added the multi-stage CPU/GPU Dockerfile, root `entrypoint.sh`,
+  `docker-compose.yml`, `docker-compose.gpu.yml`; compose mounts `src/video`
+  and uses the single `config.json`.
+- Dependencies moved to `pyproject.toml` (`cpu`/`gpu`/`ui` extras, `dev` group)
+  with `uv.lock`; `requirements.txt` is the compact pip fallback. `uv init`
+  added `.python-version`; `uv run --no-sync` is used after setup so the CUDA
+  Torch wheel is not replaced by a sync.
+- Removed `inputs/`, `config.docker.json`, `.env.example`, `requirements/` and
+  `Makefile` per author corrections.
+- CPU image **2.23 GB**; clean 30-frame container run 1 unique / 1 entry /
+  1 exit / 0 open in 29.5 s; first-start model download 101.8 s (181 MB);
+  compose config and entrypoint verified.
+- `pytest`: 216 passed; e2e verifier clean.
+- GPU image build is still pending; `ci/core-workflow`, e2e fixture/RTSP smoke,
+  PR checks and release/security follow in separate branches.
+- PR #12: https://github.com/mdaashir/KatomaranHackathon/pull/12
+- State: open, waiting for review/merge. The CPU image is validated; GPU build
+  and core CI/e2e are the next P1 branches.
+
+## Next session starts with
+
+- After merge: sync `main`, delete `chore/dockerfile-and-compose`, then start
+  `ci/core-workflow` (lint, typecheck, tests, CPU/GPU builds), followed by the
+  trimmed e2e fixture and RTSP smoke. Do not start P2/UI before P1 CI is green.

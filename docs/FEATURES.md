@@ -23,6 +23,7 @@
 | Counting | F-23 unique count, F-24 summary/report |
 | Config | F-25 typed config, F-26 validation |
 | Ops | F-27 structured logging, F-28 tests, F-29 sample outputs, F-30 docs + demo, F-31 optional dashboard |
+| Delivery | F-32 containers, F-33 core CI, F-34 API/UI, F-35 security/release |
 
 ---
 
@@ -463,6 +464,47 @@ process; reads SQLite/logs; never blocks the pipeline.
 
 **Status (2026-11-11):** implemented in `src/dashboard` + `scripts/dashboard.py`;
 sample at `samples/dashboard/index.html`; 216 tests pass.
+
+### F-32 — Containerized runtime (M, P1)
+
+Multi-stage CPU/GPU Dockerfile, compose stack, root `entrypoint.sh`,
+`pyproject.toml`/`uv.lock` dependency groups and a `requirements.txt` fallback.
+Models stay out of the image and download into a named volume; the pipeline
+remains headless.
+
+**Acceptance**
+- `docker compose config` passes; CPU image builds and runs a short clip.
+- First start downloads and verifies models into the models volume.
+- `docker compose up` is the documented one-command start; GPU override exists.
+- Image size and build time are recorded in COMPUTE/README.
+
+**Status (2026-11-12):** CPU image built and smoke-tested; model download
+verified. GPU build and CI/e2e are next.
+
+### F-33 — Core CI (M, P1)
+
+`ci.yml` with lint, typecheck, tests, CPU/GPU image builds and e2e; later
+PR-hygiene, security and release workflows per `docs/DEVOPS.md`.
+
+**Acceptance**
+- PRs and `main` run the same checks; e2e uses a trimmed fixture and verifies
+  DB/log/image invariants.
+
+**Status:** planned in the next P1 branch.
+
+### F-34 — API and Streamlit UI (C, P2)
+
+Thin FastAPI service and Streamlit client implementing the screens and runtime
+overrides in `docs/FRONTEND.md`; the pipeline runs without either.
+
+**Status:** planned; contract is in `docs/FRONTEND.md`.
+
+### F-35 — Security and release automation (C, P3)
+
+CodeQL, dependency/secret/image scanning, GHCR publish, tagged releases and
+optional nightly e2e per `docs/DEVOPS.md`.
+
+**Status:** planned.
 
 ---
 

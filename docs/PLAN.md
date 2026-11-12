@@ -355,6 +355,20 @@ entries/exits, and thumbnails. Must not touch the core pipeline.
 standalone HTML snapshot. `samples/dashboard/index.html` is generated from the
 22-clip run; 216 tests pass. The core pipeline is untouched.
 
+### Phase 11 — P1 Docker and core CI
+
+- Multi-stage CPU/GPU Dockerfile, compose stack, root `entrypoint.sh`,
+  `pyproject.toml` + `uv.lock` groups, and a `requirements.txt` fallback.
+- `ci/core-workflow` (next branch): lint, typecheck, tests, image builds.
+- `test/e2e-fixture-and-verify` (next branch): trimmed clip, compose e2e,
+  RTSP smoke test.
+- `ci/pr-checks` and `ci/security-and-release` follow.
+
+**Status (2026-11-12):** Docker/compose implemented. CPU image `2.23 GB`,
+cold build ~15 min, container smoke 30 frames / 1 unique / 1 entry / 1 exit /
+0 open. First-start model download verified (181 MB into the models volume).
+GPU target builds separately; CI/e2e/pr-checks remain.
+
 ---
 
 ## 8. Risks and mitigations

@@ -586,6 +586,61 @@ form is the only other external action.
 
 ---
 
+## 2026-11-12 — P1 Docker and uv packaging
+
+### Prompt
+
+> successfully merged the pr, deleted the branch in remote, I had updated @AGENTS.md included new 2 md in docs. start proceeding make sure you always following the agents.md
+
+### Correction prompts
+
+> wait i have serveral corrections update accordingly and work on
+> 1. move entrypoint.sh to root
+> 2. no more inputs folder use src/video itself
+> 3. remove requirements folder use only single requirements.txt in root with all properly commented and seperated.
+> 4. run uv init that might add some files modify it for easy use also use uv everywhere.
+> 5. no sperate config for docker.
+> 6. why makefile remove it if not needed.
+
+> why .env? remove if not needed
+
+> why to still use requirement.txt use uv's toml which provides all these packages segreateions like cpu, gpu etc. have requirements.txt as compactibility or fallback
+
+**Purpose:** ship the P1 headless container layer while keeping a single source
+of truth for configuration and dependencies.
+
+**What the model did:**
+
+1. Added a multi-stage CPU/GPU Dockerfile with `uv` in the builder, root
+   `entrypoint.sh`, compose + GPU override, and a single `config.json`.
+2. Moved dependencies into `pyproject.toml`: core runtime, `cpu`/`gpu`/`ui`
+   extras, `dev` dependency group; generated `uv.lock`; kept a compact
+   `requirements.txt` fallback.
+3. Removed the separate `inputs/`, `config.docker.json`, `.env.example`,
+   `requirements/` and `Makefile`; compose mounts `src/video` and uses
+   `config.json`.
+4. Built the CPU image with `uv sync`, loaded models into a named volume, and
+   ran the pipeline in the container.
+
+**Problems solved:**
+
+- A `.dockerignore` entry excluded all of `src/video` instead of only its
+  videos; changed to `src/video/*.mp4`.
+- `uv run` would re-sync the GPU environment back to the CPU lock; all user
+  commands now use `uv run --no-sync` after setup.
+- The GPU image installs the CUDA Torch wheel after `uv sync`; the GPU build is
+  still pending a local run.
+
+**Validated:** CPU image **2.23 GB**; clean 30-frame container run **1 unique /
+1 entry / 1 exit / 0 open** in 29.5 s; first-start model download 101.8 s
+(181 MB); `docker compose config` OK; entrypoint OK; `pytest` **216 passed**;
+e2e verifier clean.
+
+**Remaining:** `ci/core-workflow`, e2e fixture/RTSP smoke, GPU build, then
+P2/P3. Do not claim P1 CI complete until those branches land.
+
+---
+
 ## Template for future phases
 
 ```markdown
