@@ -74,8 +74,7 @@ def main(argv: list[str] | None = None) -> int:
         sys.stdout.write(json.dumps({"ok": False, "errors": errors}, indent=2) + "\n")
         return 1
 
-    uri = f"file:{db_path.resolve().as_posix()}?mode=ro"
-    connection = sqlite3.connect(uri, uri=True)
+    connection = sqlite3.connect(str(db_path))
     connection.row_factory = sqlite3.Row
     try:
         integrity = connection.execute("PRAGMA integrity_check").fetchone()[0]

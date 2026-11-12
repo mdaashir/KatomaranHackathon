@@ -635,12 +635,13 @@ Last updated: 2026-11-11
 - Branch: `test/e2e-fixture-and-verify`.
 - Fixture: `tests/fixtures/entry_exit_3s.mp4` — 3.04 s, 76 frames, 603 KB.
 - Added isolated `tests/e2e/config.file.json` and `config.rtsp.json`, expected
-  counts, and a read-only `verify_outputs.py` (counts, integrity, FK, two events
-  per visit, images, required log events).
+  counts, and a `tests/e2e/verify_outputs.py` that runs inside the app
+  container (counts, integrity, FK, two events per visit, images, log events).
 - Added `tests/e2e/run_e2e.sh`: file fixture twice (re-ID) then MediaMTX + ffmpeg
   publisher, 300-frame RTSP run, flush check, artifact JSON.
 - Added compose `init-dirs` (chown bind mounts for UID 10001) and a root cleanup
-  helper; verifier opens SQLite read-only so CI does not need write access.
+  helper; the verifier runs in the app container so CI has the same DB
+  permissions as the writer.
 - Added CI `e2e` job after `build`, with CPU image cache and artifacts.
 - Validated: file 1 unique / 2 visits / 2 entry+exit / 0 open; RTSP 1 unique /
   2 visits / 2 entry+exit / 0 open; ruff/format clean; 216 tests; compose/YAML

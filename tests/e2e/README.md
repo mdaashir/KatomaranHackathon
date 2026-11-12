@@ -9,9 +9,9 @@ CPU image `intelligent-face-tracker:cpu`.
   the Face ID without changing the unique count.
 - `config.rtsp.json` runs through MediaMTX and an ffmpeg publisher looping the
   fixture, stopping after 300 frames so active tracks flush as exits.
-- `verify_outputs.py` opens SQLite read-only, checks counts, integrity, foreign
-  keys, one entry/exit per visit, every referenced image and the required
-  `events.log` event types.
+- `verify_outputs.py` runs inside the app container (UID 10001), opens SQLite,
+  and checks counts, integrity, foreign keys, one entry/exit per visit, every
+  referenced image and the required `events.log` event types.
 
 Expected file result: 1 unique, 2 visits, 2 entries, 2 exits, 0 open. The RTSP
 result is intentionally flexible on visit count but requires 1 unique, at least

@@ -5,12 +5,6 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$ROOT"
 mkdir -p reports/e2e
 
-if command -v python3 >/dev/null 2>&1; then
-  PYTHON_CMD=(python3)
-else
-  PYTHON_CMD=(uv run --no-sync python)
-fi
-
 COMPOSE=(docker compose -f docker-compose.yml)
 RTSP_COMPOSE=(
   docker compose
@@ -43,14 +37,16 @@ for _ in 1 2; do
     --start-time 2025-06-20T18:39:03Z
 done
 
-"${PYTHON_CMD[@]}" tests/e2e/verify_outputs.py \
+"${COMPOSE[@]}" run --rm \
+  -v "$ROOT/tests:/app/tests:ro" \
+  app python tests/e2e/verify_outputs.py \
   --db data/e2e_file.db \
   --log-dir logs/e2e_file \
   --expected tests/e2e/expected_file.json \
   | tee reports/e2e/file.json
 
 # RTSP path: MediaMTX + an ffmpeg publisher looping the fixture. The pipeline
-# stops after 150 frames, which must flush active tracks as exits.
+# stops after 300 frames, which must flush active tracks as exits.
 "${RTSP_COMPOSE[@]}" up -d mediamtx rtsp-publisher
 sleep 8
 
@@ -60,7 +56,9 @@ sleep 8
   --config tests/e2e/config.rtsp.json \
   --max-frames 300
 
-"${PYTHON_CMD[@]}" tests/e2e/verify_outputs.py \
+"${COMPOSE[@]}" run --rm \
+  -v "$ROOT/tests:/app/tests:ro" \
+  app python tests/e2e/verify_outputs.py \
   --db data/e2e_rtsp.db \
   --log-dir logs/e2e_rtsp \
   --expected tests/e2e/expected_rtsp.json \

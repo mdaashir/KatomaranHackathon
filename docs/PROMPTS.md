@@ -688,8 +688,8 @@ log verification, and a real MediaMTX RTSP smoke test in CI.
 **What the model did:**
 
 1. Trimmed the first front-entry clip to a 3.04 s / 76-frame, 603 KB fixture.
-2. Added isolated file and RTSP configs, expected-count files and a read-only
-   `tests/e2e/verify_outputs.py`.
+2. Added isolated file and RTSP configs, expected-count files and a
+   `tests/e2e/verify_outputs.py` that runs inside the app container.
 3. Added `tests/e2e/run_e2e.sh`: file run twice (re-ID), then MediaMTX plus an
    ffmpeg publisher looping the fixture, with a 300-frame RTSP run and exits
    flushed.
@@ -706,8 +706,8 @@ log verification, and a real MediaMTX RTSP smoke test in CI.
 - `jrottenberg/ffmpeg` uses ffmpeg as its entrypoint, so `sh -c` was invalid;
   the override now passes ffmpeg arguments directly.
 - Bind-mounted data/logs are owned by UID 10001; `init-dirs` chowns them and a
-  root helper cleans previous runs. The verifier opens SQLite read-only so the
-  CI runner does not need write access.
+  root helper cleans previous runs. The verifier runs inside the app container
+  so SQLite integrity checks have the same permissions as the writer.
 - `docker compose run` in Compose 5.7 has no `--no-build`; removed it.
 
 **Validated:** file e2e 1 unique / 2 visits / 2 entry+exit / 0 open; RTSP e2e
