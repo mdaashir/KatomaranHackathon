@@ -490,10 +490,11 @@ PR-hygiene, security and release workflows per `docs/DEVOPS.md`.
 - PRs and `main` run the same checks; e2e uses a trimmed fixture and verifies
   DB/log/image invariants.
 
-**Status:** core CI, e2e and PR hygiene implemented: ruff, non-blocking mypy,
-pytest with an 85% coverage gate, CPU/GPU builds, file+RTSP e2e, conventional
-PR titles, no-attribution-trailer check, template and grouped Dependabot.
-Security/release workflows remain; API/UI assertions wait for P2.
+**Status:** core CI, e2e, security and tagged release implemented: ruff,
+non-blocking mypy, pytest with an 85% coverage gate, CPU/GPU builds, file+RTSP
+e2e, CodeQL/dependency-review/gitleaks/pip-audit/Trivy, versioned GHCR release
+images and grouped Dependabot. PR-hygiene/edge-publish/nightly were dropped.
+API/UI assertions wait for P2.
 
 ### F-34 — API and Streamlit UI (C, P2)
 
@@ -504,10 +505,10 @@ overrides in `docs/FRONTEND.md`; the pipeline runs without either.
 
 ### F-35 — Security and release automation (C, P3)
 
-CodeQL, dependency/secret/image scanning, GHCR publish, tagged releases and
-optional nightly e2e per `docs/DEVOPS.md`.
+CodeQL, dependency/secret scanning, Trivy, GHCR tagged releases, release notes
+and a samples zip. Edge publishing and nightly were dropped by the author.
 
-**Status:** planned.
+**Status:** implemented in `security.yml` + `release.yml`; Dependabot remains.
 
 ---
 

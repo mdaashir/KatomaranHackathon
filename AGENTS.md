@@ -44,7 +44,7 @@ core comes first and everything else must never put it at risk.
   build, e2e on a trimmed clip).
 - **P2 — API + Streamlit UI:** live monitor, dashboard, upload/folder/RTSP
   input, log view, runtime config pane.
-- **P3 — extras:** release/security/nightly workflows, visitor gallery
+- **P3 — extras:** release/security workflows, visitor gallery
   polish, folder-batch polish.
 
 If time runs short, cut from the bottom (P3, then P2, then P1). Never cut P0,

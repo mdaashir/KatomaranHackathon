@@ -751,6 +751,39 @@ Dependabot YAML parse; ruff clean.
 
 ---
 
+## 2026-11-12 — P3 security and release
+
+### Prompt
+
+> successfully merged the pr, deleted the branch in remote. start proceeding next make sure you always following the agents.md
+
+### Correction prompt
+
+> dont need pull_request_template.md, pr-checks.yml, docker-publish.ynl, nightly.yml so modify accordingly
+
+**Purpose:** add the P3 security and tagged-release automation while keeping
+the workflow surface small.
+
+**What the model did:**
+
+1. Added `security.yml`: CodeQL, dependency review, gitleaks, non-blocking
+   pip-audit, Trivy filesystem scan on PRs and built-image scan on pushes/
+   schedule.
+2. Added `release.yml`: tag-triggered versioned GHCR images, generated release
+   notes and a `samples.zip` attachment.
+3. Kept Dependabot grouped updates.
+4. Removed `pr-checks.yml`, `pull_request_template.md`, `docker-publish.yml`,
+   `nightly.yml` and the now-unused trailer script per the author.
+5. Updated README/PLAN/DEVOPS/FEATURES/AGENTS.
+
+**Validated:** YAML parses for `security.yml` and `release.yml`; no Python/code
+changes; e2e/tests remain green from main.
+
+**Remaining:** P2 API/UI (bonus). The public video and form remain the core
+submission actions.
+
+---
+
 ## Template for future phases
 
 ```markdown
