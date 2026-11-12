@@ -601,3 +601,29 @@ Last updated: 2026-11-11
 - After merge: sync `main`, delete `chore/dockerfile-and-compose`, then start
   `ci/core-workflow` (lint, typecheck, tests, CPU/GPU builds), followed by the
   trimmed e2e fixture and RTSP smoke. Do not start P2/UI before P1 CI is green.
+
+---
+
+## P1 core CI (2026-11-12)
+
+- Branch: `ci/core-workflow`.
+- Added `.github/workflows/ci.yml`: ruff check/format, non-blocking mypy,
+  pytest with an 85% coverage gate and JUnit/coverage artifacts, and CPU/GPU
+  Buildx image builds with GHA cache. Triggers PRs, `main`, manual dispatch and
+  `workflow_call`; least-privilege permissions; PR runs cancel superseded work.
+- Added ruff/coverage config to `pyproject.toml`; applied safe ruff fixes and
+  formatted 26 Python files; removed one unused test local.
+- Validation: ruff clean, format clean, **216 passed**, coverage **92.72%**,
+  workflow YAML parses.
+- README/PLAN/DEVOPS/FEATURES updated with the CI badge/status.
+- e2e fixture/RTSP smoke, PR checks, security/release remain.
+- PR #13: https://github.com/mdaashir/KatomaranHackathon/pull/13
+- State: open, waiting for review/merge. Core CI is in place; e2e/RTSP,
+  PR-hygiene and security/release are the next branches.
+
+## Next session starts with
+
+- After merge: sync `main`, delete `ci/core-workflow`, then create
+  `test/e2e-fixture-and-verify`: trim a small clip, add
+  `tests/e2e/verify_outputs.py`, MediaMTX/RTSP smoke and the e2e job. Do not
+  start P2/UI before P1 e2e is green.

@@ -364,10 +364,10 @@ standalone HTML snapshot. `samples/dashboard/index.html` is generated from the
   RTSP smoke test.
 - `ci/pr-checks` and `ci/security-and-release` follow.
 
-**Status (2026-11-12):** Docker/compose implemented. CPU image `2.23 GB`,
-cold build ~15 min, container smoke 30 frames / 1 unique / 1 entry / 1 exit /
-0 open. First-start model download verified (181 MB into the models volume).
-GPU target builds separately; CI/e2e/pr-checks remain.
+**Status (2026-11-12):** Docker/compose and the core `ci.yml` (ruff,
+non-blocking mypy, pytest at 85% coverage, CPU/GPU image builds) are
+implemented. The trimmed e2e fixture/RTSP smoke and PR-hygiene/security
+workflows remain. GPU image build is pending a green CI run.
 
 ---
 

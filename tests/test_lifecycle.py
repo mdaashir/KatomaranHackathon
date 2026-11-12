@@ -84,9 +84,7 @@ def test_one_frame_false_positive_produces_no_events():
 
 
 def test_gap_before_confirmation_keeps_counting_hits():
-    lifecycle = TrackLifecycle(
-        _config(confirm_hits=3, exit_timeout_frames=12)
-    )
+    lifecycle = TrackLifecycle(_config(confirm_hits=3, exit_timeout_frames=12))
 
     assert _observe(lifecycle, [_box()], 0) == []
     assert _observe(lifecycle, [_box()], 3) == []

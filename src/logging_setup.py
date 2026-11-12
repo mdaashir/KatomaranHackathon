@@ -18,9 +18,7 @@ from typing import Any
 _APP_LOGGER = "ift"
 _EVENTS_LOGGER = "ift.events"
 _DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
-_DEFAULT_FORMAT = (
-    "%(asctime)s.%(msecs)03dZ | %(levelname)-8s | %(name)s | %(message)s"
-)
+_DEFAULT_FORMAT = "%(asctime)s.%(msecs)03dZ | %(levelname)-8s | %(name)s | %(message)s"
 _LOG_LEVELS = {"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"}
 
 
@@ -170,12 +168,7 @@ def _format_value(value: Any) -> str:
     if isinstance(value, bool):
         return "true" if value else "false"
 
-    text = (
-        str(value)
-        .replace("\r", " ")
-        .replace("\n", " ")
-        .replace("|", "/")
-    )
+    text = str(value).replace("\r", " ").replace("\n", " ").replace("|", "/")
     if not text or any(character.isspace() for character in text) or '"' in text:
         text = '"' + text.replace('"', '\\"') + '"'
     return text

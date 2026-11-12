@@ -152,10 +152,7 @@ class EventLogger:
 
         if event.face_id is not None:
             existing_face = self._events.visit_face(database_visit_id)
-            if (
-                existing_face is not None
-                and existing_face != event.face_id
-            ):
+            if existing_face is not None and existing_face != event.face_id:
                 raise EventLogError(
                     f"visit {database_visit_id} is linked to Face ID "
                     f"{existing_face}, not {event.face_id}"

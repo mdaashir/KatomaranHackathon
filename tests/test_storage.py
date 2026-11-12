@@ -362,9 +362,7 @@ def test_create_visit_with_entry_is_atomic(events, visits, faces):
     assert event.similarity == pytest.approx(0.7)
 
 
-def test_create_visit_with_entry_rolls_back_on_bad_event(
-    events, visits
-):
+def test_create_visit_with_entry_rolls_back_on_bad_event(events, visits):
     with pytest.raises(StorageError, match="is_anonymous"):
         events.create_visit_with_entry(
             face_id=None,
@@ -575,6 +573,4 @@ def test_get_missing_returns_none(faces, visits, events):
 
 
 def test_utc_iso_normalizes_naive_datetime():
-    assert utc_iso(datetime(2025, 6, 20, 18, 39, 3)) == (
-        "2025-06-20T18:39:03.000Z"
-    )
+    assert utc_iso(datetime(2025, 6, 20, 18, 39, 3)) == ("2025-06-20T18:39:03.000Z")

@@ -1,15 +1,15 @@
 # Intelligent Face Tracker
 
+[![CI](https://github.com/mdaashir/KatomaranHackathon/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/mdaashir/KatomaranHackathon/actions/workflows/ci.yml)
+
 Real-time face detection, recognition, tracking, auto-registration and unique
 visitor counting for a mall front-entry camera. It accepts a video file, a
 folder of clips, or an RTSP stream, and logs exactly one entry and one exit per
 visit.
 
-> **Status: submission-ready (Phase 10 + compliance audit).** The pipeline,
-> samples and documentation are complete. The only remaining actions are
-> recording the walkthrough in [`docs/DEMO.md`](docs/DEMO.md), replacing
-> `VIDEO_URL`, and submitting the Google Form. See
-> [`docs/COMPLIANCE.md`](docs/COMPLIANCE.md).
+> **Status: P0 submission-ready; P1 container/CI in progress.** The core
+> pipeline, samples and documentation are complete. The remaining core actions
+> are the public video and Google Form; P1 e2e/security is a bonus layer.
 
 - Problem statement: [Katomarans Problem Statement](<docs/Katomarans Problem Statement.pdf>)
 - Repository: https://github.com/mdaashir/KatomaranHackathon
@@ -268,6 +268,18 @@ unique counter, all video sources, detection, recognition, tracking, events,
 storage, the CLI and the read-only dashboard. `verify_outputs.py` checks SQLite
 integrity, foreign keys, exactly one entry and one exit per visit, no open
 visits, and that every referenced image exists.
+
+## Continuous integration
+
+GitHub Actions runs `.github/workflows/ci.yml`:
+
+- Ruff check and format check.
+- Mypy (non-blocking while the type baseline is cleaned up).
+- Pytest with an 85% coverage gate and uploaded JUnit/coverage artifacts.
+- CPU and GPU Docker image builds with GitHub Actions layer cache.
+
+The trimmed e2e fixture, RTSP smoke test and PR-hygiene/security workflows are
+the next P1/P3 branches.
 
 ## Business rules implemented
 

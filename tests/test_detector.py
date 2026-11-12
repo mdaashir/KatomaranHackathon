@@ -132,9 +132,7 @@ def test_predict_receives_config(weights):
 
 def test_cuda_device_maps_to_index(weights):
     image = np.zeros((480, 640, 3), dtype=np.uint8)
-    detector, model, _ = _detector(
-        weights, [_Result(_Boxes([], []))], device="cuda:1"
-    )
+    detector, model, _ = _detector(weights, [_Result(_Boxes([], []))], device="cuda:1")
 
     detector.detect(image)
 
@@ -144,9 +142,7 @@ def test_cuda_device_maps_to_index(weights):
 
 def test_model_is_loaded_once(weights):
     image = np.zeros((480, 640, 3), dtype=np.uint8)
-    detector, _, factory_calls = _detector(
-        weights, [_Result(_Boxes([], []))]
-    )
+    detector, _, factory_calls = _detector(weights, [_Result(_Boxes([], []))])
 
     detector.detect(image)
     detector.detect(image)
@@ -174,9 +170,7 @@ def test_result_without_boxes(weights):
 
 def test_detection_without_keypoints(weights):
     image = np.zeros((480, 640, 3), dtype=np.uint8)
-    detector, _, _ = _detector(
-        weights, [_Result(_Boxes([[10, 20, 110, 140]], [0.9]))]
-    )
+    detector, _, _ = _detector(weights, [_Result(_Boxes([[10, 20, 110, 140]], [0.9]))])
 
     detections = detector.detect(image)
 

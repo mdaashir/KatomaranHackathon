@@ -16,17 +16,11 @@ import zipfile
 
 logger = logging.getLogger("download_models")
 
-YOLO_URL = (
-    "https://huggingface.co/deepghs/yolo-face/resolve/main/"
-    "yolov8n-face/model.pt"
-)
-YOLO_SHA256 = (
-    "6217b2550b792b789b3e42a55453c6c4326d6293d27f1a6ae56da715c9fbc668"
-)
+YOLO_URL = "https://huggingface.co/deepghs/yolo-face/resolve/main/yolov8n-face/model.pt"
+YOLO_SHA256 = "6217b2550b792b789b3e42a55453c6c4326d6293d27f1a6ae56da715c9fbc668"
 
 BUFFALO_L_URL = (
-    "https://github.com/deepinsight/insightface/releases/download/v0.7/"
-    "buffalo_l.zip"
+    "https://github.com/deepinsight/insightface/releases/download/v0.7/buffalo_l.zip"
 )
 INSIGHTFACE_HASHES = {
     "w600k_r50.onnx": (
@@ -129,8 +123,7 @@ def verify_models(model_dir: Path) -> None:
             raise FileNotFoundError(f"missing model: {path}")
         if not file_matches(path, expected):
             raise RuntimeError(
-                f"checksum mismatch for {path}: "
-                f"expected {expected}, got {sha256(path)}"
+                f"checksum mismatch for {path}: expected {expected}, got {sha256(path)}"
             )
         logger.info("verified %s", path)
 

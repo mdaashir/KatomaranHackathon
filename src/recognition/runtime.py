@@ -85,9 +85,7 @@ class InsightFaceRuntime:
 
         vector = np.asarray(feature, dtype=np.float32).flatten()
         if vector.size != 512:
-            raise RecognitionError(
-                f"expected a 512-d embedding, got {vector.size}"
-            )
+            raise RecognitionError(f"expected a 512-d embedding, got {vector.size}")
         norm = float(np.linalg.norm(vector))
         if norm == 0.0:
             raise RecognitionError("ArcFace returned a zero embedding")
@@ -121,8 +119,7 @@ class InsightFaceRuntime:
             from insightface.model_zoo.landmark import Landmark
         except ImportError as exc:
             raise RecognitionError(
-                "insightface is not installed; run "
-                "'uv pip install -r requirements.txt'"
+                "insightface is not installed; run 'uv pip install -r requirements.txt'"
             ) from exc
 
         try:

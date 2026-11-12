@@ -641,6 +641,41 @@ P2/P3. Do not claim P1 CI complete until those branches land.
 
 ---
 
+## 2026-11-12 — P1 core CI
+
+### Prompt
+
+> successfully merged the pr, deleted the branch in remote. start proceeding next make sure you always following the agents.md
+
+**Purpose:** add the core CI workflow after Docker: lint, typecheck, tests with
+coverage, and CPU/GPU image builds. The trimmed e2e fixture and RTSP smoke stay
+in the next P1 branch per `docs/DEVOPS.md`.
+
+**What the model did:**
+
+1. Synced `main`, created `ci/core-workflow`.
+2. Installed ruff/pytest-cov, added the ruff/coverage config, applied safe
+   fixes and formatted 26 Python files.
+3. Added `.github/workflows/ci.yml`: ruff, non-blocking mypy, pytest at an 85%
+   coverage gate with JUnit/coverage artifacts, and CPU/GPU Buildx builds with
+   GitHub Actions cache.
+4. Added the CI badge and sections to README, and updated PLAN/DEVOPS/FEATURES.
+
+**Problems solved:**
+
+- Ruff initially found 58 issues and 27 unformatted files; after config, safe
+  fixes and formatting it is clean. One unused `setup` local was removed by
+  hand.
+- Coverage is 92.72%, so the gate is set to 85% with headroom.
+
+**Validated:** `ruff check` clean; `ruff format --check` clean; **216 passed**;
+coverage **92.72%**; workflow YAML parses.
+
+**Remaining:** e2e fixture + MediaMTX/RTSP smoke, PR-hygiene, security/release.
+GPU image build still needs a green CI run.
+
+---
+
 ## Template for future phases
 
 ```markdown

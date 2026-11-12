@@ -110,10 +110,7 @@ class Pipeline:
                 if max_frames is not None and frames >= max_frames:
                     break
 
-                if (
-                    self._window_id is not None
-                    and frame.window_id != self._window_id
-                ):
+                if self._window_id is not None and frame.window_id != self._window_id:
                     self._flush_window()
                 self._window_id = frame.window_id
 
@@ -175,8 +172,7 @@ class Pipeline:
             self._crops.update(box.track_id, crop)
 
         previous = {
-            track_id: track.state
-            for track_id, track in self._lifecycle.tracks.items()
+            track_id: track.state for track_id, track in self._lifecycle.tracks.items()
         }
         face_ids = self._recognize(frame, boxes)
         events = self._lifecycle.observe(
@@ -207,10 +203,7 @@ class Pipeline:
                 continue
 
             last_attempt = self._last_attempt.get(box.track_id)
-            if (
-                last_attempt is not None
-                and now - last_attempt < retry_interval
-            ):
+            if last_attempt is not None and now - last_attempt < retry_interval:
                 continue
             self._last_attempt[box.track_id] = now
 
@@ -285,8 +278,7 @@ class Pipeline:
                                 exc,
                             )
                 elif (
-                    quality.score
-                    >= self._config.recognition.register_quality_threshold
+                    quality.score >= self._config.recognition.register_quality_threshold
                 ):
                     face_id = self._registry.register(
                         result.vector,
@@ -367,10 +359,7 @@ class Pipeline:
                     track=track_id,
                     missed=track.missed_frames,
                 )
-            elif (
-                before == TrackState.LOST
-                and track.state == TrackState.ACTIVE
-            ):
+            elif before == TrackState.LOST and track.state == TrackState.ACTIVE:
                 log_event(
                     self._events_logger,
                     "TRACK_REACQUIRED",

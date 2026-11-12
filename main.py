@@ -244,9 +244,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     if args.report:
         try:
-            sys.stdout.write(
-                json.dumps(report(config), indent=2) + "\n"
-            )
+            sys.stdout.write(json.dumps(report(config), indent=2) + "\n")
         except Exception as exc:
             sys.stderr.write(f"report error: {exc}\n")
             return 1

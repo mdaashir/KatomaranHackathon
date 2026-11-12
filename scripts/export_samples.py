@@ -30,9 +30,12 @@ def build_parser() -> argparse.ArgumentParser:
 
 def _write_csv(connection, table: str, path: Path) -> int:
     rows = connection.execute(f"SELECT * FROM {table}").fetchall()
-    columns = [description[0] for description in connection.execute(
-        f"SELECT * FROM {table} LIMIT 0"
-    ).description]
+    columns = [
+        description[0]
+        for description in connection.execute(
+            f"SELECT * FROM {table} LIMIT 0"
+        ).description
+    ]
     with path.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.writer(handle)
         writer.writerow(columns)
@@ -50,9 +53,10 @@ def _log_excerpt(log_path: Path, limit: int) -> str:
     half = max(1, limit // 2)
     head = lines[:half]
     tail = lines[-half:]
-    return "\n".join(
-        head + ["... (excerpt; see logs for the full file) ..."] + tail
-    ) + "\n"
+    return (
+        "\n".join(head + ["... (excerpt; see logs for the full file) ..."] + tail)
+        + "\n"
+    )
 
 
 def _copy_images(connection, output: Path, max_images: int) -> int:
@@ -131,9 +135,7 @@ def _copy_reentry_images(
             continue
         shutil.copy2(source, reentry_dir / source.name)
         copied += 1
-    return copied, [
-        (int(row["face_id"]), int(row["visits"])) for row in faces
-    ]
+    return copied, [(int(row["face_id"]), int(row["visits"])) for row in faces]
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -195,9 +197,9 @@ Curated output from a real run of the 22 `record_*.mp4` front-entry clips.
 {json.dumps(summary, indent=2)}
 ```
 
-- Faces exported: {counts['faces']}
-- Visits exported: {counts['visits']}
-- Events exported: {counts['events']}
+- Faces exported: {counts["faces"]}
+- Visits exported: {counts["visits"]}
+- Events exported: {counts["events"]}
 - Images copied: {image_count + reentry_count}
 
 ## Files

@@ -173,9 +173,7 @@ class RTSPSource:
                     try:
                         container.close()
                     except Exception:
-                        logger.warning(
-                            "%s: error closing container", self._source_id
-                        )
+                        logger.warning("%s: error closing container", self._source_id)
 
         self._queue.put_drop_oldest(_STOP)
 

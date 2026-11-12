@@ -74,9 +74,7 @@ class TrackLifecycle:
     def open_visits(self) -> list[Visit]:
         """Visits still waiting for an exit."""
 
-        return [
-            visit for visit in self._visits.values() if visit.status == "open"
-        ]
+        return [visit for visit in self._visits.values() if visit.status == "open"]
 
     @property
     def summary(self) -> LifecycleSummary:
@@ -91,9 +89,7 @@ class TrackLifecycle:
             active_tracks=sum(
                 1 for track in tracks if track.state == TrackState.ACTIVE
             ),
-            lost_tracks=sum(
-                1 for track in tracks if track.state == TrackState.LOST
-            ),
+            lost_tracks=sum(1 for track in tracks if track.state == TrackState.LOST),
             exited_tracks=sum(
                 1 for track in tracks if track.state == TrackState.EXITED
             ),
@@ -144,10 +140,10 @@ class TrackLifecycle:
 
         present = {box.track_id: box for box in tracked_boxes}
         for track in list(self._tracks.values()):
-            if (
-                track.track_id not in present
-                and track.state not in {TrackState.EXITED, TrackState.DROPPED}
-            ):
+            if track.track_id not in present and track.state not in {
+                TrackState.EXITED,
+                TrackState.DROPPED,
+            }:
                 events.extend(self._handle_missing(track, frame_index))
 
         recognized = face_ids or {}
@@ -295,13 +291,8 @@ class TrackLifecycle:
                 track.face_id = recognized
 
         events: list[VisitEvent] = []
-        if (
-            track.state == TrackState.NEW
-            and track.hits >= self._config.confirm_hits
-        ):
-            events.extend(
-                self._confirm(track, source_id, window_id)
-            )
+        if track.state == TrackState.NEW and track.hits >= self._config.confirm_hits:
+            events.extend(self._confirm(track, source_id, window_id))
         elif track.state == TrackState.ACTIVE and track.visit_id is not None:
             visit = self._visits.get(track.visit_id)
             if visit is not None and visit.status == "open":

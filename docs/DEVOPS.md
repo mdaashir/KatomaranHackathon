@@ -1,8 +1,8 @@
 # Docker, CI & Release Requirements (P1 core, P3 extras)
 
-> **Status (2026-11-12):** P1 Docker/compose implemented and the CPU image
-> smoke-tested end to end. `ci/core-workflow` and the e2e fixture/workflow are
-> the next P1 branches; security/release workflows remain P3.
+> **Status (2026-11-12):** P1 Docker/compose and the core CI workflow are
+> implemented. The trimmed e2e fixture/RTSP smoke, PR-hygiene and
+> security/release workflows are the next branches.
 
 ## 1. Docker
 

@@ -59,8 +59,7 @@ def _load_ultralytics_model(path: str) -> Any:
         from ultralytics import YOLO
     except ImportError as exc:
         raise DetectorError(
-            "ultralytics is not installed; run "
-            "'uv pip install -r requirements.txt'"
+            "ultralytics is not installed; run 'uv pip install -r requirements.txt'"
         ) from exc
     return YOLO(path)
 
@@ -121,9 +120,7 @@ class YoloFaceDetector:
         """
 
         if image.ndim != 3 or image.shape[2] != 3:
-            raise DetectorError(
-                f"expected an HxWx3 BGR image, got shape {image.shape}"
-            )
+            raise DetectorError(f"expected an HxWx3 BGR image, got shape {image.shape}")
 
         height, width = image.shape[:2]
         model = self._ensure_model()
@@ -182,9 +179,7 @@ class YoloFaceDetector:
 
             keypoint_array = None
             if keypoints_xy is not None and index < len(keypoints_xy):
-                keypoint_array = np.asarray(
-                    keypoints_xy[index], dtype=np.float32
-                )
+                keypoint_array = np.asarray(keypoints_xy[index], dtype=np.float32)
             detections.append(
                 FaceDetection(
                     bbox=detection.bbox,

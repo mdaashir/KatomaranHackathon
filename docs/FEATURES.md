@@ -490,7 +490,9 @@ PR-hygiene, security and release workflows per `docs/DEVOPS.md`.
 - PRs and `main` run the same checks; e2e uses a trimmed fixture and verifies
   DB/log/image invariants.
 
-**Status:** planned in the next P1 branch.
+**Status:** core `ci.yml` implemented in this branch: ruff, non-blocking mypy,
+pytest with an 85% coverage gate, and CPU/GPU image builds. Trimmed e2e/RTSP
+smoke is the next P1 branch.
 
 ### F-34 — API and Streamlit UI (C, P2)
 

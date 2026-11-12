@@ -113,9 +113,7 @@ def _parse_source(data: Mapping[str, Any]) -> SourceConfig:
         type=cast(SourceType, _get_str(section, "type", "source")),
         path=_get_str(section, "path", "source", default="", allow_empty=True),
         glob=_get_str(section, "glob", "source", default="*.mp4"),
-        rtsp_url=_get_str(
-            section, "rtsp_url", "source", default="", allow_empty=True
-        ),
+        rtsp_url=_get_str(section, "rtsp_url", "source", default="", allow_empty=True),
         realtime=_get_bool(section, "realtime", "source", default=False),
         rtsp_transport=_get_str(
             section, "rtsp_transport", "source", default="tcp"
@@ -135,13 +133,9 @@ def _parse_detector(data: Mapping[str, Any]) -> DetectorConfig:
             "detector",
             default="models/yolov8n-face.pt",
         ),
-        conf_threshold=_get_float(
-            section, "conf_threshold", "detector", default=0.5
-        ),
+        conf_threshold=_get_float(section, "conf_threshold", "detector", default=0.5),
         imgsz=_get_int(section, "imgsz", "detector", default=1600),
-        min_face_size=_get_int(
-            section, "min_face_size", "detector", default=40
-        ),
+        min_face_size=_get_int(section, "min_face_size", "detector", default=40),
         device=_get_str(section, "device", "detector", default="auto"),
     )
 
@@ -149,9 +143,7 @@ def _parse_detector(data: Mapping[str, Any]) -> DetectorConfig:
 def _parse_recognition(data: Mapping[str, Any]) -> RecognitionConfig:
     section = _section(data, "recognition", _RECOGNITION_KEYS)
     return RecognitionConfig(
-        model_name=_get_str(
-            section, "model_name", "recognition", default="buffalo_l"
-        ),
+        model_name=_get_str(section, "model_name", "recognition", default="buffalo_l"),
         model_dir=_get_str(
             section,
             "model_dir",
@@ -165,9 +157,7 @@ def _parse_recognition(data: Mapping[str, Any]) -> RecognitionConfig:
             "recognition",
             default=0.45,
         ),
-        min_face_size=_get_int(
-            section, "min_face_size", "recognition", default=60
-        ),
+        min_face_size=_get_int(section, "min_face_size", "recognition", default=60),
         min_confidence=_get_float(
             section, "min_confidence", "recognition", default=0.6
         ),
@@ -195,9 +185,7 @@ def _parse_recognition(data: Mapping[str, Any]) -> RecognitionConfig:
 def _parse_tracking(data: Mapping[str, Any]) -> TrackingConfig:
     section = _section(data, "tracking", _TRACKING_KEYS)
     return TrackingConfig(
-        tracker=_get_str(
-            section, "tracker", "tracking", default="bytetrack"
-        ).lower(),
+        tracker=_get_str(section, "tracker", "tracking", default="bytetrack").lower(),
         track_activation_threshold=_get_float(
             section,
             "track_activation_threshold",
@@ -223,9 +211,7 @@ def _parse_tracking(data: Mapping[str, Any]) -> TrackingConfig:
 def _parse_storage(data: Mapping[str, Any]) -> StorageConfig:
     section = _section(data, "storage", _STORAGE_KEYS)
     return StorageConfig(
-        db_path=_get_str(
-            section, "db_path", "storage", default="data/faces.db"
-        ),
+        db_path=_get_str(section, "db_path", "storage", default="data/faces.db"),
         log_dir=_get_str(section, "log_dir", "storage", default="logs"),
         image_size=_get_int(section, "image_size", "storage", default=256),
         jpeg_quality=_get_int(section, "jpeg_quality", "storage", default=90),
@@ -237,9 +223,7 @@ def _parse_logging(data: Mapping[str, Any]) -> LoggingConfig:
     level = _get_str(section, "level", "logging", default="INFO").upper()
     return LoggingConfig(
         level=cast(LogLevel, level),
-        max_bytes=_get_int(
-            section, "max_bytes", "logging", default=10_485_760
-        ),
+        max_bytes=_get_int(section, "max_bytes", "logging", default=10_485_760),
         backup_count=_get_int(section, "backup_count", "logging", default=5),
     )
 
@@ -256,8 +240,7 @@ def _read_json(path: Path) -> dict[str, Any]:
         data = json.loads(text)
     except json.JSONDecodeError as exc:
         raise ConfigError(
-            f"{path}: invalid JSON at line {exc.lineno}, "
-            f"column {exc.colno}: {exc.msg}"
+            f"{path}: invalid JSON at line {exc.lineno}, column {exc.colno}: {exc.msg}"
         ) from exc
 
     if not isinstance(data, dict):
@@ -271,15 +254,15 @@ def _expand_env(value: Any, path: str) -> Any:
     if isinstance(value, dict):
         return {key: _expand_env(item, f"{path}.{key}") for key, item in value.items()}
     if isinstance(value, list):
-        return [_expand_env(item, f"{path}[{index}]") for index, item in enumerate(value)]
+        return [
+            _expand_env(item, f"{path}[{index}]") for index, item in enumerate(value)
+        ]
     if isinstance(value, str):
 
         def replace(match: re.Match[str]) -> str:
             name = match.group(1)
             if name not in os.environ:
-                raise ConfigError(
-                    f"{path}: environment variable '{name}' is not set"
-                )
+                raise ConfigError(f"{path}: environment variable '{name}' is not set")
             return os.environ[name]
 
         return _ENV_PATTERN.sub(replace, value)
@@ -299,9 +282,7 @@ def _section(
     return section
 
 
-def _reject_unknown(
-    section: Mapping[str, Any], allowed: set[str], path: str
-) -> None:
+def _reject_unknown(section: Mapping[str, Any], allowed: set[str], path: str) -> None:
     unknown = sorted(set(section) - allowed)
     if unknown:
         raise ConfigError(
@@ -385,8 +366,7 @@ def _validate(config: AppConfig) -> None:
 def _validate_source(source: SourceConfig) -> None:
     if source.type not in _SOURCE_TYPES:
         raise ConfigError(
-            f"source.type: expected one of {sorted(_SOURCE_TYPES)}, "
-            f"got '{source.type}'"
+            f"source.type: expected one of {sorted(_SOURCE_TYPES)}, got '{source.type}'"
         )
     if source.type in {"file", "folder"} and not source.path:
         raise ConfigError(
@@ -415,12 +395,8 @@ def _validate_detector(detector: DetectorConfig) -> None:
 
 
 def _validate_device(device: str, path: str) -> None:
-    if device not in {"auto", "cpu"} and not re.fullmatch(
-        r"cuda(:\d+)?", device
-    ):
-        raise ConfigError(
-            f"{path}: expected 'auto', 'cpu', 'cuda' or 'cuda:<index>'"
-        )
+    if device not in {"auto", "cpu"} and not re.fullmatch(r"cuda(:\d+)?", device):
+        raise ConfigError(f"{path}: expected 'auto', 'cpu', 'cuda' or 'cuda:<index>'")
 
 
 def _validate_recognition(
@@ -432,9 +408,7 @@ def _validate_recognition(
         raise ConfigError("recognition.model_dir: must not be empty")
     _validate_device(recognition.device, "recognition.device")
     if not 0.0 <= recognition.similarity_threshold <= 1.0:
-        raise ConfigError(
-            "recognition.similarity_threshold: must be between 0 and 1"
-        )
+        raise ConfigError("recognition.similarity_threshold: must be between 0 and 1")
     if recognition.min_face_size < detector.min_face_size:
         raise ConfigError(
             "recognition.min_face_size: must be greater than or equal to "
@@ -449,13 +423,9 @@ def _validate_recognition(
             "recognition.register_quality_threshold: must be between 0 and 1"
         )
     if recognition.max_embeddings_per_face < 1:
-        raise ConfigError(
-            "recognition.max_embeddings_per_face: must be at least 1"
-        )
+        raise ConfigError("recognition.max_embeddings_per_face: must be at least 1")
     if recognition.retry_interval_sec <= 0:
-        raise ConfigError(
-            "recognition.retry_interval_sec: must be greater than 0"
-        )
+        raise ConfigError("recognition.retry_interval_sec: must be greater than 0")
 
 
 def _validate_tracking(tracking: TrackingConfig) -> None:

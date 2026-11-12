@@ -36,7 +36,7 @@ def test_events_log_format(tmp_path):
 
     text = (tmp_path / "events.log").read_text(encoding="utf-8").strip()
     assert re.fullmatch(
-        r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z \| ENTRY \| '
+        r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z \| ENTRY \| "
         r'visit=1 face=- path="logs/a b\.jpg"',
         text,
     )
@@ -86,7 +86,7 @@ def test_get_logger_uses_ift_namespace():
 
 
 def test_app_log_receives_regular_records(tmp_path):
-    setup = configure_logging(tmp_path)
+    configure_logging(tmp_path)
     get_logger("test").warning("something happened")
     shutdown_logging()
 
