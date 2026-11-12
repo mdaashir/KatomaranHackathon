@@ -9,6 +9,9 @@ updates:
     groups:
       python:
         patterns: ["*"]
+    # 0.26+ removed the ByteTrack module used by src/tracking/tracker.py.
+    ignore:
+      - dependency-name: "supervision"
 
   - package-ecosystem: "docker"
     directory: "/"
