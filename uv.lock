@@ -1780,6 +1780,7 @@ gpu = [
 ui = [
     { name = "fastapi" },
     { name = "pydantic" },
+    { name = "requests" },
     { name = "streamlit", version = "1.65.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "streamlit", version = "1.67.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "uvicorn", extra = ["standard"] },
@@ -1787,6 +1788,7 @@ ui = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "httpx" },
     { name = "mypy" },
     { name = "pytest" },
     { name = "pytest-cov" },
@@ -1804,6 +1806,7 @@ requires-dist = [
     { name = "onnxruntime-gpu", marker = "extra == 'gpu'", specifier = "==1.22.0" },
     { name = "opencv-python-headless", specifier = ">=4.9" },
     { name = "pydantic", marker = "extra == 'ui'", specifier = ">=2.7,<3.0" },
+    { name = "requests", marker = "extra == 'ui'", specifier = ">=2.31,<3.0" },
     { name = "streamlit", marker = "extra == 'ui'", specifier = ">=1.36,<2.0" },
     { name = "supervision", specifier = "==0.25.1" },
     { name = "ultralytics", specifier = ">=8.4" },
@@ -1813,6 +1816,7 @@ provides-extras = ["cpu", "gpu", "ui"]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "httpx", specifier = ">=0.27,<1.0" },
     { name = "mypy", specifier = ">=1.10" },
     { name = "pytest", specifier = ">=8.0,<10.0" },
     { name = "pytest-cov", specifier = ">=5.0" },

@@ -62,7 +62,7 @@ jobs:
       - name: Install Python and dependencies
         run: |
           uv python install 3.11
-          uv sync --extra cpu --group dev --no-install-project
+          uv sync --extra cpu --extra ui --group dev --no-install-project
 
       - name: Mypy
         continue-on-error: true
@@ -85,7 +85,7 @@ jobs:
       - name: Install Python and dependencies
         run: |
           uv python install 3.11
-          uv sync --extra cpu --group dev --no-install-project
+          uv sync --extra cpu --extra ui --group dev --no-install-project
 
       - name: Run tests with coverage
         run: |
