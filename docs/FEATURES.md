@@ -501,7 +501,9 @@ API/UI assertions wait for P2.
 Thin FastAPI service and Streamlit client implementing the screens and runtime
 overrides in `docs/FRONTEND.md`; the pipeline runs without either.
 
-**Status:** planned; contract is in `docs/FRONTEND.md`.
+**Status:** F1 implemented: `/health`, `/stats`, `/events`, `/logs/tail`,
+`/images`, `/config`; Dashboard/Event Log/System Logs; API contract and
+Streamlit boot tests. F2–F4 next.
 
 ### F-35 — Security and release automation (C, P3)
 

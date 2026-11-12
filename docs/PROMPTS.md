@@ -784,6 +784,42 @@ submission actions.
 
 ---
 
+## 2026-11-12 — P2 F1 API and Streamlit views
+
+### Prompt
+
+> successfully merged the 2 prs, deleted the branch in remote. start proceeding next make sure you always following the agents.md
+
+**Purpose:** start P2 with the read-only API and the first three Streamlit
+views, keeping the pipeline completely independent.
+
+**What the model did:**
+
+1. Added `src/api/`: a read-only `ReadModel` over SQLite/`events.log` and a
+   FastAPI app with `/health`, `/stats`, `/events`, `/logs/tail`, `/images` and
+   redacted `/config`.
+2. Added `ui/app.py`: Dashboard, Event Log and System Logs, using `requests`
+   only; no DB/pipeline imports.
+3. Added API contract tests and a Streamlit `AppTest` boot smoke.
+4. Added UI dependencies to the `ui` extra/requirements, `httpx` to dev, and
+   switched CI typecheck/test to `--extra ui`.
+5. Updated README/PLAN/FRONTEND/FEATURES and added `ui/README.md`.
+
+**Problems solved:**
+
+- `load_config` requires an explicit path; the API defaults to `config.json`.
+- API health/event reads use normal SQLite connections; the earlier read-only
+  URI caused Linux WAL/integrity issues in CI.
+- The UI handles API-down states with `st.error` instead of raising.
+
+**Validated:** 223 tests, 92.21% coverage, ruff/format clean, Streamlit boot
+smoke passes with no API running.
+
+**Remaining:** F2 job control/live view/uploads, F3 folder/config, F4 visitors/
+system pages; P0 submission video/form still the priority.
+
+---
+
 ## Template for future phases
 
 ```markdown

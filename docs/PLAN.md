@@ -453,6 +453,18 @@ cache is vendored; plan for an offline check.
 
 ---
 
+### Phase 12 — P2 F1 read-only API and Streamlit views
+
+- FastAPI read layer over SQLite/`events.log`: health, stats, events with filters,
+  log tail, images and redacted config.
+- Streamlit Dashboard, Event Log and System Logs; pure HTTP client.
+- Tests: API contract plus Streamlit `AppTest` boot smoke.
+
+**Status (2026-11-12):** F1 implemented. 223 tests, 92.21% coverage. F2 (job
+control/live view/uploads), F3 (folder/config) and F4 (visitors/system) remain.
+
+---
+
 ## 12. Compliance audit (2026-11-11)
 
 Every requirement in the problem statement is mapped to implementation evidence
