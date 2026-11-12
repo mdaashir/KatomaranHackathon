@@ -6,6 +6,7 @@ import asyncio
 from datetime import datetime, timezone
 import json
 from pathlib import Path
+import time
 from typing import Literal
 import uuid
 
@@ -24,6 +25,7 @@ from src.api.jobs import (
 from src.api.live import LiveFrameBuffer
 from src.api.models import JobRequest
 from src.api.reader import ReadModel
+from src.api.system import SystemModel
 from src.config import AppConfig, ConfigError, load_config
 
 MAX_UPLOAD_BYTES = 2 * 1024 * 1024 * 1024
@@ -48,16 +50,25 @@ def create_app(
 
     base_config = config or load_config(config_path or "config.json")
     base_path = config_path or ("config.json" if config is None else None)
+    started_at = time.monotonic()
     store = ConfigStore(
         base_config,
         base_path=base_path,
         overrides_path=overrides_path,
     )
     effective = store.effective
+    db_file = db_path or effective.storage.db_path
+    logs = log_dir or effective.storage.log_dir
     reader = ReadModel(
-        db_path or effective.storage.db_path,
-        log_dir or effective.storage.log_dir,
+        db_file,
+        logs,
         config=effective,
+    )
+    system_model = SystemModel(
+        effective,
+        db_path=db_file,
+        log_dir=logs,
+        started_at=started_at,
     )
     buffer = frame_buffer or (
         job_manager.frame_buffer if job_manager is not None else LiveFrameBuffer()
@@ -93,6 +104,24 @@ def create_app(
     @app.get("/stats")
     def stats() -> dict[str, object]:
         return reader.stats()
+
+    @app.get("/system")
+    def system() -> dict[str, object]:
+        return system_model.snapshot()
+
+    @app.get("/visitors")
+    def visitors(
+        limit: int = Query(100, ge=1, le=500),
+        offset: int = Query(0, ge=0),
+    ) -> dict[str, object]:
+        return reader.visitors(limit=limit, offset=offset)
+
+    @app.get("/visitors/{face_id}")
+    def visitor(face_id: int) -> dict[str, object]:
+        found = reader.visitor(face_id)
+        if found is None:
+            raise HTTPException(status_code=404, detail="visitor not found")
+        return found
 
     @app.get("/events")
     def events(

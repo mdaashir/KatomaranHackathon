@@ -105,8 +105,9 @@ an optional `frame_sink`; `LiveFrameBuffer` copies the newest detection frame
 only while an MJPEG viewer is attached. The activity feed is SSE over new DB
 event IDs. `ConfigStore` layers validated runtime overrides over `config.json`
 and updates the manager for the next job; only five hot fields are writable and
-`frame_skip` stays file-owned. Headless `main.py` is unchanged and never
-depends on the API/UI.
+`frame_skip` stays file-owned. Visitor timelines are read directly from the
+DB; `/system` uses `psutil` and ONNX providers. Headless `main.py` is unchanged
+and never depends on the API/UI.
 
 ### Core types and interfaces
 

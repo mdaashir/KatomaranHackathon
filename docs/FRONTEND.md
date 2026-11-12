@@ -1,12 +1,9 @@
 # Frontend & API Requirements (P2 — bonus layer)
 
-> **Status (2026-11-12):** F1 implemented: read-only FastAPI (`/health`,
-> `/stats`, `/events`, `/logs/tail`, `/images`, `/config`) and Streamlit
-> Dashboard, Event Log and System Logs. F2 implemented: upload, one-worker job
-> control (file/RTSP), MJPEG live view and SSE activity feed, plus Live Monitor
-> and Sources & Jobs pages. F3 implemented: recursive folder jobs (`/folders`,
-> `**/*.mp4`) and validated runtime overrides (`/config` GET/PUT/reset/
-> save-default, persisted to `data/runtime_overrides.json`). F4 remains.
+> **Status (2026-11-12):** F1–F3 complete. F4 implemented: `/visitors`,
+> `/visitors/{id}`, `/system`, Visitors gallery/timeline, System metrics and
+> model info, Event Log CSV export, log download. All P2 screens are
+> implemented; API/UI remain clients and never block the pipeline.
 
 **Status of the requirement:** the problem statement says a frontend "is not
 required, but including one will be considered an added advantage". It does

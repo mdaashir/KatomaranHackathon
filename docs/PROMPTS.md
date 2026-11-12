@@ -898,6 +898,39 @@ passes with the API down.
 
 ---
 
+## 2026-11-12 — P2 F4 visitors, system and polish
+
+### Prompt
+
+> successfully merged the pr, deleted the branch in remote. start proceeding next make sure you always following the agents.md
+
+**Purpose:** finish the bonus UI without touching the graded pipeline.
+
+**What the model did:**
+
+1. Added `/visitors` and `/visitors/{face_id}` from faces/visits/events,
+   including thumbnails and entry/exit image URLs.
+2. Added `/system` with CPU, memory, disk, process RSS, DB size, uptime, ONNX
+   providers, model settings and GPU availability (`psutil`).
+3. Added the Streamlit Visitors gallery/timeline and System page; Event Log
+   CSV export and System Logs download.
+4. Added visitor/system contract tests and updated all status docs.
+
+**Problems solved:**
+
+- Visitor queries use event IDs rather than image paths, preserving the
+  traversal-safe image endpoint.
+- System diagnostics are read-only and never instantiate a model or touch the
+  pipeline.
+- CSV/download actions stay in the UI; no extra API writes.
+
+**Validated:** 237 tests, 90.81% coverage, ruff/format clean, Streamlit smoke
+passes with the API down.
+
+**Remaining:** P0 public video and Google Form; no more P2 build slices.
+
+---
+
 ## Template for future phases
 
 ```markdown
