@@ -1,8 +1,9 @@
 # Frontend & API Requirements (P2 — bonus layer)
 
-> **Status (2026-11-12):** P2 not started. The P0 pipeline and P1 Docker layer
-> are the current priorities; this document is the implementation contract for
-> the API/UI follow-up.
+> **Status (2026-11-12):** F1 implemented: read-only FastAPI (`/health`,
+> `/stats`, `/events`, `/logs/tail`, `/images`, `/config`) and Streamlit
+> Dashboard, Event Log and System Logs. F2–F4 are next; API/UI remain clients
+> and never block the pipeline.
 
 **Status of the requirement:** the problem statement says a frontend "is not
 required, but including one will be considered an added advantage". It does
@@ -58,7 +59,7 @@ Browser ── Streamlit (ui/) ──HTTP──▶ FastAPI (src/api) ──▶ p
 | `GET /visitors`, `GET /visitors/{id}` | registered faces + visit history |
 | `GET /events` | filter by date, type, face ID; paged |
 | `GET /logs/tail` | tail of `events.log`, filter by level/text |
-| `GET /images/{path}` | serve cropped face images (traversal-safe) |
+| `GET /images/{event_id}` | serve cropped face images by event ID (DB-resolved) |
 | `GET /config`, `PUT /config` | effective config; apply runtime overrides |
 | `POST /config/reset` | drop overrides, back to `config.json` |
 | `POST /config/save-default` | explicitly write overrides into `config.json` |

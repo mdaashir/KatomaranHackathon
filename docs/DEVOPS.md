@@ -110,9 +110,8 @@ commit the full provided video.
 ### `security.yml` — P3
 
 CodeQL (Python), `dependency-review` on PRs, secret scanning with gitleaks
-(RTSP credentials are a real risk), `pip-audit`, and Trivy filesystem scan on
-PRs; the built CPU image is scanned on pushes/schedule. Runs on PRs, pushes to
-`main`, and weekly.
+(RTSP credentials are a real risk), `pip-audit`, and Trivy filesystem + built
+CPU image scans on every run. Runs on PRs, pushes to `main`, and weekly.
 
 ### `release.yml` — P3
 

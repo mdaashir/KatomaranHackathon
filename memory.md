@@ -699,3 +699,24 @@ Last updated: 2026-11-11
 - After merge: sync `main`, delete `ci/security-and-release`, then start P2
   (`docs/FRONTEND.md`): FastAPI skeleton, Streamlit dashboard/event/log views,
   then jobs/live view/config. Keep P0 submission video/form as the priority.
+
+---
+
+## P2 F1 API and Streamlit views (2026-11-12)
+
+- Branch: `feature/api-dashboard`.
+- Added `src/api/`: read-only `ReadModel` + FastAPI `/health`, `/stats`,
+  `/events` (filters), `/logs/tail`, `/images`, redacted `/config`.
+- Added `ui/app.py`: Dashboard, Event Log, System Logs; pure `requests` client,
+  no DB/pipeline imports; `ui/README.md`.
+- Added API contract tests and a Streamlit `AppTest` boot smoke; UI deps in the
+  `ui` extra, `httpx` in dev; CI typecheck/test use `--extra ui`.
+- Validated: **223 tests**, **92.21% coverage**, ruff/format clean, Streamlit
+  boots with the API down.
+- PR pending creation in this phase; stop and wait for review/merge.
+
+## Next session starts with
+
+- After merge: sync `main`, delete `feature/api-dashboard`, then start P2 F2
+  (`feature/api-jobs-live`): background job worker, uploads, live MJPEG,
+  activity feed and RTSP input. Keep the public video/form as the priority.
