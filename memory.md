@@ -791,3 +791,16 @@ Last updated: 2026-11-11
   walkthrough, replace `VIDEO_URL` in README/SUBMISSION, submit the Google
   Form before 2:00 PM Friday 13 Nov 2026.
 - PR pending creation; stop and wait for review/merge.
+
+---
+
+## RTSP e2e fix (2026-11-12)
+
+- Branch: `fix/rtsp-e2e-confirmation`; PR #27.
+- PR #26's e2e failed: RTSP registered Face 1 but had 0 visits/entries/exits.
+- CPU container is slower than the real-time feed; the queue intentionally
+  drops frames, so tracks rarely reached 3 hits. E2E-only config now uses
+  `confirm_hits: 1`; production remains 3.
+- Local RTSP e2e: 300 frames, 10 visits/entries/exits, 0 open, 20 images,
+  all required log events; `verify_outputs.py` reports `ok: true`.
+- Stop and wait for merge.
