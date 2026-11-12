@@ -201,6 +201,125 @@ class ReadModel:
             "image_url": f"/images/{row['event_id']}",
         }
 
+    def visitors(self, *, limit: int = 100, offset: int = 0) -> dict[str, object]:
+        """Return registered faces with visit counts and thumbnails."""
+
+        if not self._db_path.is_file():
+            return {"items": [], "total": 0, "limit": limit, "offset": offset}
+        connection = sqlite3.connect(str(self._db_path))
+        connection.row_factory = sqlite3.Row
+        try:
+            total = connection.execute("SELECT COUNT(*) FROM faces").fetchone()[0]
+            rows = connection.execute(
+                """
+                SELECT f.face_id, f.created_at, f.first_seen_at, f.model_name,
+                       f.best_quality, f.is_active,
+                       COUNT(v.visit_id) AS visit_count,
+                       COALESCE(MAX(COALESCE(v.exit_at, v.entry_at)),
+                                f.first_seen_at) AS last_seen_at,
+                       (SELECT e.event_id FROM events e
+                        WHERE e.face_id = f.face_id AND e.event_type = 'entry'
+                        ORDER BY e.event_id DESC LIMIT 1) AS thumbnail_event_id
+                FROM faces f
+                LEFT JOIN visits v ON v.face_id = f.face_id
+                GROUP BY f.face_id
+                ORDER BY last_seen_at DESC
+                LIMIT ? OFFSET ?
+                """,
+                (limit, offset),
+            ).fetchall()
+        finally:
+            connection.close()
+        return {
+            "items": [self._visitor_item(row) for row in rows],
+            "total": int(total),
+            "limit": limit,
+            "offset": offset,
+        }
+
+    def visitor(self, face_id: int) -> dict[str, object] | None:
+        """Return one face and its visit timeline, or ``None``."""
+
+        if not self._db_path.is_file():
+            return None
+        connection = sqlite3.connect(str(self._db_path))
+        connection.row_factory = sqlite3.Row
+        try:
+            face = connection.execute(
+                """
+                SELECT f.face_id, f.created_at, f.first_seen_at, f.model_name,
+                       f.best_quality, f.is_active,
+                       COUNT(v.visit_id) AS visit_count,
+                       COALESCE(MAX(COALESCE(v.exit_at, v.entry_at)),
+                                f.first_seen_at) AS last_seen_at,
+                       (SELECT e.event_id FROM events e
+                        WHERE e.face_id = f.face_id AND e.event_type = 'entry'
+                        ORDER BY e.event_id DESC LIMIT 1) AS thumbnail_event_id
+                FROM faces f
+                LEFT JOIN visits v ON v.face_id = f.face_id
+                WHERE f.face_id = ?
+                GROUP BY f.face_id
+                """,
+                (face_id,),
+            ).fetchone()
+            if face is None:
+                return None
+            visits = connection.execute(
+                """
+                SELECT v.visit_id, v.face_id, v.track_id, v.source_id,
+                       v.entry_at, v.exit_at, v.status, v.is_anonymous,
+                       (SELECT e.event_id FROM events e
+                        WHERE e.visit_id = v.visit_id AND e.event_type = 'entry'
+                        ORDER BY e.event_id DESC LIMIT 1) AS entry_event_id,
+                       (SELECT e.event_id FROM events e
+                        WHERE e.visit_id = v.visit_id AND e.event_type = 'exit'
+                        ORDER BY e.event_id DESC LIMIT 1) AS exit_event_id
+                FROM visits v
+                WHERE v.face_id = ?
+                ORDER BY v.entry_at DESC, v.visit_id DESC
+                """,
+                (face_id,),
+            ).fetchall()
+        finally:
+            connection.close()
+        payload = self._visitor_item(face)
+        payload["visits"] = [self._visit_item(row) for row in visits]
+        return payload
+
+    @staticmethod
+    def _visitor_item(row: sqlite3.Row) -> dict[str, object]:
+        thumbnail = row["thumbnail_event_id"]
+        return {
+            "face_id": int(row["face_id"]),
+            "created_at": str(row["created_at"]),
+            "first_seen_at": str(row["first_seen_at"]),
+            "last_seen_at": str(row["last_seen_at"]),
+            "model_name": str(row["model_name"]),
+            "best_quality": float(row["best_quality"]),
+            "is_active": bool(row["is_active"]),
+            "visit_count": int(row["visit_count"]),
+            "thumbnail_url": f"/images/{thumbnail}" if thumbnail is not None else None,
+        }
+
+    @staticmethod
+    def _visit_item(row: sqlite3.Row) -> dict[str, object]:
+        entry = row["entry_event_id"]
+        exit_event = row["exit_event_id"]
+        return {
+            "visit_id": int(row["visit_id"]),
+            "face_id": int(row["face_id"]),
+            "track_id": int(row["track_id"]),
+            "source_id": str(row["source_id"]),
+            "entry_at": str(row["entry_at"]),
+            "exit_at": str(row["exit_at"]) if row["exit_at"] is not None else None,
+            "status": str(row["status"]),
+            "is_anonymous": bool(row["is_anonymous"]),
+            "entry_image_url": f"/images/{entry}" if entry is not None else None,
+            "exit_image_url": (
+                f"/images/{exit_event}" if exit_event is not None else None
+            ),
+        }
+
     def log_tail(
         self,
         *,

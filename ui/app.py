@@ -6,6 +6,8 @@ plain HTTP client; the API can be down without affecting the tracker.
 
 from __future__ import annotations
 
+import csv
+import io
 import os
 
 import requests
@@ -350,6 +352,83 @@ def config_page() -> None:
                 st.success("Effective config saved as config.json.")
 
 
+def visitors_page() -> None:
+    st.subheader("Visitors")
+    data = api_get("/visitors")
+    if not data:
+        return
+    visitors = data["items"]
+    if not visitors:
+        st.info("No registered visitors yet.")
+        return
+    cols = st.columns(4)
+    for index, visitor in enumerate(visitors[:12]):
+        with cols[index % 4]:
+            url = _image_url(visitor.get("thumbnail_url"))
+            if url:
+                st.image(url, use_container_width=True)
+            st.caption(f"Face {visitor['face_id']} · {visitor['visit_count']} visits")
+    selected = st.selectbox(
+        "Open visitor",
+        [visitor["face_id"] for visitor in visitors],
+        format_func=lambda face_id: f"Face {face_id}",
+    )
+    detail = api_get(f"/visitors/{selected}")
+    if not detail:
+        return
+    metrics = st.columns(4)
+    metrics[0].metric("Face", detail["face_id"])
+    metrics[1].metric("Visits", detail["visit_count"])
+    metrics[2].metric("Best quality", round(detail["best_quality"], 3))
+    metrics[3].metric("Active", "yes" if detail["is_active"] else "no")
+    st.caption(
+        f"First seen: {detail['first_seen_at']} · Last seen: {detail['last_seen_at']}"
+    )
+    if detail["visits"]:
+        st.dataframe(
+            [
+                {
+                    "Visit": visit["visit_id"],
+                    "Entry": visit["entry_at"],
+                    "Exit": visit["exit_at"] or "open",
+                    "Status": visit["status"],
+                    "Source": visit["source_id"],
+                }
+                for visit in detail["visits"]
+            ],
+            use_container_width=True,
+            hide_index=True,
+        )
+
+
+def _bytes(value: int) -> str:
+    size = float(value)
+    for unit in ("B", "KiB", "MiB", "GiB"):
+        if size < 1024 or unit == "GiB":
+            return f"{size:.1f} {unit}"
+        size /= 1024
+    return f"{size:.1f} GiB"
+
+
+def system_page() -> None:
+    st.subheader("System")
+    data = api_get("/system")
+    if not data:
+        return
+    memory = data["memory"]
+    metrics = st.columns(4)
+    metrics[0].metric("CPU", f"{data['cpu']['percent']:.0f}%")
+    metrics[1].metric("Memory", f"{memory['percent']:.0f}%")
+    metrics[2].metric("DB size", _bytes(data["database"]["size_bytes"]))
+    metrics[3].metric("Uptime", f"{data['uptime_seconds'] / 60:.1f} min")
+    st.caption(
+        f"{data['platform']} · Python {data['python']} · "
+        f"GPU: {'available' if data['gpu']['available'] else 'CPU only'}"
+    )
+    st.write("ONNX providers: " + ", ".join(data["gpu"]["providers"]))
+    st.json(data["models"])
+
+
 def event_log() -> None:
     left, middle, right = st.columns([1, 1, 1])
     event_type = left.selectbox("Type", ["all", "entry", "exit"])
@@ -369,6 +448,28 @@ def event_log() -> None:
     if data:
         st.caption(f"{data['total']} matching events")
         _event_table(data["items"])
+        buffer = io.StringIO()
+        writer = csv.writer(buffer)
+        writer.writerow(
+            ["event_id", "type", "occurred_at", "face_id", "visit_id", "source"]
+        )
+        for event in data["items"]:
+            writer.writerow(
+                [
+                    event["event_id"],
+                    event["event_type"],
+                    event["occurred_at"],
+                    event["face_id"] or "",
+                    event["visit_id"],
+                    event["source_id"],
+                ]
+            )
+        st.download_button(
+            "Download CSV",
+            buffer.getvalue(),
+            "events.csv",
+            "text/csv",
+        )
 
 
 def system_logs() -> None:
@@ -378,6 +479,12 @@ def system_logs() -> None:
     if data:
         st.caption(data["path"])
         st.code("\n".join(data["lines"]) or "No matching log lines.", language="text")
+        st.download_button(
+            "Download tail",
+            "\n".join(data["lines"]),
+            "events.log",
+            "text/plain",
+        )
 
 
 st.sidebar.title("Face Tracker")
@@ -387,8 +494,10 @@ view = st.sidebar.radio(
         "Dashboard",
         "Live Monitor",
         "Sources & Jobs",
+        "Visitors",
         "Event log",
         "Config",
+        "System",
         "System logs",
     ],
 )
@@ -405,5 +514,9 @@ elif view == "Event log":
     event_log()
 elif view == "Config":
     config_page()
+elif view == "Visitors":
+    visitors_page()
+elif view == "System":
+    system_page()
 else:
     system_logs()

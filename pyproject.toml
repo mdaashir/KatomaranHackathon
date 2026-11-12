@@ -24,6 +24,7 @@ ui = [
     "pydantic>=2.7,<3.0",
     "requests>=2.31,<3.0",
     "python-multipart>=0.0.9",
+    "psutil>=5.9,<8.0",
 ]
 
 [dependency-groups]
