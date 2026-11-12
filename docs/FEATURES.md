@@ -490,9 +490,10 @@ PR-hygiene, security and release workflows per `docs/DEVOPS.md`.
 - PRs and `main` run the same checks; e2e uses a trimmed fixture and verifies
   DB/log/image invariants.
 
-**Status:** e2e implemented in this branch: 3.04 s fixture, file run twice
-(re-ID), MediaMTX RTSP smoke, read-only DB/image/log verifier and the CI job.
-PR-hygiene/security remain; API/UI assertions wait for P2.
+**Status:** core CI, e2e and PR hygiene implemented: ruff, non-blocking mypy,
+pytest with an 85% coverage gate, CPU/GPU builds, file+RTSP e2e, conventional
+PR titles, no-attribution-trailer check, template and grouped Dependabot.
+Security/release workflows remain; API/UI assertions wait for P2.
 
 ### F-34 — API and Streamlit UI (C, P2)
 
