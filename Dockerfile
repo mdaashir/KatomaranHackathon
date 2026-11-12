@@ -60,7 +60,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=300s --retries=3 \
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["sh", "-c", "exec python main.py --config \"${CONFIG_PATH:-config.json}\""]
 
-FROM nvidia/cuda:12.8.1-cudnn-runtime-ubuntu22.04 AS gpu
+FROM nvidia/cuda:13.5.0-cudnn-runtime-ubuntu22.04 AS gpu
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
