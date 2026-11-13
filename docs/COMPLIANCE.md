@@ -5,9 +5,8 @@ Source: [Katomarans Problem Statement](<Katomarans Problem Statement.pdf>)
 Status: **final audit — 2026-11-13**. All functional requirements are
 implemented and verified; the optional P2 API/UI is feature-complete
 (235 tests). Real-time throughput is the one documented performance caveat.
-The public demo video is the only missing deliverable; the Google Form
-submission is the only other author action, and interview-hardware fps tuning
-is the only performance follow-up.
+The public video is uploaded and the Google Form submission is complete.
+Interview-hardware fps tuning remains the only performance follow-up.
 
 This checklist maps every requirement in the problem statement to the
 implementation and the evidence a reviewer can inspect. Status values:
@@ -74,11 +73,11 @@ implementation and the evidence a reviewer can inspect. Status values:
 | 5.5 | README setup instructions | DONE | `README.md` GPU and CPU setup, fresh-clone path |
 | 5.6 | README assumptions | DONE | `README.md` known limitations |
 | 5.7 | README sample `config.json` structure | DONE | `README.md` sample block + full `config.json` |
-| 5.8 | README Loom/YouTube explanatory video | **MISSING (AUTHOR)** | `VIDEO_URL` placeholder in `README.md` and `docs/SUBMISSION.md`; the author must record and upload it |
+| 5.8 | README Loom/YouTube explanatory video | DONE | [YouTube walkthrough](https://youtu.be/bekQvFoOWTY) linked in README, SUBMISSION and DEMO; local [`demo.mkv`](../demo.mkv) |
 | 5.9 | Exact Katomaran footer at the bottom of README | DONE | Last line of `README.md` |
-| 5.10 | Sample output: logs, images, DB entries | DONE | `samples/` with `events.log` excerpt, 24 crops, CSVs, `summary.json`, dashboard |
+| 5.10 | Sample output: logs, images, DB entries | DONE | `samples/` with `events.log` excerpt, 24 crops, CSVs and `summary.json`; optional P2 UI reads the same data |
 | 5.11 | Prompts used are documented | DONE | `docs/PROMPTS.md` |
-| 5.12 | Submit the GitHub repository in the Google Form before the deadline | **AUTHOR** | Repository is ready; the form submission and video are external actions |
+| 5.12 | Submit the GitHub repository in the Google Form before the deadline | DONE | Repository + public video submitted 2026-11-13 |
 | 5.13 | Clean, modular, understandable Python code | DONE | Typed modules, constructor injection, tests, phase docs |
 
 ## 6. Optional and bonus items
@@ -92,11 +91,9 @@ implementation and the evidence a reviewer can inspect. Status values:
 
 ## 7. Author actions before submission
 
-1. Record the 4–5 minute walkthrough using [`DEMO.md`](DEMO.md).
-2. Upload it to Loom or YouTube with public/unlisted visibility.
-3. Replace `VIDEO_URL` in `README.md` and `SUBMISSION.md`.
-4. Submit the repository and video through the Katomaran Google Form before
-   **2:00 PM, Friday 13 November 2026**.
+**Completed 2026-11-13:** the 4–5 minute walkthrough was recorded, uploaded to
+[YouTube](https://youtu.be/bekQvFoOWTY), linked in the repo, and the repository
++ video were submitted through the Katomaran Google Form.
 
 ## 8. Validation evidence
 
@@ -111,19 +108,15 @@ implementation and the evidence a reviewer can inspect. Status values:
 ## 9. Audit result and next iteration
 
 **Repository-side result:** all functional requirements are implemented and
-verified. Real-time throughput is the one documented performance caveat, and
-the public video is the one missing deliverable. The exact footer line is
+verified. Real-time throughput is the one documented performance caveat. The
+public video and Google Form submission are complete, the exact footer line is
 present, the samples are consistent, and the verifier is clean.
 
-**Next iteration / author actions:**
+**Next iteration / interview follow-ups:**
 
-1. Record the 4–5 minute walkthrough in [`DEMO.md`](DEMO.md), upload it, and
-   replace `VIDEO_URL` in `README.md` and [`SUBMISSION.md`](SUBMISSION.md).
-2. Submit the public repository and video through the Katomaran Google Form
-   before **2:00 PM, Friday 13 November 2026**.
-3. Tune `imgsz` / `frame_skip` on the interview GPU if the source is 25 fps;
+1. Tune `imgsz` / `frame_skip` on the interview GPU if the source is 25 fps;
    the long run averaged ~21 fps at 1600/skip3. The RTSP queue already drops
    stale frames, so the unique count stays current.
-4. Optional if interview hardware is available: repeat the RTSP kill/restore
+2. Optional if interview hardware is available: repeat the RTSP kill/restore
    check on the actual camera. The code path and backoff/reconnect tests are
    already in place; this is a hardware confirmation, not a missing feature.

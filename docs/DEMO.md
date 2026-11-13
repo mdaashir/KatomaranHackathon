@@ -1,7 +1,10 @@
 # Demo video script
 
-> Compliance audit: [`COMPLIANCE.md`](COMPLIANCE.md). This recording is the only
-> repository-external deliverable still missing.
+> **Published:** [YouTube walkthrough](https://youtu.be/bekQvFoOWTY) ·
+> local [`demo.mkv`](../demo.mkv). This recording and the Google Form
+> submission are complete.
+>
+> Compliance audit: [`COMPLIANCE.md`](COMPLIANCE.md).
 
 Target length: **4–5 minutes**. Record the terminal at 1080p with a readable
 font, and keep `samples/` open in Explorer or the editor.
@@ -118,8 +121,9 @@ uv run --no-sync python main.py --source rtsp --rtsp-url rtsp://camera/stream
 > the camera; those visits are logged as anonymous. The unique count is always
 > derived from SQLite. The repo and samples are linked in the README.”
 
-## After recording
+## Recording status
 
-1. Upload to Loom or YouTube with public or unlisted visibility.
-2. Replace `VIDEO_URL` in `README.md` and `docs/SUBMISSION.md` with the link.
-3. Confirm the link opens in a private browser window.
+**Completed 2026-11-13.** The walkthrough is published at
+[https://youtu.be/bekQvFoOWTY](https://youtu.be/bekQvFoOWTY) and a local copy is
+in [`demo.mkv`](../demo.mkv). The link was verified in a private browser window
+and submitted with the repository through the Katomaran Google Form.

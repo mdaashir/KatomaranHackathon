@@ -5,9 +5,10 @@
 > criteria. “Done” means the acceptance criteria are demonstrable from a log,
 > a DB row, an image file, or a test.
 >
-> **Final audit (2026-11-11):** F-01–F-31 are implemented and tested. F-30’s
-> public video link is the only author action; see
-> [`COMPLIANCE.md`](./COMPLIANCE.md).
+> **Final audit (2026-11-13):** F-01–F-36 are implemented and tested. The
+> public walkthrough is published at
+> [https://youtu.be/bekQvFoOWTY](https://youtu.be/bekQvFoOWTY); the Google Form
+> was submitted. See [`COMPLIANCE.md`](./COMPLIANCE.md).
 
 ---
 
