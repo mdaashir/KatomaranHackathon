@@ -40,6 +40,14 @@ class WebcamSource:
             raise VideoSourceError(
                 f"webcam {device_index}: cannot open camera: {exc}"
             ) from exc
+        if not self._capture.isOpened() and backend != cv2.CAP_ANY:
+            self._capture.release()
+            try:
+                self._capture = factory(device_index, cv2.CAP_ANY)
+            except Exception as exc:
+                raise VideoSourceError(
+                    f"webcam {device_index}: cannot open camera: {exc}"
+                ) from exc
         if not self._capture.isOpened():
             self._capture.release()
             raise VideoSourceError(
