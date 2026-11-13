@@ -1045,6 +1045,28 @@ preserved; the final state is interview-ready.
 
 ---
 
+## 2026-11-13 — Webcam diagnostics
+
+### Prompt
+
+> that webcam not working or i dont know how to use so wanna browser test it verify its working
+
+**What the model did:**
+
+1. Probed the host directly: camera index 0 is 640×480/25 fps, index 1 is
+   1280×720/25 fps.
+2. Added `GET /webcam/test?device_index=N`, which opens the host camera, reads
+   one frame, reports resolution/fps, and releases it.
+3. Added **Test server camera** and a browser-only camera check to Sources &
+   Jobs, with explicit guidance that the tracker reads the API host camera.
+4. Verified end to end: API probe OK, webcam job running, MJPEG delivered 6
+   frames at 640×480, job stop released the camera.
+5. Added API diagnostic tests.
+
+**Validated:** 237 tests, 90.29% coverage; no application pipeline changes.
+
+---
+
 ## Template for future phases
 
 ```markdown

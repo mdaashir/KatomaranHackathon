@@ -22,6 +22,8 @@ gallery/timeline, the System page, Event Log CSV export and log download.
 The 2026-11-13 polish pass adds the light theme/sidebar/cards and uses
 Streamlit's `width` API instead of the removed `use_container_width`. The
 Sources & Jobs page also supports a host webcam by device index; run the API on
-the machine that owns the camera. The Live Monitor shows viewers, frame age,
-frames sent and resolution from `/stream/status`.
+the machine that owns the camera. Use **Test server camera** for a server-side
+probe and the browser camera check only to verify browser permission. The Live
+Monitor shows viewers, frame age, frames sent and resolution from
+`/stream/status`.
 Uploads go to `src/video/`; job paths are filenames/folder names in that folder.

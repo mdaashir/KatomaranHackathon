@@ -521,8 +521,9 @@ Linux Docker needs an explicit `--device`.
 
 **Status (2026-11-13):** implemented in `src/video/webcam.py`, `/jobs`
 (`source_type=webcam`, `device_index`), CLI `--source webcam --device-index`,
-Sources & Jobs UI and `/stream/status` live health. Fake-capture tests cover
-open failure, frame iteration and single-use behavior.
+Sources & Jobs UI and `/stream/status` live health. `/webcam/test` and a browser
+camera check diagnose host/browser camera issues; fake-capture tests cover open
+failure, frame iteration and single-use behavior.
 
 ---
 
