@@ -1,8 +1,9 @@
 # PLAN — Intelligent Face Tracker with Auto-Registration and Visitor Counting
 
-> Status: **final implementation; compliance audit complete** (2026-11-11)
+> Status: **submitted 2026-11-13**; compliance audit complete.
 > Deadline: **2:00 PM, Friday 13 November 2026**
-> Remaining author actions: public demo video and Google Form submission.
+> Public demo: [https://youtu.be/bekQvFoOWTY](https://youtu.be/bekQvFoOWTY)
+> Google Form submission and public video: complete.
 > Interview-hardware fps tuning is the remaining validation step.
 > Sources of truth: `docs/Katomarans Problem Statement.pdf`, `AGENTS.md`
 > Local data: `src/video/`
@@ -338,12 +339,11 @@ left out to keep the frame budget.
 Acceptance: a fresh clone can run the sample in ≤10 minutes following the
 README; video link is public and plays.
 
-**Status (2026-11-11):** README, `docs/DEMO.md`, `docs/SUBMISSION.md` and
-`docs/demo_config.json` are complete. The 300-frame demo command was re-run:
-1 unique / 1 visit / 1 entry / 1 exit / 0 open, and `verify_outputs.py` is
-clean. Public video, `VIDEO_URL` replacement and the Google Form are author
-actions; fps tuning on the interview hardware remains the only performance
-follow-up.
+**Status (2026-11-13):** README, `docs/DEMO.md`, `docs/SUBMISSION.md` and
+`docs/demo_config.json` are complete. The walkthrough is published at
+[https://youtu.be/bekQvFoOWTY](https://youtu.be/bekQvFoOWTY), a local
+[`demo.mkv`](../demo.mkv) is included, and the Google Form was submitted.
+fps tuning on the interview hardware remains the only performance follow-up.
 
 ### Phase 10 — Optional dashboard (`feature/dashboard`) — only after Phases 0–9
 
@@ -513,11 +513,9 @@ feature-complete; P0 video/form submission actions remain.
 - Re-audited the README, feature count, UI evidence and test numbers after F4.
 - Updated `COMPLIANCE.md` and `SUBMISSION.md` to 36 features, 235 tests,
   90.29% coverage and the full optional P2 UI.
-- No repository code changes: the only remaining deliverables are the public
-  demo video and Google Form submission.
+- The public demo and Google Form were completed on 2026-11-13.
 
-**Status (2026-11-12):** repository-side submission is complete; external
-author actions remain.
+**Status (2026-11-13):** repository-side submission is complete and submitted.
 
 ---
 
@@ -547,6 +545,19 @@ smoke passes without an API.
 
 **Status (2026-11-13):** 235 tests, 90.29% coverage; webcam fake-capture tests
 and API job coverage pass.
+
+---
+
+### Phase 19 — Submitted and interview-ready
+
+- Public walkthrough: [https://youtu.be/bekQvFoOWTY](https://youtu.be/bekQvFoOWTY).
+- Local copy: [`demo.mkv`](../demo.mkv).
+- Google Form submission completed 2026-11-13.
+- README has the video thumbnail/link, local copy, keywords and submission
+  links; repository description/topics/homepage set for discoverability.
+
+**Status (2026-11-13):** submission complete. Only optional interview-hardware
+fps/RTSP confirmation remains.
 
 ---
 

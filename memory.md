@@ -834,3 +834,16 @@ Last updated: 2026-11-11
 - Validated: **235 tests**, **90.29% coverage**, ruff clean. Docker/webcam
   device requirements documented.
 - PR pending update; stop and wait for review/merge.
+
+---
+
+## Final submission, video and SEO (2026-11-13)
+
+- Public walkthrough: https://youtu.be/bekQvFoOWTY
+- Local copy: `demo.mkv` at repo root.
+- Updated README, SUBMISSION, COMPLIANCE, DEMO, PLAN, FEATURES, PROMPTS and
+  this file; video + Google Form marked submitted.
+- Added README YouTube thumbnail/keywords and repository
+  description/topics/homepage for SEO.
+- No application code changes. Submission complete; only optional
+  interview-hardware fps/RTSP confirmation remains.

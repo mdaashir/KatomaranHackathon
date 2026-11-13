@@ -1,18 +1,24 @@
 # Intelligent Face Tracker
 
 [![CI](https://github.com/mdaashir/KatomaranHackathon/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/mdaashir/KatomaranHackathon/actions/workflows/ci.yml)
+[![Demo](https://img.shields.io/badge/Watch%20the%20demo-YouTube-red?logo=youtube&logoColor=white)](https://youtu.be/bekQvFoOWTY)
 
 Real-time face detection, recognition, tracking, auto-registration and unique
 visitor counting for a mall front-entry camera. It accepts a video file, a
 folder of clips, an RTSP stream or a local webcam, and logs exactly one entry
 and one exit per visit.
 
-> **Status: P0 submission-ready; P1/P3 complete; P2 F1–F4 API/UI complete.**
-> The core pipeline, samples, documentation and bonus UI are complete. The
-> remaining core actions are the public video and Google Form.
+> **Status: submitted 2026-11-13.** P0 requirements, P1 Docker/CI, P3
+> security/release and the optional P2 FastAPI/Streamlit console are complete.
+> The walkthrough is public and the Google Form submission is done.
+
+**Keywords:** real-time face recognition, YOLO face detection, InsightFace
+ArcFace, ByteTrack, re-identification, unique visitor counting, SQLite WAL,
+FastAPI, Streamlit, RTSP, webcam, computer vision.
 
 - Problem statement: [Katomarans Problem Statement](<docs/Katomarans Problem Statement.pdf>)
 - Repository: https://github.com/mdaashir/KatomaranHackathon
+- Demo: https://youtu.be/bekQvFoOWTY · local [`demo.mkv`](demo.mkv)
 - Samples: [`samples/README.md`](samples/README.md)
 - Plan: [`docs/PLAN.md`](docs/PLAN.md)
 - Compliance audit: [`docs/COMPLIANCE.md`](docs/COMPLIANCE.md)
@@ -21,11 +27,12 @@ and one exit per visit.
 
 ## Demo video
 
-> **TODO before submission:** record the 4–5 minute walkthrough using
-> [`docs/DEMO.md`](docs/DEMO.md), upload it to Loom or YouTube, and replace
-> `VIDEO_URL` with the public link.
+[![Watch the Intelligent Face Tracker walkthrough](https://img.youtube.com/vi/bekQvFoOWTY/hqdefault.jpg)](https://youtu.be/bekQvFoOWTY)
 
-**Video:** `VIDEO_URL` (replace with the public Loom/YouTube link)
+**Watch:** [YouTube](https://youtu.be/bekQvFoOWTY) · **Local copy:** [`demo.mkv`](demo.mkv)
+
+The walkthrough covers the problem, architecture, live pipeline, entry/exit
+audit trail, SQLite-derived unique count and the optional operations console.
 
 ## What it does
 
@@ -341,10 +348,10 @@ The API/UI e2e assertions and Streamlit layer arrive with P2.
 ## Submission
 
 - Repository: https://github.com/mdaashir/KatomaranHackathon
-- Demo video: `VIDEO_URL` — replace after recording.
+- Demo video: https://youtu.be/bekQvFoOWTY · [`demo.mkv`](demo.mkv)
 - Samples: [`samples/README.md`](samples/README.md)
-- Compliance audit: [`docs/COMPLIANCE.md`](docs/COMPLIANCE.md)
+- Compliance: [`docs/COMPLIANCE.md`](docs/COMPLIANCE.md)
 - Submission checklist: [`docs/SUBMISSION.md`](docs/SUBMISSION.md)
-- Deadline: **2:00 PM, Friday 13 November 2026**.
+- Submitted: **2026-11-13** · deadline: **2:00 PM, Friday 13 November 2026**.
 
 This project is a part of a hackathon run by https://katomaran.com

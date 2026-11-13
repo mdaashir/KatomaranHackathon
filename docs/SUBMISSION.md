@@ -1,31 +1,31 @@
 # Submission checklist
 
-The code, documentation, samples and optional P2 API/UI are complete. Two
-author actions remain: record the public demo video and submit the Google Form.
-The requirement audit is in [`COMPLIANCE.md`](COMPLIANCE.md).
+**Submitted 2026-11-13.** The repository, public video, and Google Form were
+completed. The requirement audit is in [`COMPLIANCE.md`](COMPLIANCE.md).
 
 ## Before submitting
 
-- [ ] Repository is public: https://github.com/mdaashir/KatomaranHackathon
-- [ ] `README.md` opens cleanly and the final Katomaran line is present.
-- [ ] Review [`COMPLIANCE.md`](COMPLIANCE.md) and the `AUTHOR` items.
-- [ ] Record the walkthrough using [`docs/DEMO.md`](DEMO.md), upload to Loom or
-      YouTube, and replace `VIDEO_URL` in `README.md` and this file.
-- [ ] Open the video link in a private browser window and confirm it plays.
-- [ ] `samples/` contains `summary.json`, CSVs, `events.log` and crops.
-- [ ] Fresh-clone smoke test: setup, download models, run one short clip,
+- [x] Repository is public: https://github.com/mdaashir/KatomaranHackathon
+- [x] `README.md` opens cleanly and the final Katomaran line is present.
+- [x] Review [`COMPLIANCE.md`](COMPLIANCE.md) and the `AUTHOR` items.
+- [x] Record the walkthrough using [`docs/DEMO.md`](DEMO.md), upload to YouTube,
+      and link it from `README.md`, this file and the README bottom.
+- [x] Open the video link in a private browser window and confirm it plays.
+- [x] `samples/` contains `summary.json`, CSVs, `events.log` and crops.
+- [x] Fresh-clone smoke test: setup, download models, run one short clip,
       `--report`, and `scripts/verify_outputs.py`.
-- [ ] `pytest` passes (235 tests, 90.29% coverage) and the verifier is clean.
-- [ ] Optional P2 UI smoke: `uv sync --extra cpu --extra ui`, run `uvicorn
+- [x] `pytest` passes (235 tests, 90.29% coverage) and the verifier is clean.
+- [x] Optional P2 UI smoke: `uv sync --extra cpu --extra ui`, run `uvicorn
       src.api.app:app` + `streamlit run ui/app.py`, and open the dashboard.
-- [ ] Submit the repository and the public video through the Katomaran
+- [x] Submit the repository and the public video through the Katomaran
       submission form before **2:00 PM, Friday 13 November 2026**.
 
 ## Video
 
-- **Demo video:** `VIDEO_URL` (replace after recording)
+- **Demo video:** [https://youtu.be/bekQvFoOWTY](https://youtu.be/bekQvFoOWTY)
+- **Local copy:** [`demo.mkv`](../demo.mkv)
 - Script: [`docs/DEMO.md`](DEMO.md)
-- Expected length: 4–5 minutes.
+- Length: 4–5 minutes.
 
 ## Evidence to mention in the submission
 
