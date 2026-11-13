@@ -219,7 +219,7 @@ def _event_table(events: list[dict[str, object]]) -> None:
             {
                 "Time": event["occurred_at"],
                 "Type": event["event_type"],
-                "Face": event["face_id"] if event["face_id"] else "anonymous",
+                "Face": str(event["face_id"]) if event["face_id"] else "anonymous",
                 "Visit": event["visit_id"],
                 "Track": event["track_id"],
                 "Source": event["source_id"],
