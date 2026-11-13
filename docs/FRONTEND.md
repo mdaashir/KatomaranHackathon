@@ -55,6 +55,7 @@ Browser ── Streamlit (ui/) ──HTTP──▶ FastAPI (src/api) ──▶ p
 | `POST /jobs/{id}/stop` | graceful stop (flushes active tracks as exits) |
 | `GET /stream/live.mjpg` | annotated frames for the live view |
 | `GET /stream/status` | viewers, frame age, resolution and frames sent |
+| `GET /webcam/test?device_index=0` | open the host camera and return one frame's resolution or an error |
 | `GET /events/stream` | SSE: live pipeline events (detect, embed, register, recognise, entry, exit) |
 | `GET /stats` | unique count, entries, exits, currently in frame, FPS |
 | `GET /visitors`, `GET /visitors/{id}` | registered faces + visit history |
@@ -83,7 +84,9 @@ Browser ── Streamlit (ui/) ──HTTP──▶ FastAPI (src/api) ──▶ p
    - Drag-and-drop area for one or many video files (validate extension and
      size limit; show errors inline).
    - **Webcam:** choose a host camera index and start it as a real-time source;
-     the API must run on the machine that owns the camera.
+     the API must run on the machine that owns the camera. “Test server camera”
+     opens one frame and reports resolution/error; the browser camera check only
+     verifies local browser permission.
    - **Process folder:** choose a folder under `src/video/` and process every
      video in it (recursive, sorted, sequential). Per-file status and progress
      bar, continue on failure, summary at the end (entries/exits/new IDs per

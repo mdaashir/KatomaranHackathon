@@ -847,3 +847,16 @@ Last updated: 2026-11-11
   description/topics/homepage for SEO.
 - No application code changes. Submission complete; only optional
   interview-hardware fps/RTSP confirmation remains.
+
+---
+
+## Webcam diagnostics (2026-11-13)
+
+- Branch: `feature/webcam-diagnostics`.
+- Host camera works: index 0 = 640×480/25 fps; index 1 = 1280×720/25 fps.
+- Added `GET /webcam/test?device_index=N` (opens/reads one frame/releases).
+- UI Sources & Jobs: **Test server camera** + browser camera check (browser
+  permission does not feed the tracker).
+- End-to-end: API probe OK, webcam job running, MJPEG delivered 6 annotated
+  frames at 640×480, stop released camera.
+- 237 tests, 90.29% coverage. PR pending; stop and wait for merge.

@@ -390,6 +390,33 @@ def sources_jobs() -> None:
                     "source_type": "webcam",
                     "device_index": int(device_index),
                 }
+                if st.button("Test server camera"):
+                    probe = _try_get(
+                        "/webcam/test",
+                        {"device_index": int(device_index)},
+                        timeout=8,
+                    )
+                    if probe is None:
+                        st.error("API unavailable; start uvicorn first.")
+                    elif probe.get("ok"):
+                        st.success(
+                            "Camera "
+                            f"{probe['device_index']} works: "
+                            f"{probe['width']}×{probe['height']} @ "
+                            f"{probe['fps']} fps"
+                        )
+                    else:
+                        st.error(probe.get("error", "Camera could not be opened."))
+                with st.expander("Browser camera check (does not feed the tracker)"):
+                    st.camera_input(
+                        "Test this browser's camera",
+                        key="browser_camera_test",
+                    )
+                    st.caption(
+                        "Browser permission only verifies your local webcam. "
+                        "The tracker reads the camera from the API process, so "
+                        "start uvicorn on this same computer."
+                    )
             else:
                 rtsp_url = st.text_input(
                     "RTSP URL",

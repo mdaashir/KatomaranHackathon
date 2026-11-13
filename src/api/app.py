@@ -27,6 +27,7 @@ from src.api.models import JobRequest
 from src.api.reader import ReadModel
 from src.api.system import SystemModel
 from src.config import AppConfig, ConfigError, load_config
+from src.video import WebcamSource
 
 MAX_UPLOAD_BYTES = 2 * 1024 * 1024 * 1024
 
@@ -204,6 +205,34 @@ def create_app(
     @app.get("/videos")
     def videos() -> dict[str, object]:
         return {"videos": list_videos(upload_root)}
+
+    @app.get("/webcam/test")
+    def test_webcam(
+        device_index: int = Query(0, ge=0, le=16),
+    ) -> dict[str, object]:
+        """Open the host camera just long enough to read one frame."""
+
+        source: WebcamSource | None = None
+        try:
+            source = WebcamSource(device_index)
+            frame = next(source.frames())
+            height, width = frame.image.shape[:2]
+            return {
+                "ok": True,
+                "device_index": device_index,
+                "width": int(width),
+                "height": int(height),
+                "fps": source.fps,
+            }
+        except Exception as exc:
+            return {
+                "ok": False,
+                "device_index": device_index,
+                "error": f"{type(exc).__name__}: {exc}",
+            }
+        finally:
+            if source is not None:
+                source.close()
 
     @app.get("/folders")
     def folders() -> dict[str, object]:
