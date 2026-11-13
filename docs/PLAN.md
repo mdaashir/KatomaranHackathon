@@ -77,11 +77,11 @@ Consequences that shape the design:
 - Graceful SIGINT/SIGTERM shutdown with active-track flush.
 - Tests for registry, lifecycle and counter.
 - Sample outputs in `samples/`, README and architecture docs. The public demo
-  video is the remaining author action.
+  video and Google Form submission are complete.
 
 ### Out of scope (unless time remains)
 
-- Frontend dashboard: optional; completed as a read-only snapshot in Phase 10.
+- Frontend dashboard: optional; completed as the FastAPI/Streamlit console.
 - Multi-camera identity fusion.
 - Cloud sync, auth, multi-tenant storage.
 - Person/body re-identification (optional enhancement, see R4).

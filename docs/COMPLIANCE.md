@@ -89,7 +89,7 @@ implementation and the evidence a reviewer can inspect. Status values:
 | 6.3 | Code is modular, scalable and clearly commented | DONE | `src/` modules, docstrings, tests |
 | 6.4 | Database and file logging consistent and resilient | DONE | WAL, transactions, atomic writes, `verify_outputs.py` |
 
-## 7. Author actions before submission
+## 7. Completed author actions
 
 **Completed 2026-11-13:** the 4–5 minute walkthrough was recorded, uploaded to
 [YouTube](https://youtu.be/bekQvFoOWTY), linked in the repo, and the repository
