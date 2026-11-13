@@ -207,6 +207,16 @@ class JobManager:
                 glob=("**/*.mp4" if request.source_type == "folder" else source.glob),
             )
 
+        if request.source_type == "webcam":
+            index = (
+                request.device_index
+                if request.device_index is not None
+                else source.device_index
+            )
+            if index < 0:
+                raise ValueError("device_index must not be negative")
+            return replace(source, type="webcam", device_index=index)
+
         url = (request.url or "").strip()
         parsed = urlparse(url)
         if parsed.scheme not in {"rtsp", "rtsps"} or not parsed.netloc:
@@ -214,6 +224,9 @@ class JobManager:
         return replace(source, type="rtsp", rtsp_url=url)
 
     def _label(self, request: JobRequest, path: str, rtsp_url: str) -> str:
+        if request.source_type == "webcam":
+            index = request.device_index if request.device_index is not None else 0
+            return f"Webcam {index}"
         if request.source_type == "rtsp":
             return re.sub(r"(rtsps?://)[^/@]+@", r"\1***@", rtsp_url)
         return Path(path).name or request.source_type

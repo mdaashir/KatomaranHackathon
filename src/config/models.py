@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Literal
 
-SourceType = Literal["file", "folder", "rtsp"]
+SourceType = Literal["file", "folder", "rtsp", "webcam"]
 LogLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
 
@@ -17,6 +17,7 @@ class SourceConfig:
     path: str = ""
     glob: str = "*.mp4"
     rtsp_url: str = ""
+    device_index: int = 0
     realtime: bool = False
     rtsp_transport: str = "tcp"
     reconnect_max_backoff_sec: int = 30

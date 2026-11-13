@@ -462,8 +462,8 @@ process; reads SQLite/logs; never blocks the pipeline.
 - Pipeline runs normally with the dashboard stopped.
 - No new dependency in the core path.
 
-**Status (2026-11-11):** implemented in `src/dashboard` + `scripts/dashboard.py`;
-sample at `samples/dashboard/index.html`; 216 tests pass.
+**Status (2026-11-13):** superseded by the full P2 FastAPI/Streamlit console;
+the standalone `src/dashboard`/`scripts/dashboard.py` artifacts were removed.
 
 ### F-32 — Containerized runtime (M, P1)
 
@@ -511,6 +511,17 @@ CodeQL, dependency/secret scanning, Trivy, GHCR tagged releases, release notes
 and a samples zip. Edge publishing and nightly were dropped by the author.
 
 **Status:** implemented in `security.yml` + `release.yml`; Dependabot remains.
+
+### F-36 — Host webcam source (C, P2)
+
+Local camera input through OpenCV for a real-time demo without a video file or
+RTSP camera. The API process must run on the machine that owns the camera;
+Linux Docker needs an explicit `--device`.
+
+**Status (2026-11-13):** implemented in `src/video/webcam.py`, `/jobs`
+(`source_type=webcam`, `device_index`), CLI `--source webcam --device-index`,
+Sources & Jobs UI and `/stream/status` live health. Fake-capture tests cover
+open failure, frame iteration and single-use behavior.
 
 ---
 

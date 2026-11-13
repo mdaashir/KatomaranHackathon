@@ -19,4 +19,9 @@ Monitor (MJPEG + activity feed) and Sources & Jobs (upload, file/RTSP start,
 queue/stop). F3 adds recursive folder jobs and the Config page for the five
 hot-reloadable tunables (`frame_skip` stays file-owned). F4 adds the Visitors
 gallery/timeline, the System page, Event Log CSV export and log download.
+The 2026-11-13 polish pass adds the light theme/sidebar/cards and uses
+Streamlit's `width` API instead of the removed `use_container_width`. The
+Sources & Jobs page also supports a host webcam by device index; run the API on
+the machine that owns the camera. The Live Monitor shows viewers, frame age,
+frames sent and resolution from `/stream/status`.
 Uploads go to `src/video/`; job paths are filenames/folder names in that folder.

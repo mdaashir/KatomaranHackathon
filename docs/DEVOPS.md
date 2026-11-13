@@ -50,6 +50,9 @@ scripts/download_models.py # idempotent; used by the container and by CI
   (profile `rtsp-test`) for local RTSP testing.
 - Volumes: `./data`, `./logs`, `./src/video` bind mounts so the clips and
   outputs are visible on the host; `models` named volume.
+- Webcam: run the API on the host that owns the camera. In Linux Docker, pass
+  `--device=/dev/video0` to the one-off `docker compose run` command; Docker
+  Desktop on Windows does not provide reliable webcam passthrough.
 - Config through env vars (`CONFIG_PATH`, `API_URL`, `LOG_LEVEL`, `RTSP_URL`)
   with defaults in compose. No `.env` file is required; secrets are never baked
   into images or printed in logs.

@@ -350,10 +350,9 @@ follow-up.
 Small read-only page or CLI report showing current unique count, recent
 entries/exits, and thumbnails. Must not touch the core pipeline.
 
-**Status (2026-11-11):** implemented as `src/dashboard` plus
-`scripts/dashboard.py`; it reads SQLite, copies event thumbnails and writes a
-standalone HTML snapshot. `samples/dashboard/index.html` is generated from the
-22-clip run; 216 tests pass. The core pipeline is untouched.
+**Status (2026-11-13):** superseded by the full P2 FastAPI/Streamlit console;
+the standalone `src/dashboard`, `scripts/dashboard.py`, static sample and test
+artifacts were removed. The core pipeline is untouched.
 
 ### Phase 11 — P1 Docker and core CI
 
@@ -512,13 +511,42 @@ feature-complete; P0 video/form submission actions remain.
 ### Phase 16 — Final submission audit
 
 - Re-audited the README, feature count, UI evidence and test numbers after F4.
-- Updated `COMPLIANCE.md` and `SUBMISSION.md` to 35 features, 237 tests,
-  90.81% coverage and the full optional P2 UI.
+- Updated `COMPLIANCE.md` and `SUBMISSION.md` to 36 features, 235 tests,
+  90.29% coverage and the full optional P2 UI.
 - No repository code changes: the only remaining deliverables are the public
   demo video and Google Form submission.
 
 **Status (2026-11-12):** repository-side submission is complete; external
 author actions remain.
+
+---
+
+### Phase 17 — UI modernization and cleanup
+
+- Replaced deprecated `use_container_width` usage with Streamlit's `width`
+  API (`"stretch"`) and removed the startup warning.
+- Rebuilt `ui/app.py` as a themed operations console: hero headers, KPI cards,
+  sidebar health, bordered work areas and responsive gallery/table layouts.
+- Kept the UI a pure HTTP client; no pipeline/storage imports.
+- Emptied the old static HTML dashboard artifacts and removed their test and
+  documentation references; the Streamlit console supersedes it.
+
+**Status (2026-11-13):** 231 tests, 90.47% coverage; ruff clean; Streamlit
+smoke passes without an API.
+
+---
+
+### Phase 18 — Webcam source and live-stream health
+
+- Added `WebcamSource` (OpenCV, host camera) with config, CLI, API job and
+  Sources & Jobs UI support.
+- Added `/stream/status` (viewers, frame age, frames sent, resolution) and
+  surfaced it in Live Monitor.
+- Kept production camera confirmation at 3 hits; no pipeline behavior change
+  for existing sources.
+
+**Status (2026-11-13):** 235 tests, 90.29% coverage; webcam fake-capture tests
+and API job coverage pass.
 
 ---
 

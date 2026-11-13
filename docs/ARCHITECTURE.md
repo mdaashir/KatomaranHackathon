@@ -79,14 +79,13 @@ flowchart LR
 | Module | Responsibility | Depends on |
 |---|---|---|
 | `src/config` | Load and validate JSON into frozen typed config | — |
-| `src/video` | Decode files/folders/RTSP into `Frame` objects; reconnect | config, logging |
+| `src/video` | Decode files/folders/RTSP/webcam into `Frame` objects; reconnect | config, logging |
 | `src/detection` | YOLO face inference; native-coordinate boxes; detect-only checkpoint | config, types |
 | `src/recognition` | Quality gate, 106→5 alignment, ArcFace embeddings, cosine registry, CUDA/CPU providers | config, storage |
 | `src/tracking` | ByteTrack association, track lifecycle, visits | config, detection |
 | `src/events` | Atomic image writes, event + visit persistence, audit log | config, storage, tracking |
 | `src/storage` | SQLite connection, schema, repositories | config |
 | `src/counting` | DB-derived unique count and summary | storage |
-| `src/dashboard` | Read-only HTML snapshot; copies event thumbnails | storage, counting |
 | `src/pipeline` | Frame loop, cadence, orchestration, shutdown | all of the above |
 | `src/api` | FastAPI read/control layer, job worker, live buffer | pipeline, storage, config |
 | `ui` | Streamlit HTTP client; pages only | `src/api` over HTTP |

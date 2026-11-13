@@ -277,6 +277,10 @@ def create_app(
             raise HTTPException(status_code=404, detail="job not found")
         return stopped.to_dict()
 
+    @app.get("/stream/status")
+    def stream_status() -> dict[str, object]:
+        return manager.frame_buffer.snapshot()
+
     @app.get("/stream/live.mjpg")
     def live_stream() -> StreamingResponse:
         return StreamingResponse(

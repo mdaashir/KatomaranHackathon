@@ -42,6 +42,7 @@ _SOURCE_KEYS = {
     "path",
     "glob",
     "rtsp_url",
+    "device_index",
     "realtime",
     "rtsp_transport",
     "reconnect_max_backoff_sec",
@@ -71,7 +72,7 @@ _STORAGE_KEYS = {"db_path", "log_dir", "image_size", "jpeg_quality"}
 _LOGGING_KEYS = {"level", "max_bytes", "backup_count"}
 
 _LOG_LEVELS = {"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"}
-_SOURCE_TYPES = {"file", "folder", "rtsp"}
+_SOURCE_TYPES = {"file", "folder", "rtsp", "webcam"}
 _TRACKERS = {"bytetrack", "deepsort"}
 
 
@@ -120,6 +121,7 @@ def _parse_source(data: Mapping[str, Any]) -> SourceConfig:
         path=_get_str(section, "path", "source", default="", allow_empty=True),
         glob=_get_str(section, "glob", "source", default="*.mp4"),
         rtsp_url=_get_str(section, "rtsp_url", "source", default="", allow_empty=True),
+        device_index=_get_int(section, "device_index", "source", default=0),
         realtime=_get_bool(section, "realtime", "source", default=False),
         rtsp_transport=_get_str(
             section, "rtsp_transport", "source", default="tcp"
@@ -382,6 +384,8 @@ def _validate_source(source: SourceConfig) -> None:
         raise ConfigError("source.glob: required when source.type is 'folder'")
     if source.type == "rtsp" and not source.rtsp_url:
         raise ConfigError("source.rtsp_url: required when source.type is 'rtsp'")
+    if source.device_index < 0:
+        raise ConfigError("source.device_index: must not be negative")
     if source.rtsp_transport not in {"tcp", "udp"}:
         raise ConfigError("source.rtsp_transport: expected 'tcp' or 'udp'")
     if source.reconnect_max_backoff_sec < 1:

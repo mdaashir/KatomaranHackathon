@@ -4,6 +4,7 @@
     "path": "src/video",
     "glob": "record_*.mp4",
     "rtsp_url": "",
+    "device_index": 0,
     "realtime": false,
     "rtsp_transport": "tcp",
     "reconnect_max_backoff_sec": 30
