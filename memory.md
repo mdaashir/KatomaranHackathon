@@ -785,7 +785,7 @@ Last updated: 2026-11-11
 
 - Branch: `docs/final-submission-audit`.
 - P2 F1–F4 complete; repo-side submission complete.
-- Updated `COMPLIANCE.md` (35 features, 237 tests/90.81%, full P2 UI evidence)
+- Updated `COMPLIANCE.md` (35 features, 231 tests/90.47%, full P2 UI evidence)
   and `SUBMISSION.md` (P2 UI smoke + evidence).
 - No code changes. Remaining external actions: record/upload the 4–5 minute
   walkthrough, replace `VIDEO_URL` in README/SUBMISSION, submit the Google
@@ -804,3 +804,18 @@ Last updated: 2026-11-11
 - Local RTSP e2e: 300 frames, 10 visits/entries/exits, 0 open, 20 images,
   all required log events; `verify_outputs.py` reports `ok: true`.
 - Stop and wait for merge.
+
+---
+
+## UI modernization and cleanup (2026-11-13)
+
+- Branch: `feature/ui-polish`.
+- Kept the user's deletion of the static dashboard/sample artifacts; removed
+  `tests/test_dashboard.py`, dead docs/script references and sample claims.
+- Replaced deprecated `use_container_width` with `width="stretch"` everywhere.
+- Rebuilt the Streamlit console with a theme, hero headers, KPI cards, sidebar
+  API health, bordered work areas, visitor cards and system telemetry.
+- UI remains a pure HTTP client; API contract unchanged.
+- Validated: **231 tests**, **90.47% coverage**, ruff clean, Streamlit smoke
+  passes without the API. No `use_container_width` references remain.
+- PR pending creation; stop and wait for review/merge.

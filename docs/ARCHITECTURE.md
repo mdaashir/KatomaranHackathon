@@ -86,7 +86,6 @@ flowchart LR
 | `src/events` | Atomic image writes, event + visit persistence, audit log | config, storage, tracking |
 | `src/storage` | SQLite connection, schema, repositories | config |
 | `src/counting` | DB-derived unique count and summary | storage |
-| `src/dashboard` | Read-only HTML snapshot; copies event thumbnails | storage, counting |
 | `src/pipeline` | Frame loop, cadence, orchestration, shutdown | all of the above |
 | `src/api` | FastAPI read/control layer, job worker, live buffer | pipeline, storage, config |
 | `ui` | Streamlit HTTP client; pages only | `src/api` over HTTP |

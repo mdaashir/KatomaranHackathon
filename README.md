@@ -244,18 +244,6 @@ excerpt and `summary.json`.
 uv run --no-sync python scripts\export_samples.py --config config.json
 ```
 
-## Dashboard (optional)
-
-A read-only HTML snapshot of the current database and recent event crops. It
-does not import the pipeline and adds no dependency:
-
-```powershell
-uv run --no-sync python scripts\dashboard.py --config config.json --open
-```
-
-Open [`samples/dashboard/index.html`](samples/dashboard/index.html) for the
-snapshot generated from the 22-clip run.
-
 ## API and Streamlit UI (P2 F1–F4)
 
 The API exposes the dashboard/event/log reads plus upload, folder/file/RTSP job
