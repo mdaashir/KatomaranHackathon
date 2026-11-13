@@ -4,8 +4,8 @@
 
 Real-time face detection, recognition, tracking, auto-registration and unique
 visitor counting for a mall front-entry camera. It accepts a video file, a
-folder of clips, or an RTSP stream, and logs exactly one entry and one exit per
-visit.
+folder of clips, an RTSP stream or a local webcam, and logs exactly one entry
+and one exit per visit.
 
 > **Status: P0 submission-ready; P1/P3 complete; P2 F1–F4 API/UI complete.**
 > The core pipeline, samples, documentation and bonus UI are complete. The
@@ -107,14 +107,17 @@ uv run --no-sync python main.py --source folder --path src/video
 # Interview RTSP stream
 uv run --no-sync python main.py --source rtsp --rtsp-url rtsp://camera/stream
 
+# Local host webcam (device index 0)
+uv run --no-sync python main.py --source webcam --device-index 0
+
 # Read the DB summary without processing
 uv run --no-sync python main.py --report
 ```
 
 Ctrl+C (or SIGTERM) stops the stream, flushes every open track as an exit, and
 writes a `SUMMARY` line. Use `--verify-db` to log `PRAGMA integrity_check` at
-startup. `--start-time`, `--source`, `--path` and `--rtsp-url` override the
-config at runtime.
+startup. `--start-time`, `--source`, `--path`, `--rtsp-url` and
+`--device-index` override the config at runtime.
 
 ## Docker
 
@@ -142,12 +145,18 @@ docker compose run --rm app python main.py `
   --path /app/src/video/record_20250620_183903.mp4 `
   --start-time 2025-06-20T18:39:03Z --max-frames 300
 
+# Linux webcam inside Docker (pass the device explicitly)
+docker compose run --rm --device=/dev/video0 app python main.py `
+  --source webcam --device-index 0
+
 # Stop
 docker compose down
 ```
 
 The image runs as a non-root user with `init: true` and a 30-second stop grace
-period so active tracks flush as exits.
+period so active tracks flush as exits. For a host webcam, run the API directly
+on the machine that owns the camera (`uv run uvicorn ...`); browser camera
+permissions do not apply to this server-side source.
 
 ## Output layout
 
@@ -164,7 +173,7 @@ samples/                       committed real run: CSVs, crops, log, summary
 
 ```mermaid
 flowchart LR
-    A[Video file / folder / RTSP] --> B[VideoSource<br/>PyAV, reconnect]
+    A[Video file / folder / RTSP / webcam] --> B[VideoSource<br/>PyAV, OpenCV, reconnect]
     B --> C[YOLOv8 face detector]
     C --> D[ByteTrack]
     D --> E[Track lifecycle<br/>NEW → ACTIVE → LOST → EXITED]
@@ -183,7 +192,7 @@ each phase are in [`docs/PROMPTS.md`](docs/PROMPTS.md).
 
 ```json
 {
-  "source": {"type": "folder", "path": "src/video", "glob": "record_*.mp4"},
+  "source": {"type": "folder", "path": "src/video", "glob": "record_*.mp4", "device_index": 0},
   "frame_skip": 3,
   "detector": {
     "model_path": "models/yolov8n-face.pt",
@@ -246,10 +255,10 @@ uv run --no-sync python scripts\export_samples.py --config config.json
 
 ## API and Streamlit UI (P2 F1–F4)
 
-The API exposes the dashboard/event/log reads plus upload, folder/file/RTSP job
-control, live MJPEG, an SSE activity feed, validated runtime overrides, a
-visitor gallery and host/model system info. The Streamlit UI is a pure HTTP
-client; the pipeline runs independently.
+The API exposes the dashboard/event/log reads plus upload, folder/file/RTSP/
+webcam job control, live MJPEG, an SSE activity feed, validated runtime
+overrides, a visitor gallery and host/model system info. The Streamlit UI is a
+pure HTTP client; the pipeline runs independently.
 
 ```powershell
 uv sync --extra cpu --extra ui
@@ -262,10 +271,10 @@ uv run streamlit run ui/app.py
 ```
 
 API docs: `http://127.0.0.1:8000/docs` · UI: `http://localhost:8501`.
-Uploads land in `src/video/`; start a file, folder or RTSP job from **Sources &
-Jobs**, tune the five hot fields in **Config**, browse faces in **Visitors**,
-and inspect CPU/memory/ONNX providers in **System**. `frame_skip` stays owned by
-`config.json`; **Save as default** is explicit. See [`ui/README.md`](ui/README.md).
+Uploads land in `src/video/`; start a file, folder, RTSP or webcam job from
+**Sources & Jobs**, tune the five hot fields in **Config**, browse faces in
+**Visitors**, and inspect CPU/memory/ONNX providers in **System**. `frame_skip`
+stays owned by `config.json`; **Save as default** is explicit. See [`ui/README.md`](ui/README.md).
 
 ## Tests and verification
 
@@ -276,7 +285,7 @@ uv run --no-sync python scripts\verify_outputs.py --config config.json
 
 `pytest` covers the registry/re-ID matching, the entry/exit state machine, the
 unique counter, all video sources, detection, recognition, tracking, events,
-storage, the CLI and the read-only dashboard. `verify_outputs.py` checks SQLite
+storage, the CLI and the API/Streamlit console. `verify_outputs.py` checks SQLite
 integrity, foreign keys, exactly one entry and one exit per visit, no open
 visits, and that every referenced image exists.
 

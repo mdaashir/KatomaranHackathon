@@ -274,6 +274,19 @@ def dashboard() -> None:
 
 @st.fragment(run_every=LIVE_REFRESH_SECONDS)
 def live_body() -> None:
+    status = api_get("/stream/status")
+    if status:
+        columns = st.columns(4)
+        columns[0].metric("Viewers", status["viewers"])
+        columns[1].metric("Frames sent", status["frames_published"])
+        age = status["frame_age_seconds"]
+        columns[2].metric("Frame age", f"{age:.1f}s" if age is not None else "—")
+        columns[3].metric(
+            "Resolution",
+            f"{status['width']}×{status['height']}"
+            if status["width"] and status["height"]
+            else "—",
+        )
     jobs = api_get("/jobs")
     if jobs:
         running = [job for job in jobs["jobs"] if job["status"] == "running"]
@@ -350,7 +363,7 @@ def sources_jobs() -> None:
         with st.container(border=True):
             source_mode = st.radio(
                 "Start from",
-                ["file", "folder", "rtsp"],
+                ["file", "folder", "rtsp", "webcam"],
                 horizontal=True,
             )
             if source_mode == "file":
@@ -365,6 +378,18 @@ def sources_jobs() -> None:
                     folder_names or ["(no folders)"],
                 )
                 payload = {"source_type": "folder", "path": selected_folder}
+            elif source_mode == "webcam":
+                device_index = st.number_input(
+                    "Camera index",
+                    min_value=0,
+                    max_value=16,
+                    value=0,
+                    step=1,
+                )
+                payload = {
+                    "source_type": "webcam",
+                    "device_index": int(device_index),
+                }
             else:
                 rtsp_url = st.text_input(
                     "RTSP URL",

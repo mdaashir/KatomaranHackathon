@@ -15,7 +15,7 @@ The requirement audit is in [`COMPLIANCE.md`](COMPLIANCE.md).
 - [ ] `samples/` contains `summary.json`, CSVs, `events.log` and crops.
 - [ ] Fresh-clone smoke test: setup, download models, run one short clip,
       `--report`, and `scripts/verify_outputs.py`.
-- [ ] `pytest` passes (231 tests, 90.47% coverage) and the verifier is clean.
+- [ ] `pytest` passes (235 tests, 90.29% coverage) and the verifier is clean.
 - [ ] Optional P2 UI smoke: `uv sync --extra cpu --extra ui`, run `uvicorn
       src.api.app:app` + `streamlit run ui/app.py`, and open the dashboard.
 - [ ] Submit the repository and the public video through the Katomaran

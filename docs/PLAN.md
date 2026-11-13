@@ -511,8 +511,8 @@ feature-complete; P0 video/form submission actions remain.
 ### Phase 16 — Final submission audit
 
 - Re-audited the README, feature count, UI evidence and test numbers after F4.
-- Updated `COMPLIANCE.md` and `SUBMISSION.md` to 35 features, 231 tests,
-  90.47% coverage and the full optional P2 UI.
+- Updated `COMPLIANCE.md` and `SUBMISSION.md` to 36 features, 235 tests,
+  90.29% coverage and the full optional P2 UI.
 - No repository code changes: the only remaining deliverables are the public
   demo video and Google Form submission.
 
@@ -533,6 +533,20 @@ author actions remain.
 
 **Status (2026-11-13):** 231 tests, 90.47% coverage; ruff clean; Streamlit
 smoke passes without an API.
+
+---
+
+### Phase 18 — Webcam source and live-stream health
+
+- Added `WebcamSource` (OpenCV, host camera) with config, CLI, API job and
+  Sources & Jobs UI support.
+- Added `/stream/status` (viewers, frame age, frames sent, resolution) and
+  surfaced it in Live Monitor.
+- Kept production camera confirmation at 3 hits; no pipeline behavior change
+  for existing sources.
+
+**Status (2026-11-13):** 235 tests, 90.29% coverage; webcam fake-capture tests
+and API job coverage pass.
 
 ---
 

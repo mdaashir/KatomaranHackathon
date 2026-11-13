@@ -943,7 +943,7 @@ passes with the API down.
 
 1. Re-checked README, compliance, submission checklist, feature count and test
    evidence.
-2. Updated `COMPLIANCE.md` from 31 to 35 features, from 216 to 237 tests, and
+2. Updated `COMPLIANCE.md` from 31 to 36 features, from 216 to 235 tests, and
    recorded the full optional P2 API/UI in 6.1.
 3. Added the optional P2 UI smoke and evidence to `SUBMISSION.md`.
 4. Confirmed the exact Katomaran footer and the remaining external actions.
@@ -995,6 +995,29 @@ confirmation behavior remains covered by unit tests.
 
 **Validated:** 231 tests, 90.47% coverage, ruff/format clean, no
 `use_container_width` references, Streamlit smoke passes with the API down.
+
+---
+
+## 2026-11-13 — Webcam source and live-stream health
+
+### Prompt
+
+> till im not ok with it i need more relaistic, realtime, with a support to add webcam as a source
+
+**What the model did:**
+
+1. Added `WebcamSource` using OpenCV with a Windows DirectShow backend,
+   single-use guard, frame timing and release on close.
+2. Extended `source.type`/`source.device_index`, CLI `--source webcam
+   --device-index`, and `POST /jobs` with `device_index`.
+3. Added a webcam mode to Sources & Jobs and documented host/Docker device
+   requirements.
+4. Added `/stream/status` and Live Monitor metrics for viewers, frame age,
+   frames sent and resolution.
+5. Added fake-capture/config/job/API tests.
+
+**Validated:** 235 tests, 90.29% coverage; ruff/format clean; no
+`use_container_width` references.
 
 ---
 

@@ -32,6 +32,7 @@ from src.video import (
     RTSPSource,
     VideoSource,
     VideoSourceError,
+    WebcamSource,
 )
 
 
@@ -56,6 +57,8 @@ def build_source(
             max_backoff_sec=config.source.reconnect_max_backoff_sec,
             source_id="rtsp",
         )
+    if config.source.type == "webcam":
+        return WebcamSource(config.source.device_index)
     raise ConfigError(f"unsupported source type '{config.source.type}'")
 
 
@@ -72,6 +75,8 @@ def apply_overrides(
         source = replace(source, path=args.path)
     if args.rtsp_url is not None:
         source = replace(source, rtsp_url=args.rtsp_url)
+    if args.device_index is not None:
+        source = replace(source, device_index=args.device_index)
 
     if source.type in {"file", "folder"} and not source.path:
         raise ConfigError("source.path is required for file/folder sources")
@@ -188,7 +193,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--source",
-        choices=["file", "folder", "rtsp"],
+        choices=["file", "folder", "rtsp", "webcam"],
         default=None,
         help="override source.type",
     )
@@ -201,6 +206,12 @@ def build_parser() -> argparse.ArgumentParser:
         "--rtsp-url",
         default=None,
         help="override source.rtsp_url",
+    )
+    parser.add_argument(
+        "--device-index",
+        type=int,
+        default=None,
+        help="webcam device index (default: source.device_index)",
     )
     parser.add_argument(
         "--start-time",

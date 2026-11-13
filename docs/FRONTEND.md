@@ -50,10 +50,11 @@ Browser ── Streamlit (ui/) ──HTTP──▶ FastAPI (src/api) ──▶ p
 | `GET /health` | liveness + pipeline state |
 | `POST /upload` | multipart, one or many video files → saved to `src/video/` |
 | `GET /videos` | list files/folders under `src/video/` (traversal-safe) |
-| `POST /jobs` | start a job: `{type: file\|folder\|rtsp, path\|url}` |
+| `POST /jobs` | start a job: `{type: file\|folder\|rtsp\|webcam, path\|url\|device_index}` |
 | `GET /jobs`, `GET /jobs/{id}` | queue, status, per-file progress |
 | `POST /jobs/{id}/stop` | graceful stop (flushes active tracks as exits) |
 | `GET /stream/live.mjpg` | annotated frames for the live view |
+| `GET /stream/status` | viewers, frame age, resolution and frames sent |
 | `GET /events/stream` | SSE: live pipeline events (detect, embed, register, recognise, entry, exit) |
 | `GET /stats` | unique count, entries, exits, currently in frame, FPS |
 | `GET /visitors`, `GET /visitors/{id}` | registered faces + visit history |
@@ -76,10 +77,13 @@ Browser ── Streamlit (ui/) ──HTTP──▶ FastAPI (src/api) ──▶ p
      entry / exit, with the latest face crops as thumbnails.
    - Counters: unique visitors, currently in frame, entries, exits, FPS,
      frame number, processing latency.
-   - Start / Stop controls and a source indicator (file name or masked RTSP).
+   - Start / Stop controls and a source indicator (file name, masked RTSP or
+     webcam index). Live-stream health shows viewers, frame age and resolution.
 2. **Sources & Jobs**
    - Drag-and-drop area for one or many video files (validate extension and
      size limit; show errors inline).
+   - **Webcam:** choose a host camera index and start it as a real-time source;
+     the API must run on the machine that owns the camera.
    - **Process folder:** choose a folder under `src/video/` and process every
      video in it (recursive, sorted, sequential). Per-file status and progress
      bar, continue on failure, summary at the end (entries/exits/new IDs per

@@ -512,6 +512,17 @@ and a samples zip. Edge publishing and nightly were dropped by the author.
 
 **Status:** implemented in `security.yml` + `release.yml`; Dependabot remains.
 
+### F-36 — Host webcam source (C, P2)
+
+Local camera input through OpenCV for a real-time demo without a video file or
+RTSP camera. The API process must run on the machine that owns the camera;
+Linux Docker needs an explicit `--device`.
+
+**Status (2026-11-13):** implemented in `src/video/webcam.py`, `/jobs`
+(`source_type=webcam`, `device_index`), CLI `--source webcam --device-index`,
+Sources & Jobs UI and `/stream/status` live health. Fake-capture tests cover
+open failure, frame iteration and single-use behavior.
+
 ---
 
 ## 9. Explicit non-features

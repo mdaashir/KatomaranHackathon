@@ -48,6 +48,10 @@ def test_live_buffer_only_copies_for_viewers():
         assert live is not None
         assert live.face_ids == {1: 7}
         assert buffer.encode(live).startswith(b"\xff\xd8")
+        snapshot = buffer.snapshot()
+        assert snapshot["frames_published"] == 1
+        assert snapshot["width"] == 32
+        assert snapshot["height"] == 32
     finally:
         buffer.release()
 
@@ -106,6 +110,19 @@ def test_job_path_and_rtsp_validation(tmp_path):
         manager.start(JobRequest(source_type="rtsp", url="http://camera"))
 
 
+def test_webcam_job_uses_device_index(tmp_path):
+    manager = JobManager(
+        load_config("config.json"),
+        input_root=tmp_path,
+        runner=_fake_runner(threading.Event(), threading.Event()),
+    )
+    job = manager.start(JobRequest(source_type="webcam", device_index=2))
+
+    assert job.config.source.type == "webcam"
+    assert job.config.source.device_index == 2
+    assert job.label == "Webcam 2"
+
+
 def test_upload_and_job_routes(tmp_path):
     video = tmp_path / "existing.mp4"
     video.write_bytes(b"x")
@@ -124,6 +141,9 @@ def test_upload_and_job_routes(tmp_path):
     client = TestClient(app)
 
     assert client.get("/videos").json()["videos"] == ["existing.mp4"]
+    stream = client.get("/stream/status").json()
+    assert stream["frames_published"] == 0
+    assert stream["has_frame"] is False
     upload = client.post(
         "/upload",
         files={"files": ("new.mp4", b"video-bytes", "video/mp4")},

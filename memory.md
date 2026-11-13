@@ -785,7 +785,7 @@ Last updated: 2026-11-11
 
 - Branch: `docs/final-submission-audit`.
 - P2 F1–F4 complete; repo-side submission complete.
-- Updated `COMPLIANCE.md` (35 features, 231 tests/90.47%, full P2 UI evidence)
+- Updated `COMPLIANCE.md` (36 features, 235 tests/90.29%, full P2 UI evidence)
   and `SUBMISSION.md` (P2 UI smoke + evidence).
 - No code changes. Remaining external actions: record/upload the 4–5 minute
   walkthrough, replace `VIDEO_URL` in README/SUBMISSION, submit the Google
@@ -819,3 +819,18 @@ Last updated: 2026-11-11
 - Validated: **231 tests**, **90.47% coverage**, ruff clean, Streamlit smoke
   passes without the API. No `use_container_width` references remain.
 - PR pending creation; stop and wait for review/merge.
+
+---
+
+## Webcam and live health (2026-11-13)
+
+- Continue branch: `feature/ui-polish`.
+- `WebcamSource` (OpenCV, host camera) with `source.type=webcam`,
+  `source.device_index`, CLI `--source webcam --device-index`, `/jobs`
+  `device_index`, and Sources & Jobs webcam mode.
+- `/stream/status`: viewers, frame age, frames sent, resolution; Live Monitor
+  shows them.
+- Production confirmation remains 3; no changes to file/RTSP behavior.
+- Validated: **235 tests**, **90.29% coverage**, ruff clean. Docker/webcam
+  device requirements documented.
+- PR pending update; stop and wait for review/merge.

@@ -9,6 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime, timezone
 import threading
+import time
 from typing import Iterator, Sequence
 
 import cv2
@@ -34,6 +35,28 @@ class LiveFrameBuffer:
         self._viewers = 0
         self._latest: LiveFrame | None = None
         self._jpeg_quality = jpeg_quality
+        self._frames_published = 0
+        self._last_publish_at: float | None = None
+        self._width = 0
+        self._height = 0
+
+    def snapshot(self) -> dict[str, object]:
+        """Return live-view health for the API/UI."""
+
+        with self._condition:
+            age = (
+                time.monotonic() - self._last_publish_at
+                if self._last_publish_at is not None
+                else None
+            )
+            return {
+                "viewers": self._viewers,
+                "has_frame": self._latest is not None,
+                "frame_age_seconds": age,
+                "frames_published": self._frames_published,
+                "width": self._width,
+                "height": self._height,
+            }
 
     @property
     def has_viewers(self) -> bool:
@@ -66,6 +89,11 @@ class LiveFrameBuffer:
                 face_ids=dict(face_ids),
                 captured_at=datetime.now(timezone.utc),
             )
+            self._frames_published += 1
+            self._last_publish_at = time.monotonic()
+            height, width = frame.image.shape[:2]
+            self._width = width
+            self._height = height
             self._condition.notify_all()
 
     def wait(self, timeout: float = 1.0) -> LiveFrame | None:

@@ -79,7 +79,7 @@ flowchart LR
 | Module | Responsibility | Depends on |
 |---|---|---|
 | `src/config` | Load and validate JSON into frozen typed config | — |
-| `src/video` | Decode files/folders/RTSP into `Frame` objects; reconnect | config, logging |
+| `src/video` | Decode files/folders/RTSP/webcam into `Frame` objects; reconnect | config, logging |
 | `src/detection` | YOLO face inference; native-coordinate boxes; detect-only checkpoint | config, types |
 | `src/recognition` | Quality gate, 106→5 alignment, ArcFace embeddings, cosine registry, CUDA/CPU providers | config, storage |
 | `src/tracking` | ByteTrack association, track lifecycle, visits | config, detection |
