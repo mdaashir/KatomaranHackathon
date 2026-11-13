@@ -8,31 +8,15 @@ visitor counting for a mall front-entry camera. It accepts a video file, a
 folder of clips, an RTSP stream or a local webcam, and logs exactly one entry
 and one exit per visit.
 
-> **Status: submitted 2026-11-13.** P0 requirements, P1 Docker/CI, P3
-> security/release and the optional P2 FastAPI/Streamlit console are complete.
-> The walkthrough is public and the Google Form submission is done.
-
-**Keywords:** real-time face recognition, YOLO face detection, InsightFace
-ArcFace, ByteTrack, re-identification, unique visitor counting, SQLite WAL,
-FastAPI, Streamlit, RTSP, webcam, computer vision.
-
-- Problem statement: [Katomarans Problem Statement](<docs/Katomarans Problem Statement.pdf>)
-- Repository: https://github.com/mdaashir/KatomaranHackathon
-- Demo: https://youtu.be/bekQvFoOWTY · local [`demo.mkv`](demo.mkv)
-- Samples: [`samples/README.md`](samples/README.md)
-- Plan: [`docs/PLAN.md`](docs/PLAN.md)
-- Compliance audit: [`docs/COMPLIANCE.md`](docs/COMPLIANCE.md)
-- Docker/CI: [`docs/DEVOPS.md`](docs/DEVOPS.md)
-- P2 API/UI: [`docs/FRONTEND.md`](docs/FRONTEND.md)
+**Quick links:** [Problem statement](<docs/Katomarans Problem Statement.pdf>) ·
+[Architecture](#architecture) · [Compliance audit](docs/COMPLIANCE.md) ·
+[Submission checklist](docs/SUBMISSION.md)
 
 ## Demo video
 
 [![Watch the Intelligent Face Tracker walkthrough](https://img.youtube.com/vi/bekQvFoOWTY/hqdefault.jpg)](https://youtu.be/bekQvFoOWTY)
 
 **Watch:** [YouTube](https://youtu.be/bekQvFoOWTY) · **Local copy:** [`demo.mkv`](demo.mkv)
-
-The walkthrough covers the problem, architecture, live pipeline, entry/exit
-audit trail, SQLite-derived unique count and the optional operations console.
 
 ## What it does
 
@@ -48,6 +32,30 @@ audit trail, SQLite-derived unique count and the optional operations console.
   never from an in-memory counter.
 - **Write the audit trail**: `events.log`, dated entry/exit JPEG crops, and
   SQLite rows for every event.
+
+## Architecture
+
+Video/folder/RTSP/webcam input flows through the detector, tracker and ArcFace
+recognition into SQLite; entry/exit events also write crops and `events.log`.
+The unique count is always a SQL query.
+
+`Video / RTSP / webcam → YOLOv8 → ByteTrack → lifecycle → ArcFace → SQLite → unique count`
+
+```mermaid
+flowchart LR
+    A[Video / RTSP / webcam] --> B[VideoSource]
+    B --> C[YOLOv8 face detector]
+    C --> D[ByteTrack]
+    D --> E[Track lifecycle]
+    E --> F[Quality gate + ArcFace]
+    F --> G[(SQLite WAL)]
+    E --> H[Crops + events.log]
+    H --> G
+    G --> I[Unique count]
+```
+
+Full component, sequence, identity, state-machine and ER diagrams:
+[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 ## Quick start
 
@@ -139,8 +147,8 @@ docker compose up --build
 
 The container reads the single `config.json` and processes
 `src/video/record_*.mp4`; compose mounts `src/video` read-only,
-`data/` and `logs/` are writable for inspection. The API and Streamlit UI are
-P2 and are not started by this compose file yet.
+`data/` and `logs/` are writable for inspection. The API/Streamlit console runs
+separately with `uvicorn`/`streamlit`.
 
 ```powershell
 # GPU (NVIDIA Container Toolkit required)
@@ -175,25 +183,6 @@ logs/entries/YYYY-MM-DD/*.jpg  cropped face image for every entry
 logs/exits/YYYY-MM-DD/*.jpg    cropped face image for every exit
 samples/                       committed real run: CSVs, crops, log, summary
 ```
-
-## Architecture
-
-```mermaid
-flowchart LR
-    A[Video file / folder / RTSP / webcam] --> B[VideoSource<br/>PyAV, OpenCV, reconnect]
-    B --> C[YOLOv8 face detector]
-    C --> D[ByteTrack]
-    D --> E[Track lifecycle<br/>NEW → ACTIVE → LOST → EXITED]
-    E --> F[Quality gate + ArcFace]
-    F --> G[(SQLite WAL<br/>faces, visits, events)]
-    E --> H[Entry/exit crops<br/>events.log]
-    H --> G
-    G --> I[DB-derived unique count]
-```
-
-The full component, sequence, identity, state-machine and ER diagrams are in
-[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). The record/prompts used to build
-each phase are in [`docs/PROMPTS.md`](docs/PROMPTS.md).
 
 ## Sample configuration
 
@@ -260,7 +249,7 @@ excerpt and `summary.json`.
 uv run --no-sync python scripts\export_samples.py --config config.json
 ```
 
-## API and Streamlit UI (P2 F1–F4)
+## Operations console (FastAPI + Streamlit)
 
 The API exposes the dashboard/event/log reads plus upload, folder/file/RTSP/
 webcam job control, live MJPEG, an SSE activity feed, validated runtime
@@ -310,20 +299,8 @@ GitHub Actions runs `.github/workflows/ci.yml`:
 - Tagged releases: versioned GHCR images, generated notes and a samples zip.
 - Dependabot: grouped weekly updates for uv, Docker and GitHub Actions.
 
-The API/UI e2e assertions and Streamlit layer arrive with P2.
-
-## Business rules implemented
-
-- Auto-register an unmatched face above `similarity_threshold`; reuse the Face
-  ID on a match.
-- Skip tiny, blurry or profile faces to avoid garbage registrations.
-- Entry timestamp = first sight; exit timestamp = last sight; exit fires after
-  `exit_timeout_frames` misses.
-- Log every event to the DB and `events.log`; save the cropped image atomically.
-- Derive the unique count from `COUNT(faces)` in SQLite, not a memory counter.
-- Anonymous visits are logged but excluded from the unique count.
-- WAL, transactional event writes, atomic image rename, SIGINT/SIGTERM flush
-  and capped RTSP reconnect.
+The API/UI layer is covered by contract tests and a Streamlit boot smoke; the
+container e2e covers the pipeline.
 
 ## Assumptions and known limitations
 
@@ -344,14 +321,5 @@ The API/UI e2e assertions and Streamlit layer arrive with P2.
   queue drops stale frames. Tune `imgsz` / `frame_skip` on the interview GPU if
   the source cadence is 25 fps.
 - Face crops are biometric data and stay local. Nothing is uploaded.
-
-## Submission
-
-- Repository: https://github.com/mdaashir/KatomaranHackathon
-- Demo video: https://youtu.be/bekQvFoOWTY · [`demo.mkv`](demo.mkv)
-- Samples: [`samples/README.md`](samples/README.md)
-- Compliance: [`docs/COMPLIANCE.md`](docs/COMPLIANCE.md)
-- Submission checklist: [`docs/SUBMISSION.md`](docs/SUBMISSION.md)
-- Submitted: **2026-11-13** · deadline: **2:00 PM, Friday 13 November 2026**.
 
 This project is a part of a hackathon run by https://katomaran.com
